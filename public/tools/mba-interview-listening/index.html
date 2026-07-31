@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#faf9f5" />
+  <title>MBA 面试听力 · Song Chaoyang</title>
+  <style>
+    html,body,#root{min-height:100%;margin:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;background:#faf9f5}
+    .site-back{position:fixed;z-index:9999;left:14px;top:14px;padding:8px 12px;border-radius:999px;background:rgba(20,20,20,.82);color:#fff;text-decoration:none;font-size:13px;backdrop-filter:blur(8px)}
+  </style>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <a class="site-back" href="/tools/">← 工具中心</a>
+  <div id="root"></div>
+  <script>
+    window.storage = {
+      async get(key){ const value=localStorage.getItem(key); return value==null?null:{value}; },
+      async set(key,value){ localStorage.setItem(key,value); return true; },
+      async delete(key){ localStorage.removeItem(key); return true; }
+    };
+  </script>
+  <script type="text/plain" id="app-source">
+const { useState, useEffect, useRef } = React;
+
+// ---------- dialogues ----------
+const DIALOGUES = [
+  {
+    title: "自我介绍·跟读",
+    tag: "面试",
+    words: ["performance", "certificate", "corporate", "layoff", "trust", "promote", "accounting", "director"],
+    lines: [
+      { sp: "A", en: "Good morning. Please introduce yourself briefly.", v: ["introduce"], zh: "早上好。请简单做个自我介绍。" },
+      { sp: "E", en: "Good morning, professors. I am a training and performance manager at a retail chain company.", v: ["am"], zh: "各位老师早上好。我是一家连锁企业的培训绩效主管。" },
+      { sp: "E", en: "I support forty stores and about seven hundred employees, and I lead a team of eight.", v: ["support", "lead"], zh: "我支撑40家门店、约700名员工，直接管理8人团队。" },
+      { sp: "E", en: "My education was built step by step, all while working full-time.", v: ["was built"], zh: "我的学历是在职一步一步搭起来的。" },
+      { sp: "E", en: "A college diploma in mechanical engineering, then a bachelor's degree in accounting, plus national certificates in HR, project management, and psychological counseling.", v: [], zh: "机电大专，然后是会计本科，加上人力、项目管理和心理咨询的国家证书。" },
+      { sp: "E", en: "In the past few years, my company went through a big change — from eighteen hundred employees down to seven hundred.", v: ["went"], zh: "过去几年，公司经历巨变——从1800人缩到700人。" },
+      { sp: "E", en: "In the growth years, I ran our corporate university, organizing up to one hundred and seventy training sessions a month.", v: ["ran", "organizing"], zh: "扩张期，我负责企业大学，月峰值组织170场培训。" },
+      { sp: "E", en: "In the hard years, the company gave me the hardest jobs: rebuilding the performance system, and leading the final round of layoff talks.", v: ["gave"], zh: "困难期，公司把最难的活交给我：重建绩效体系，主谈最后一轮裁员。" },
+      { sp: "E", en: "I succeeded because of trust — I was the person who had promoted many of them years before.", v: ["succeeded", "was", "had promoted"], zh: "我谈成了，靠的是信任——他们中很多人当年是我亲手升上去的。" },
+      { sp: "E", en: "I also opened a small coffee shop with my own money. It failed in six months.", v: ["opened", "failed"], zh: "我还自费开过一家小咖啡店。半年就失败了。" },
+      { sp: "E", en: "But it taught me how a real business loses money, and I never forgot that lesson.", v: ["taught", "loses", "forgot"], zh: "但它教会我一门真实的生意是怎么亏钱的，这一课我从没忘。" },
+      { sp: "E", en: "I want an MBA because I have solved people problems for ten years.", v: ["want", "have solved"], zh: "我想读MBA，因为我解决了十年'人'的问题。" },
+      { sp: "E", en: "Now I want to understand the business decisions behind those problems.", v: ["want"], zh: "现在我想看懂这些问题背后的经营决策。" },
+      { sp: "E", en: "My goal is to become an HR director who truly understands business. Thank you.", v: ["is", "understands"], zh: "我的目标是成为真正懂经营的HR总监。谢谢。" },
+    ],
+  },
+  {
+    title: "第1轮·基本信息",
+    tag: "面试",
+    words: ["design", "hiring", "promotion", "trust", "certificate", "delegation"],
+    lines: [
+      { sp: "A", en: "What do you do in your daily work?", v: ["do"], zh: "你的日常工作是什么？" },
+      { sp: "E", en: "I design performance systems and training programs.", v: ["design"], zh: "我设计绩效体系和培训项目。" },
+      { sp: "E", en: "I also work with store managers to solve people problems — hiring, promotion, and sometimes, difficult conversations.", v: ["work"], zh: "我也和店长们一起解决人的问题——招聘、晋升，有时是艰难的谈话。" },
+      { sp: "A", en: "What are your strengths?", v: ["are"], zh: "你的优势是什么？" },
+      { sp: "E", en: "Two things. First, people trust me — that is why I could handle the hardest talks.", v: ["trust", "could handle"], zh: "两点。第一，人们信任我——所以最难的谈话是我去谈成的。" },
+      { sp: "E", en: "Second, I get things done. Every certificate I have, I earned while working full-time.", v: ["get", "earned"], zh: "第二，我能把事做成。我的每一张证书都是在职考下来的。" },
+      { sp: "A", en: "And your weakness?", v: [], zh: "那你的短板呢？" },
+      { sp: "E", en: "I used to do everything by myself. After my partner left, I carried all the training work alone.", v: ["used to do", "left", "carried"], zh: "我以前习惯什么都自己扛。伙伴离职后，我一个人扛下了全部培训工作。" },
+      { sp: "E", en: "Later I learned to share work with my team. Delegation was a hard lesson for me.", v: ["learned", "was"], zh: "后来我学会了把工作分给团队。授权对我是很难的一课。" },
+    ],
+  },
+  {
+    title: "第2轮·动机规划",
+    tag: "面试",
+    words: ["pursue", "finance", "strategy", "responsible", "career", "organization"],
+    lines: [
+      { sp: "A", en: "Why do you want to pursue an MBA?", v: ["want", "pursue"], zh: "你为什么想读MBA？" },
+      { sp: "E", en: "I have solved people problems for ten years.", v: ["have solved"], zh: "我解决了十年'人'的问题。" },
+      { sp: "E", en: "But business decisions decide people's future, and I want to be on that side of the table.", v: ["decide", "want"], zh: "但经营决策决定人的命运，我想坐到桌子的那一边去。" },
+      { sp: "E", en: "I need finance and strategy knowledge in a system, not by trial and error.", v: ["need"], zh: "我需要系统的财务和战略知识，而不是靠试错。" },
+      { sp: "A", en: "Why now? You are thirty-five.", v: ["are"], zh: "为什么是现在？你35岁了。" },
+      { sp: "E", en: "Because this year my job changed from training to performance.", v: ["changed"], zh: "因为今年我的工作从培训转向了绩效。" },
+      { sp: "E", en: "For the first time, I am responsible for business numbers, not just people.", v: ["am"], zh: "我第一次直接对经营数字负责，而不只是对人。" },
+      { sp: "E", en: "I can see clearly what I don't know. That is the best time to learn.", v: ["can see", "don't know", "is"], zh: "我能清楚看到自己不懂什么。这正是学习的最佳时机。" },
+      { sp: "A", en: "What is your career plan?", v: ["is"], zh: "你的职业规划是什么？" },
+      { sp: "E", en: "In three to five years, I want to be an HR director who understands business — someone who can read the numbers and design the organization at the same time.", v: ["want", "understands", "can read"], zh: "三到五年内，我要成为懂经营的HR总监——既能看懂数字，又能设计组织的人。" },
+    ],
+  },
+  {
+    title: "第3轮·工作深挖",
+    tag: "面试",
+    words: ["achievement", "layoff", "downsizing", "organization", "prepare", "shrink"],
+    lines: [
+      { sp: "A", en: "Tell me about your biggest achievement.", v: ["Tell"], zh: "讲讲你最大的成就。" },
+      { sp: "E", en: "I built and ran our corporate university — up to one hundred and seventy training sessions a month for seventy stores.", v: ["built", "ran"], zh: "我搭建并运营了企业大学——月峰值170场培训，覆盖70家门店。" },
+      { sp: "E", en: "It was also our promotion system. Many managers in our company grew up through it.", v: ["was", "grew"], zh: "它同时也是晋升体系。公司里许多管理者是从这里成长起来的。" },
+      { sp: "A", en: "Tell me about a difficult situation you handled.", v: ["Tell", "handled"], zh: "讲一个你处理过的困难局面。" },
+      { sp: "E", en: "Last year I led the final round of layoff talks.", v: ["led"], zh: "去年我主谈了最后一轮裁员面谈。" },
+      { sp: "E", en: "The hardest cases were people I had promoted years before.", v: ["were", "had promoted"], zh: "最难的几位，正是我当年亲手晋升上去的人。" },
+      { sp: "E", en: "I succeeded because they trusted me, and because I prepared a real plan for each person's next step.", v: ["succeeded", "trusted", "prepared"], zh: "我谈成了，因为他们信任我，也因为我为每个人的下一步准备了真实的方案。" },
+      { sp: "A", en: "Your company is downsizing. Why do you stay?", v: ["is downsizing", "stay"], zh: "你们公司在收缩。你为什么留下？" },
+      { sp: "E", en: "Because the company keeps giving me bigger jobs, not smaller ones.", v: ["keeps giving"], zh: "因为公司交给我的活越来越重，而不是越来越轻。" },
+      { sp: "E", en: "I have seen both sides of an organization — growing and shrinking. Few HR people my age have that.", v: ["have seen", "have"], zh: "我见过组织的两面——扩张与收缩。同龄HR很少有这个经历。" },
+    ],
+  },
+  {
+    title: "第4轮·失败个人",
+    tag: "面试",
+    words: ["failure", "fixed", "budget", "calculation", "balance", "commute"],
+    lines: [
+      { sp: "A", en: "Tell me about a failure.", v: ["Tell"], zh: "讲一次你的失败。" },
+      { sp: "E", en: "I opened a coffee shop with one hundred thousand yuan of my own money. It closed in six months.", v: ["opened", "closed"], zh: "我用自己的十万块开了家咖啡店。半年就关了。" },
+      { sp: "E", en: "My accounting degree helped me understand why — fixed costs were too high, and I guessed the customer flow wrong.", v: ["helped", "were", "guessed"], zh: "会计知识帮我看懂了原因——固定成本太高，客流也估错了。" },
+      { sp: "E", en: "Now, every budget I make at work starts with a break-even calculation.", v: ["make", "starts"], zh: "现在我做的每一个预算，都从盈亏平衡计算开始。" },
+      { sp: "A", en: "Do you regret it?", v: ["regret"], zh: "你后悔吗？" },
+      { sp: "E", en: "No. It was an expensive lesson, but a real one. I will not pay the same tuition twice.", v: ["was", "will not pay"], zh: "不后悔。这堂课很贵，但很真实。同样的学费我不会交第二次。" },
+      { sp: "A", en: "How do you balance work, study, and family?", v: ["balance"], zh: "工作、学习和家庭，你怎么平衡？" },
+      { sp: "E", en: "Fixed time blocks. I study on my commute and two and a half hours every evening.", v: ["study"], zh: "固定时间块。通勤学习，每晚固定两个半小时。" },
+      { sp: "E", en: "Weekends belong to my daughter. I design training schedules for a living — I know how to design my own.", v: ["belong", "design", "know"], zh: "周末属于我女儿。我以设计培训日程为业——我知道怎么设计自己的。" },
+    ],
+  },
+  {
+    title: "第5轮·视野收尾",
+    tag: "面试",
+    words: ["replace", "material", "admit", "practice", "repeat", "project"],
+    lines: [
+      { sp: "A", en: "Will AI replace HR and training?", v: ["Will", "replace"], zh: "AI会取代HR和培训吗？" },
+      { sp: "E", en: "Part of it, yes. AI already makes course materials better than people.", v: ["makes"], zh: "一部分会。AI做课件已经比人强了。" },
+      { sp: "E", en: "But AI cannot build trust, and it cannot sit across the table in a layoff talk.", v: ["cannot build", "cannot sit"], zh: "但AI建立不了信任，也没法坐在裁员面谈的桌子对面。" },
+      { sp: "E", en: "My plan is to move to the side AI cannot replace.", v: ["is", "cannot replace"], zh: "我的计划是走向AI替代不了的那一边。" },
+      { sp: "A", en: "What if you are not admitted this year?", v: ["are not admitted"], zh: "如果今年没被录取怎么办？" },
+      { sp: "E", en: "I will keep my interview result and try again next year. But my plan is to pass this year.", v: ["will keep", "try", "is"], zh: "我会保留面试成绩，明年再战。但我的计划是今年通过。" },
+      { sp: "A", en: "Do you have any questions for us?", v: ["have"], zh: "你有什么想问我们的吗？" },
+      { sp: "E", en: "Yes. In the organization and HR direction, what kind of companies do students work with in practice projects?", v: ["work"], zh: "有。组织与人力方向的实践项目，通常和什么类型的企业合作？" },
+      { sp: "A", en: "Good question. Last tip — if you get stuck, what do you say?", v: ["get", "say"], zh: "好问题。最后一个提示——如果卡壳了，你会说什么？" },
+      { sp: "E", en: "Sorry, could you repeat the question? Let me think for a second.", v: ["repeat", "think"], zh: "抱歉，您能重复一下问题吗？让我想几秒钟。" },
+      { sp: "E", en: "In short, my answer is this. That always brings me back.", v: ["is", "brings"], zh: "'简而言之，我的回答是……'——这句总能把我拉回来。" },
+    ],
+  },
+  {
+    title: "早晨的习惯",
+    tag: "日常",
+    words: ["norm", "normal", "routine", "establish", "accustomed", "capacity", "abide"],
+    lines: [
+      { sp: "A", en: "Morning, Elena! You look tired today.", v: ["look"], zh: "早，Elena！你今天看起来很累。" },
+      { sp: "E", en: "I am. I'm trying to establish a new routine — running at six a.m.", v: ["am", "'m trying"], zh: "是啊。我在努力养成新习惯——早上六点跑步。" },
+      { sp: "A", en: "Six? That's early! Is that normal for you?", v: ["That's", "Is"], zh: "六点？太早了！这对你来说正常吗？" },
+      { sp: "E", en: "Not yet. But they say it becomes the norm after three weeks.", v: ["say", "becomes"], zh: "还不算。但据说三周后就成常态了。" },
+      { sp: "A", en: "I'm accustomed to sleeping until eight, honestly.", v: ["I'm"], zh: "说实话，我习惯睡到八点。" },
+      { sp: "E", en: "Ha! Then you'd never abide by my running schedule.", v: ["you'd", "abide"], zh: "哈！那你肯定遵守不了我的跑步计划。" },
+      { sp: "A", en: "True. My capacity for early mornings is very small.", v: ["is"], zh: "没错。我起早的能力非常有限。" },
+      { sp: "E", en: "Start small. Even ten minutes helps you establish the habit.", v: ["Start", "helps"], zh: "从小处开始。哪怕十分钟也有助于养成习惯。" },
+      { sp: "A", en: "Okay, okay. Maybe I'll try next Monday.", v: ["I'll", "try"], zh: "好吧好吧。也许下周一我试试。" },
+      { sp: "E", en: "Everyone says Monday! Just make it your new normal.", v: ["says", "make"], zh: "人人都说下周一！直接让它成为你的新常态吧。" },
+    ],
+  },
+  {
+    title: "换工作的纠结",
+    tag: "职场",
+    words: ["career", "candidate", "achieve", "advantage", "potential", "pursue", "attitude", "acquire"],
+    lines: [
+      { sp: "E", en: "Alex, can I ask you something about my career?", v: ["can", "ask"], zh: "Alex，能问你点职业上的事吗？" },
+      { sp: "A", en: "Of course. What's going on?", v: ["What's", "going"], zh: "当然。怎么了？" },
+      { sp: "E", en: "A big company wants me as a candidate for a manager job.", v: ["wants"], zh: "一家大公司想让我做经理职位的候选人。" },
+      { sp: "A", en: "That's great! What's the advantage of moving?", v: ["That's", "What's"], zh: "太好了！跳过去有什么好处？" },
+      { sp: "E", en: "More money, and I could acquire new skills.", v: ["could acquire"], zh: "钱更多，还能学到新技能。" },
+      { sp: "A", en: "And the downside?", v: [], zh: "那坏处呢？" },
+      { sp: "E", en: "I love my team here. We achieve a lot together.", v: ["love", "achieve"], zh: "我喜欢现在的团队。我们一起做成了很多事。" },
+      { sp: "A", en: "Hmm. Do you see more potential here, or there?", v: ["Do", "see"], zh: "嗯。你觉得哪边潜力更大，这里还是那里？" },
+      { sp: "E", en: "There, honestly. It's the career I want to pursue.", v: ["It's", "want"], zh: "说实话是那边。那才是我想追求的事业。" },
+      { sp: "A", en: "Then go. With your attitude, you'll do well anywhere.", v: ["go", "you'll", "do"], zh: "那就去吧。凭你这心态，到哪都能做好。" },
+    ],
+  },
+  {
+    title: "这个月超支了",
+    tag: "消费",
+    words: ["budget", "purchase", "afford", "excessive", "estimate", "adequate", "finance", "profit"],
+    lines: [
+      { sp: "A", en: "Elena, help me. My budget is broken again.", v: ["help", "is broken"], zh: "Elena，救命。我的预算又爆了。" },
+      { sp: "E", en: "Again? What did you purchase this time?", v: ["did", "purchase"], zh: "又爆了？这次你买什么了？" },
+      { sp: "A", en: "A new phone. And a watch. And some shoes.", v: [], zh: "一部新手机。还有块表。还有几双鞋。" },
+      { sp: "E", en: "Alex! That's excessive. Can you actually afford all that?", v: ["That's", "Can", "afford"], zh: "Alex！这太过分了。你真买得起这些吗？" },
+      { sp: "A", en: "Well... I estimate I'll be fine by next month.", v: ["estimate", "I'll be"], zh: "呃……我估计下个月就能缓过来。" },
+      { sp: "E", en: "You need to manage your finances like a company.", v: ["need"], zh: "你得像公司一样管理自己的财务。" },
+      { sp: "A", en: "Like a company? What do you mean?", v: ["do", "mean"], zh: "像公司？什么意思？" },
+      { sp: "E", en: "Income minus spending equals profit. Keep it positive.", v: ["equals", "Keep"], zh: "收入减支出等于利润。保持正数。" },
+      { sp: "A", en: "My profit this month is very, very negative.", v: ["is"], zh: "我这个月的利润是非常非常大的负数。" },
+      { sp: "E", en: "Then an adequate plan starts today. No more shopping!", v: ["starts"], zh: "那像样的计划今天就开始。不许再购物了！" },
+    ],
+  },
+  {
+    title: "去哪儿度假",
+    tag: "旅行",
+    words: ["abroad", "departure", "available", "forecast", "vehicle", "urgent", "approach", "schedule"],
+    lines: [
+      { sp: "E", en: "I finally have a week off! I want to travel abroad.", v: ["have", "want"], zh: "我终于有一周假了！我想出国旅行。" },
+      { sp: "A", en: "Nice! Where are you thinking?", v: ["are", "thinking"], zh: "赞！你想去哪？" },
+      { sp: "E", en: "Japan. But cheap flights are not available this month.", v: ["are"], zh: "日本。但这个月没有便宜机票了。" },
+      { sp: "A", en: "What about next month? As summer approaches, prices drop midweek.", v: ["approaches", "drop"], zh: "下个月呢？入夏后工作日的价格会降。" },
+      { sp: "E", en: "Good idea. I'll check departure times tonight.", v: ["I'll check"], zh: "好主意。我今晚查查出发时间。" },
+      { sp: "A", en: "Check the weather forecast too. June can be rainy there.", v: ["Check", "can be"], zh: "也看看天气预报。那边六月可能多雨。" },
+      { sp: "E", en: "True. And I need to rent a vehicle for the countryside.", v: ["need"], zh: "对。去乡下我还得租辆车。" },
+      { sp: "A", en: "Book early. That part is urgent — cars sell out fast.", v: ["Book", "is", "sell"], zh: "早点订。这事很急——车很快被订光。" },
+      { sp: "E", en: "Okay! Flight, car, hotel. My schedule is full tonight.", v: ["is"], zh: "好！机票、车、酒店。我今晚日程满了。" },
+      { sp: "A", en: "Ha! Planning the trip is half the fun.", v: ["is"], zh: "哈！规划旅行本身就是一半的乐趣。" },
+    ],
+  },
+  {
+    title: "AI会取代我们吗",
+    tag: "观点",
+    words: ["innovation", "transform", "inevitable", "predict", "trend", "tremendous", "dominate", "adapt"],
+    lines: [
+      { sp: "A", en: "Elena, do you think AI will take our jobs?", v: ["do", "think", "will take"], zh: "Elena，你觉得AI会抢走我们的工作吗？" },
+      { sp: "E", en: "Some jobs, yes. I think that part is inevitable.", v: ["think", "is"], zh: "一部分会。我觉得那是不可避免的。" },
+      { sp: "A", en: "That sounds scary. The trend is moving so fast.", v: ["sounds", "is moving"], zh: "听着挺吓人。这趋势变化太快了。" },
+      { sp: "E", en: "Fast, yes. AI is already transforming how we work.", v: ["is", "transforming", "work"], zh: "确实快。AI已经在改变我们的工作方式。" },
+      { sp: "A", en: "Nobody can predict where it ends, right?", v: ["can predict", "ends"], zh: "没人能预测它的终点，对吧？" },
+      { sp: "E", en: "Right. But every big innovation felt scary at first.", v: ["felt"], zh: "对。但每次重大创新一开始都让人害怕。" },
+      { sp: "A", en: "Like the internet. It changed everything, tremendously.", v: ["changed"], zh: "就像互联网。它带来了巨大的改变。" },
+      { sp: "E", en: "Exactly. A few companies dominate now, but people adapted.", v: ["dominate", "adapted"], zh: "没错。现在几家公司占主导，但人们适应了。" },
+      { sp: "A", en: "So your advice is: don't fear it, learn it?", v: ["is", "fear", "learn"], zh: "所以你的建议是：别怕它，去学它？" },
+      { sp: "E", en: "Yes. The people who adapt will always be needed.", v: ["adapt", "will", "be needed"], zh: "对。会适应的人永远被需要。" },
+    ],
+  },
+  {
+    title: "坚持锻炼太难了",
+    tag: "健康",
+    words: ["maintain", "sustain", "endure", "vital", "enhance", "vigorous", "tolerance"],
+    lines: [
+      { sp: "E", en: "How's the gym going, Alex? Still going every day?", v: ["How's", "going"], zh: "健身怎么样了，Alex？还每天去吗？" },
+      { sp: "A", en: "I went twice. Then I stopped. I can't maintain it.", v: ["went", "stopped", "can't maintain"], zh: "我去了两次。然后就停了。我坚持不下来。" },
+      { sp: "E", en: "Twice is a start! Why did you stop?", v: ["is", "did", "stop"], zh: "两次也是开始啊！为什么停了？" },
+      { sp: "A", en: "The classes are too vigorous. I couldn't endure an hour.", v: ["are", "couldn't endure"], zh: "课程强度太大了。我撑不过一小时。" },
+      { sp: "E", en: "Then don't do an hour! Start with twenty minutes.", v: ["don't do", "Start"], zh: "那就别练一小时！从二十分钟开始。" },
+      { sp: "A", en: "Twenty minutes? Does that even help?", v: ["Does", "help"], zh: "二十分钟？那有用吗？" },
+      { sp: "E", en: "Yes! Small steps you can sustain beat big steps you quit.", v: ["can sustain", "beat", "quit"], zh: "有用！能坚持的小步胜过放弃的大步。" },
+      { sp: "A", en: "Hmm. My tolerance for pain is really low.", v: ["is"], zh: "嗯。我对疼痛的耐受度真的很低。" },
+      { sp: "E", en: "Exercise is vital, but it should enhance your life, not hurt it.", v: ["is", "should enhance", "hurt"], zh: "锻炼很重要，但它应该让生活更好，不是折磨你。" },
+      { sp: "A", en: "Okay. Twenty minutes, three times a week. Deal.", v: [], zh: "好。每周三次，每次二十分钟。成交。" },
+    ],
+  },
+  {
+    title: "考前一个月",
+    tag: "备考",
+    words: ["priority", "determine", "confront", "obstacle", "endeavor", "persuade", "ultimate", "objective"],
+    lines: [
+      { sp: "A", en: "One month until my big exam. I'm so nervous, Elena.", v: ["I'm"], zh: "离大考只剩一个月了。我好紧张，Elena。" },
+      { sp: "E", en: "Nervous is normal. What's your biggest obstacle right now?", v: ["is", "What's"], zh: "紧张很正常。你现在最大的障碍是什么？" },
+      { sp: "A", en: "English words. I see them and my mind goes empty.", v: ["see", "goes"], zh: "英语单词。一看到它们我脑子就空了。" },
+      { sp: "E", en: "Then words are your top priority this month.", v: ["are"], zh: "那这个月单词就是你的头等大事。" },
+      { sp: "A", en: "I know. I'm determined to review them every day.", v: ["know", "I'm determined"], zh: "我知道。我下定决心每天复习。" },
+      { sp: "E", en: "Good. Confront the hard words first, not the easy ones.", v: ["Confront"], zh: "很好。先攻克难词，别刷简单的。" },
+      { sp: "A", en: "My ultimate objective is just to pass, honestly.", v: ["is"], zh: "说实话，我的最终目标就是通过。" },
+      { sp: "E", en: "You'll do more than pass. Your endeavor will pay off.", v: ["You'll do", "will pay off"], zh: "你不止能通过。你的努力会有回报的。" },
+      { sp: "A", en: "You always know how to persuade me to keep going.", v: ["know"], zh: "你总有办法说服我坚持下去。" },
+      { sp: "E", en: "That's what friends are for. One month. You've got this!", v: ["That's", "are", "You've got"], zh: "朋友就是干这个的。一个月。你可以的！" },
+    ],
+  },
+];
+
+// ---------- voices ----------
+let vAlex = null, vElena = null, voicesReady = false;
+function assignVoices() {
+  try {
+    const vs = window.speechSynthesis.getVoices().filter((v) => v.lang && v.lang.startsWith("en"));
+    if (!vs.length) return;
+    voicesReady = true;
+    const prefer = (names) => vs.find((v) => names.some((n) => v.name.toLowerCase().includes(n)));
+    vAlex = prefer(["daniel", "david", "alex", "guy", "google us english", "aaron"]) || vs[0];
+    vElena = prefer(["samantha", "victoria", "zira", "karen", "google uk english female", "aria", "susan"]) ||
+      vs.find((v) => v !== vAlex) || vs[0];
+  } catch (e) {}
+}
+function speakLine(line, rate, onEnd) {
+  try {
+    const synth = window.speechSynthesis;
+    if (!synth) { onEnd && onEnd(); return null; }
+    const u = new SpeechSynthesisUtterance(line.en);
+    u.lang = "en-US";
+    u.rate = rate;
+    const sameVoice = vAlex && vElena && vAlex === vElena;
+    if (line.sp === "A") { if (vAlex) u.voice = vAlex; u.pitch = sameVoice ? 0.8 : 1.0; }
+    else { if (vElena) u.voice = vElena; u.pitch = sameVoice ? 1.3 : 1.05; }
+    u.onend = () => onEnd && onEnd();
+    u.onerror = () => onEnd && onEnd();
+    synth.speak(u);
+    return u;
+  } catch (e) { onEnd && onEnd(); return null; }
+}
+
+// ---------- storage ----------
+const KEY = "mba-listen-v1";
+async function loadCfg() {
+  try { const r = await window.storage.get(KEY); if (r && r.value) return JSON.parse(r.value); } catch (e) {}
+  return null;
+}
+async function saveCfg(c) { try { await window.storage.set(KEY, JSON.stringify(c)); } catch (e) {} }
+
+function App() {
+  const [cfg, setCfg] = useState({ rate: 0.9, mode: "both" }); // mode: both | en | blind
+  const [di, setDi] = useState(0);
+  const [cur, setCur] = useState(-1);
+  const [playing, setPlaying] = useState(false);
+  const playingRef = useRef(false);
+  const curRef = useRef(-1);
+  const cfgRef = useRef(cfg);
+  cfgRef.current = cfg;
+  const lineRefs = useRef([]);
+
+  useEffect(() => {
+    (async () => {
+      const c = await loadCfg();
+      if (c) setCfg((p) => ({ ...p, ...c }));
+    })();
+    try {
+      window.speechSynthesis.onvoiceschanged = assignVoices;
+      assignVoices();
+    } catch (e) {}
+    return () => { try { window.speechSynthesis.cancel(); } catch (e) {} };
+  }, []);
+
+  useEffect(() => {
+    if (cur >= 0 && lineRefs.current[cur]) {
+      lineRefs.current[cur].scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [cur]);
+
+  const persist = (patch) => {
+    const next = { ...cfgRef.current, ...patch };
+    setCfg(next);
+    saveCfg(next);
+  };
+
+  const stop = () => {
+    playingRef.current = false;
+    setPlaying(false);
+    try { window.speechSynthesis.cancel(); } catch (e) {}
+  };
+
+  const playFrom = (idx) => {
+    const d = DIALOGUES[di];
+    if (idx >= d.lines.length) {
+      playingRef.current = false;
+      setPlaying(false);
+      setCur(-1);
+      return;
+    }
+    curRef.current = idx;
+    setCur(idx);
+    speakLine(d.lines[idx], cfgRef.current.rate, () => {
+      if (!playingRef.current) return;
+      setTimeout(() => { if (playingRef.current) playFrom(idx + 1); }, 350);
+    });
+  };
+
+  const togglePlay = () => {
+    if (playing) { stop(); return; }
+    if (!voicesReady) assignVoices();
+    playingRef.current = true;
+    setPlaying(true);
+    try { window.speechSynthesis.cancel(); } catch (e) {}
+    playFrom(cur >= 0 && cur < DIALOGUES[di].lines.length ? cur : 0);
+  };
+
+  const tapLine = (idx) => {
+    stop();
+    setCur(idx);
+    speakLine(DIALOGUES[di].lines[idx], cfgRef.current.rate, () => {});
+  };
+
+  const switchDialogue = (i) => {
+    stop();
+    setDi(i);
+    setCur(-1);
+  };
+
+  // 颜色管语法(谓语=绿)，粗细管词汇(目标词=粗)；重叠=绿粗
+  const highlight = (text, verbs) => {
+    const flags = new Array(text.length).fill(0); // bit1=谓语 bit2=目标词
+    const isL = (c) => !!c && /[a-z']/i.test(c);
+    const lower = text.toLowerCase();
+    (verbs || []).forEach((v) => {
+      const vl = v.toLowerCase();
+      let p = 0;
+      while ((p = lower.indexOf(vl, p)) !== -1) {
+        if (!isL(text[p - 1]) && !isL(text[p + vl.length])) {
+          for (let k = p; k < p + vl.length; k++) flags[k] |= 1;
+        }
+        p += vl.length;
+      }
+    });
+    const ws = DIALOGUES[di].words.map((w) => w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+    const re = new RegExp(`\\b(${ws.join("|")})\\w*\\b`, "gi");
+    let m;
+    while ((m = re.exec(text)) !== null) {
+      for (let k = m.index; k < m.index + m[0].length; k++) flags[k] |= 2;
+    }
+    const out = [];
+    let i = 0;
+    while (i < text.length) {
+      let j = i;
+      while (j < text.length && flags[j] === flags[i]) j++;
+      const seg = text.slice(i, j);
+      const f = flags[i];
+      if (!f) out.push(seg);
+      else
+        out.push(
+          <span key={i} style={{
+            color: f & 1 ? "var(--green)" : "var(--accent)",
+            fontWeight: f & 2 ? 700 : 600,
+          }}>{seg}</span>
+        );
+      i = j;
+    }
+    return out;
+  };
+
+  const css = `
+    :root{
+      --bg:#12151b; --card:#1b2029; --line:#2b3240; --ink:#f0ede4; --dim:#8b93a3;
+      --accent:#8fb4ff; --green:#5fce8a; --amber:#e8b45a; --rose:#e87a7a;
+      --serif:Georgia,'Times New Roman','Songti SC',serif;
+    }
+    .ls-root{height:100vh;background:var(--bg);color:var(--ink);
+      font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Segoe UI',sans-serif;
+      display:flex;flex-direction:column;max-width:560px;margin:0 auto;box-sizing:border-box;}
+    .ls-btn{border:none;border-radius:12px;cursor:pointer;font-family:inherit;transition:transform .06s ease;}
+    .ls-btn:active{transform:scale(.96)}
+    .ls-chip{padding:5px 12px;border-radius:999px;background:transparent;color:var(--dim);
+      border:1px solid var(--line);font-size:12.5px;white-space:nowrap;}
+    .ls-chip.on{background:var(--accent);color:#0e1116;border-color:var(--accent);font-weight:600;}
+    .fadein{animation:lsf .18s ease}
+    @keyframes lsf{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+    .ls-scroll::-webkit-scrollbar{width:0}
+  `;
+
+  const d = DIALOGUES[di];
+
+  return (
+    <div className="ls-root">
+      <style>{css}</style>
+
+      {/* header */}
+      <div style={{ padding: "14px 16px 10px", borderBottom: "1px solid var(--line)" }}>
+        <div style={{ fontFamily: "var(--serif)", fontSize: 20, fontWeight: 600 }}>双人听力 · Alex &amp; Elena</div>
+        <div className="ls-scroll" style={{ display: "flex", gap: 6, marginTop: 10, overflowX: "auto" }}>
+          {DIALOGUES.map((dd, i) => (
+            <button key={i} className={`ls-btn ls-chip ${di === i ? "on" : ""}`} onClick={() => switchDialogue(i)}>
+              {dd.tag}·{dd.title}
+            </button>
+          ))}
+        </div>
+        <div style={{ display: "flex", gap: 6, marginTop: 10, alignItems: "center", flexWrap: "wrap" }}>
+          <span style={{ fontSize: 11.5, color: "var(--dim)" }}>语速</span>
+          {[["0.75", 0.75], ["0.9", 0.9], ["1.0", 1.0]].map(([label, r]) => (
+            <button key={label} className={`ls-btn ls-chip ${cfg.rate === r ? "on" : ""}`}
+              onClick={() => persist({ rate: r })}>{label}x</button>
+          ))}
+          <span style={{ width: 6 }} />
+          <span style={{ fontSize: 11.5, color: "var(--dim)" }}>字幕</span>
+          {[["both", "中英"], ["en", "只英文"], ["blind", "盲听"]].map(([k, label]) => (
+            <button key={k} className={`ls-btn ls-chip ${cfg.mode === k ? "on" : ""}`}
+              onClick={() => persist({ mode: k })}>{label}</button>
+          ))}
+        </div>
+        <div style={{ display: "flex", gap: 5, marginTop: 10, flexWrap: "wrap", alignItems: "center" }}>
+          <span style={{ fontSize: 11.5, color: "var(--dim)" }}>本段目标词</span>
+          {d.words.map((w) => (
+            <span key={w} style={{ background: "rgba(143,180,255,.1)", border: "1px solid rgba(143,180,255,.3)",
+              color: "var(--accent)", borderRadius: 8, padding: "2px 8px", fontSize: 12 }}>{w}</span>
+          ))}
+        </div>
+      </div>
+
+      {/* transcript */}
+      <div className="ls-scroll" style={{ flex: 1, overflowY: "auto", padding: "14px 16px", minHeight: 0 }}>
+        <p style={{ fontSize: 12, color: "var(--dim)", margin: "0 0 12px" }}>
+          点任意一句可单独重听 · <span style={{ color: "var(--green)", fontWeight: 600 }}>绿色=谓语</span> · <span style={{ color: "var(--accent)", fontWeight: 700 }}>蓝粗=目标词</span> · 又绿又粗=两者都是
+        </p>
+        {d.lines.map((l, i) => {
+          const active = i === cur;
+          const isA = l.sp === "A";
+          const blind = cfg.mode === "blind" && !active;
+          return (
+            <div key={i} ref={(el) => (lineRefs.current[i] = el)} onClick={() => tapLine(i)}
+              style={{ display: "flex", justifyContent: isA ? "flex-start" : "flex-end", marginBottom: 10, cursor: "pointer" }}>
+              <div style={{ maxWidth: "86%" }}>
+                <div style={{ fontSize: 11, color: isA ? "var(--accent)" : "var(--amber)",
+                  marginBottom: 3, textAlign: isA ? "left" : "right" }}>
+                  {isA ? "Alex" : "Elena"}
+                </div>
+                <div style={{
+                  background: active ? (isA ? "rgba(143,180,255,.15)" : "rgba(232,180,90,.13)") : "var(--card)",
+                  border: `1px solid ${active ? (isA ? "var(--accent)" : "var(--amber)") : "var(--line)"}`,
+                  borderRadius: isA ? "4px 14px 14px 14px" : "14px 4px 14px 14px",
+                  padding: "10px 13px", fontSize: 15, lineHeight: 1.55,
+                  filter: blind ? "blur(6px)" : "none", transition: "filter .15s",
+                }}>
+                  {highlight(l.en, l.v)}
+                  {cfg.mode === "both" && (
+                    <div style={{ fontSize: 12.5, color: "var(--dim)", marginTop: 5 }}>{l.zh}</div>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+        <div style={{ height: 20 }} />
+      </div>
+
+      {/* controls */}
+      <div style={{ display: "flex", gap: 10, padding: "12px 16px 18px", borderTop: "1px solid var(--line)", alignItems: "center" }}>
+        <button className="ls-btn" onClick={togglePlay}
+          style={{ flex: 1, background: playing ? "var(--rose)" : "var(--accent)", color: "#0e1116",
+            fontSize: 17, fontWeight: 700, padding: "15px 0", borderRadius: 14 }}>
+          {playing ? "⏸ 暂停" : cur > 0 && cur < d.lines.length ? "▶ 继续" : "▶ 播放整段"}
+        </button>
+        <button className="ls-btn" onClick={() => { stop(); setCur(-1); }}
+          style={{ background: "var(--card)", border: "1px solid var(--line)", color: "var(--dim)",
+            fontSize: 14, padding: "15px 18px", borderRadius: 14 }}>
+          ↺ 回开头
+        </button>
+        <span style={{ fontSize: 12.5, color: "var(--dim)", minWidth: 44, textAlign: "right" }}>
+          {cur >= 0 ? cur + 1 : "–"}/{d.lines.length}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+  <script>
+    const { code } = Babel.transform(document.getElementById('app-source').textContent, {
+      presets: [['env'], ['react', { runtime: 'classic' }]]
+    });
+    new Function(code)();
+  </script>
+</body>
+</html>

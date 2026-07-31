@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>拾光读书会 · 与书相伴的时光</title>
+  <meta name="description" content="拾光读书会 —— 记录每一本读过的书、每一部看过的电影，用阅读丈量时光。">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ======= 顶部导航 ======= -->
+  <header class="site-header" id="siteHeader">
+    <nav class="nav container" aria-label="主导航">
+      <a class="brand" href="#/">
+        <svg class="brand-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+        <span class="brand-name">拾光读书会</span>
+      </a>
+      <button class="nav-toggle" id="navToggle" aria-label="打开菜单" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <line x1="4" y1="7" x2="20" y2="7"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17" x2="20" y2="17"/>
+        </svg>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#/" data-route="home">首页</a></li>
+        <li><a href="#/books" data-route="books">书库</a></li>
+        <li><a href="#/movies" data-route="movies">影库</a></li>
+        <li><a href="#/sessions" data-route="sessions">往期活动</a></li>
+        <li><a href="#/about" data-route="about">关于我们</a></li>
+        <li><a class="nav-cta" href="#/about">加入读书会</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main">
+
+    <!-- ======= 首页 ======= -->
+    <section class="page" id="page-home">
+      <div class="hero">
+        <div class="container hero-inner">
+          <p class="hero-kicker" id="heroKicker">A READING JOURNEY</p>
+          <h1 class="hero-title" id="heroTitle">书与影，<br>一个人的<em>阅读档案</em></h1>
+          <p class="hero-sub" id="heroSub">这里记录着每一本读过的书、每一部看过的电影。</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#/books">
+              浏览书库
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+            <a class="btn btn-ghost" href="#/sessions">往期回顾</a>
+          </div>
+          <dl class="hero-stats" id="heroStats"></dl>
+        </div>
+        <div class="hero-shelf" id="heroShelf" aria-hidden="true"></div>
+        <div class="cover-marquee" aria-label="书库封面滚动展示">
+          <div class="marquee-track" id="marqueeTrack"></div>
+        </div>
+      </div>
+
+      <section class="section container">
+        <div class="section-head">
+          <h2 class="section-title">近期共读</h2>
+          <a class="section-more" href="#/books">全部书籍
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+          </a>
+        </div>
+        <div class="book-grid" id="homeBooks"></div>
+      </section>
+
+      <section class="section section-tinted" id="homeSessionSection">
+        <div class="container">
+          <div class="section-head">
+            <h2 class="section-title">最近一次相聚</h2>
+            <a class="section-more" href="#/sessions">全部活动
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+            </a>
+          </div>
+          <div id="homeSession"></div>
+        </div>
+      </section>
+
+      <section class="section container quote-band">
+        <blockquote>
+          <p>"读书不是为了雄辩和驳斥，也不是为了轻信和盲从，而是为了思考和权衡。"</p>
+          <cite>—— 弗朗西斯 · 培根</cite>
+        </blockquote>
+      </section>
+    </section>
+
+    <!-- ======= 书库 ======= -->
+    <section class="page" id="page-books" hidden>
+      <div class="page-hero">
+        <div class="container">
+          <h1 class="page-title">书库</h1>
+          <p class="page-sub" id="booksCount"></p>
+        </div>
+      </div>
+      <div class="container">
+        <div class="toolbar">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" id="bookSearch" placeholder="搜索书名或作者…" aria-label="搜索书名或作者">
+          </div>
+          <div class="filter-chips" id="categoryChips" role="group" aria-label="按分类筛选"></div>
+          <label class="sort-select">
+            <span>排序</span>
+            <select id="bookSort" aria-label="排序方式">
+              <option value="date-desc">最近阅读</option>
+              <option value="date-asc">最早阅读</option>
+              <option value="rating-desc">评分最高</option>
+              <option value="title">书名</option>
+            </select>
+          </label>
+        </div>
+        <div class="book-grid" id="bookGrid"></div>
+        <div class="empty-state" id="bookEmpty" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <p>没有找到匹配的书籍</p>
+          <button class="btn btn-ghost" id="bookReset">清除筛选</button>
+        </div>
+        <nav class="pagination" id="bookPager" aria-label="分页"></nav>
+      </div>
+    </section>
+
+    <!-- ======= 影库 ======= -->
+    <section class="page" id="page-movies" hidden>
+      <div class="page-hero">
+        <div class="container">
+          <h1 class="page-title">影库</h1>
+          <p class="page-sub" id="moviesCount"></p>
+        </div>
+      </div>
+      <div class="container">
+        <div class="toolbar">
+          <div class="search-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" id="movieSearch" placeholder="搜索片名或导演…" aria-label="搜索片名或导演">
+          </div>
+          <div class="filter-chips" id="movieGenreChips" role="group" aria-label="按类型筛选"></div>
+          <label class="sort-select">
+            <span>排序</span>
+            <select id="movieSort" aria-label="排序方式">
+              <option value="date-desc">最近看的</option>
+              <option value="rating-desc">评分最高</option>
+              <option value="title">片名</option>
+            </select>
+          </label>
+        </div>
+        <div class="book-grid" id="movieGrid"></div>
+        <div class="empty-state" id="movieEmpty" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <p>没有找到匹配的影视</p>
+          <button class="btn btn-ghost" id="movieReset">清除筛选</button>
+        </div>
+        <nav class="pagination" id="moviePager" aria-label="分页"></nav>
+      </div>
+    </section>
+
+    <!-- ======= 往期活动 ======= -->
+    <section class="page" id="page-sessions" hidden>
+      <div class="page-hero">
+        <div class="container">
+          <h1 class="page-title">往期活动</h1>
+          <p class="page-sub" id="sessionsCount"></p>
+        </div>
+      </div>
+      <div class="container">
+        <div class="timeline" id="sessionTimeline"></div>
+      </div>
+    </section>
+
+    <!-- ======= 活动详情 ======= -->
+    <section class="page" id="page-session-detail" hidden>
+      <div class="container detail-container" id="sessionDetail"></div>
+    </section>
+
+    <!-- ======= 关于 ======= -->
+    <section class="page" id="page-about" hidden>
+      <div class="page-hero">
+        <div class="container">
+          <h1 class="page-title">关于拾光读书会</h1>
+          <p class="page-sub">用阅读丈量时光</p>
+        </div>
+      </div>
+      <div class="container about-grid">
+        <article class="about-main" id="aboutMain">
+          <h2>关于这个站</h2>
+          <p>这是一份个人的书影记录。每读完一本书、看完一部电影，就在这里留下一笔，积少成多，回头看时便是一段阅读的时光。</p>
+          <h2>数据来源</h2>
+          <p>书籍和影视数据来自豆瓣个人标记，通过脚本导入并缓存封面到本地。</p>
+        </article>
+        <aside class="about-side">
+          <div class="stat-card" id="aboutStats"></div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <!-- ======= 书籍详情弹层 ======= -->
+  <div class="modal" id="bookModal" hidden role="dialog" aria-modal="true" aria-labelledby="bookModalTitle">
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-panel">
+      <button class="modal-close" data-close aria-label="关闭">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="modal-body" id="bookModalBody"></div>
+    </div>
+  </div>
+
+  <!-- ======= 影视详情弹层 ======= -->
+  <div class="modal" id="movieModal" hidden role="dialog" aria-modal="true" aria-labelledby="movieModalTitle">
+    <div class="modal-backdrop" data-mclose></div>
+    <div class="modal-panel">
+      <button class="modal-close" data-mclose aria-label="关闭">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="modal-body" id="movieModalBody"></div>
+    </div>
+  </div>
+
+  <!-- ======= 图片灯箱 ======= -->
+  <div class="lightbox" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="查看大图">
+    <button class="lightbox-close" aria-label="关闭">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <img id="lightboxImg" alt="">
+    <p class="lightbox-caption" id="lightboxCaption"></p>
+  </div>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <span class="brand-name">拾光读书会</span>
+        <p>记录每一本书、每一部电影。</p>
+      </div>
+      <p class="footer-copy" id="footerCopy"></p>
+    </div>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/sessions.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
