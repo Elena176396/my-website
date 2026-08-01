@@ -1,9 +1,9 @@
 ---
 const categories = [
-  { id: 'decode', label: '人格解码', color: '#9a9488', soft: 'rgba(154,148,136,.06)' },
-  { id: 'mystic', label: '玄学引擎', color: '#a07a50', soft: 'rgba(160,122,80,.06)' },
-  { id: 'boost',  label: '效率外挂', color: '#768672', soft: 'rgba(118,134,114,.06)' },
-  { id: 'spark',  label: '灵感弹珠', color: '#9a9488', soft: 'rgba(154,148,136,.06)' },
+  { id: 'decode', label: '人格解码', color: '#6e7488', soft: 'rgba(110,116,136,.1)' },
+  { id: 'mystic', label: '玄学引擎', color: '#706888', soft: 'rgba(112,104,136,.1)' },
+  { id: 'boost',  label: '效率外挂', color: '#5e7080', soft: 'rgba(94,112,128,.1)' },
+  { id: 'spark',  label: '灵感弹珠', color: '#6e7488', soft: 'rgba(110,116,136,.1)' },
 ];
 
 const tools = [
@@ -27,10 +27,10 @@ const tools = [
 const catMap = Object.fromEntries(categories.map(c => [c.id, c]));
 
 const bentoBlocks = [
-  { cat: 'boost',  label: '效率外挂', desc: '专注计时 · 考研词汇 · MBA 口语 · 面试听力', deco: '时词研\n商说听', bg: 'rgba(180,195,182,.45)', c: '#566e52', count: 7 },
-  { cat: 'decode', label: '人格解码', desc: 'MBTI · 九型人格 · 人格融合测试',              deco: 'M九融',         bg: 'rgba(200,196,188,.45)', c: '#7a756a', count: 3 },
-  { cat: 'mystic', label: '玄学引擎', desc: '八字排盘 · 五行关系 · 生肖图谱',              deco: '八五肖',        bg: 'rgba(206,196,182,.45)', c: '#8a7040', count: 3 },
-  { cat: 'spark',  label: '灵感弹珠', desc: '名言转盘 · 拾光读书会',                        deco: '言书',          bg: 'rgba(198,194,186,.45)', c: '#7a756a', count: 2 },
+  { cat: 'boost',  label: '效率外挂', desc: '专注计时 · 考研词汇 · MBA 口语 · 面试听力', deco: '时词研\n商说听', bg: 'rgba(140,160,175,.32)', c: '#48606e', count: 7 },
+  { cat: 'decode', label: '人格解码', desc: 'MBTI · 九型人格 · 人格融合测试',              deco: 'M九融',         bg: 'rgba(155,150,175,.32)', c: '#555068', count: 3 },
+  { cat: 'mystic', label: '玄学引擎', desc: '八字排盘 · 五行关系 · 生肖图谱',              deco: '八五肖',        bg: 'rgba(148,140,170,.32)', c: '#564e6e', count: 3 },
+  { cat: 'spark',  label: '灵感弹珠', desc: '名言转盘 · 拾光读书会',                        deco: '言书',          bg: 'rgba(148,155,172,.32)', c: '#4e5568', count: 2 },
 ];
 ---
 
@@ -39,7 +39,7 @@ const bentoBlocks = [
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#edebe6" />
+  <meta name="theme-color" content="#e7e9ed" />
   <title>Song Chaoyang · 工具与模拟器</title>
   <meta name="description" content="宋超洋的互动工具实验场——人格解码、玄学引擎、效率外挂与灵感弹珠。把好奇心做成工具。" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -81,6 +81,7 @@ const bentoBlocks = [
 
     <section class="section-heading">
       <div class="wrap">
+        <div class="section-rule" aria-hidden="true"></div>
         <h2>15 个实验，4 个方向</h2>
         <p class="section-sub">Every tool here started as a "what if" — pick a direction and start playing.</p>
       </div>
@@ -126,70 +127,85 @@ const bentoBlocks = [
 
 <style>
   :global(*) { box-sizing: border-box; margin: 0; }
+  :global(html) { scroll-behavior: smooth; }
   :global(body) {
-    color: #2c2a24;
-    background: #edebe6;
+    color: #1a1c1e;
+    background: #e7e9ed;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
                  "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-    position: relative;
+    position: relative; min-height: 100vh; overflow-x: hidden;
   }
 
-  /* gradient orbs — gives depth for glass to reveal */
+  /* animated cold orbs */
   :global(body)::before {
-    content: '';
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    content: ''; position: fixed; top: 0; left: 0;
+    width: 140%; height: 140%;
     background:
-      radial-gradient(circle 600px at 15% 20%, rgba(118,134,114,.12), transparent),
-      radial-gradient(circle 500px at 80% 15%, rgba(160,122,80,.09), transparent),
-      radial-gradient(circle 700px at 60% 70%, rgba(154,148,136,.1), transparent),
-      radial-gradient(circle 400px at 30% 80%, rgba(118,134,114,.07), transparent);
-    z-index: 0;
-    pointer-events: none;
+      radial-gradient(circle 550px at 10% 15%, rgba(80,100,180,.18), transparent),
+      radial-gradient(circle 450px at 85% 10%, rgba(120,90,170,.14), transparent),
+      radial-gradient(circle 600px at 55% 60%, rgba(70,140,160,.12), transparent),
+      radial-gradient(circle 400px at 30% 80%, rgba(90,110,170,.1), transparent);
+    z-index: 0; pointer-events: none;
+    animation: drift 28s ease-in-out infinite alternate;
+  }
+  @keyframes drift {
+    0%   { transform: translate(0, 0) scale(1); }
+    33%  { transform: translate(-4%, 2%) scale(1.02); }
+    66%  { transform: translate(3%, -3%) scale(.98); }
+    100% { transform: translate(-2%, 4%) scale(1.01); }
   }
 
   :global(body) > * { position: relative; z-index: 1; }
-
   .wrap { width: min(1100px, calc(100% - 48px)); margin-inline: auto; }
 
-  /* ═══ HEADER — frosted glass ═══ */
+  /* ═══ HEADER ═══ */
   header {
     position: sticky; top: 0; z-index: 10;
-    background: rgba(237,235,230,.6);
-    backdrop-filter: blur(20px) saturate(1.2);
-    -webkit-backdrop-filter: blur(20px) saturate(1.2);
-    border-bottom: 1px solid rgba(255,255,255,.45);
+    background: rgba(231,233,237,.48);
+    backdrop-filter: blur(24px) saturate(1.3);
+    -webkit-backdrop-filter: blur(24px) saturate(1.3);
+    border-bottom: 1px solid rgba(255,255,255,.4);
+    background-image: linear-gradient(135deg, rgba(255,255,255,.15) 0%, transparent 40%);
   }
   .header-inner { height: 64px; display: flex; align-items: center; justify-content: space-between; }
   .brand { color: inherit; text-decoration: none; font-size: 12.5px; font-weight: 780; letter-spacing: .14em; }
   .gh-link {
     display: flex; align-items: center; justify-content: center;
-    width: 38px; height: 38px; color: #9e9a90;
-    background: rgba(255,255,255,.3);
-    border: 1px solid rgba(255,255,255,.5);
+    width: 38px; height: 38px; color: #8a8d96;
+    background: rgba(255,255,255,.25); border: 1px solid rgba(255,255,255,.45);
     border-radius: 50%;
     backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
     transition: color .2s, background .2s;
   }
-  .gh-link:hover { color: #2c2a24; background: rgba(255,255,255,.5); }
+  .gh-link:hover { color: #1a1c1e; background: rgba(255,255,255,.45); }
 
   /* ═══ HERO ═══ */
   .hero { padding: clamp(72px, 12vw, 150px) 0 clamp(20px, 3vw, 36px); text-align: center; }
-  h1 { font-size: clamp(36px, 7vw, 64px); font-weight: 820; line-height: 1.15; letter-spacing: -.04em; }
-  .subtitle { max-width: 460px; margin: 20px auto 0; font-size: clamp(13px, 1.6vw, 15px); line-height: 1.7; color: #a5a19a; }
+  h1 { font-size: clamp(36px, 7vw, 64px); font-weight: 820; line-height: 1.15; letter-spacing: -.04em; color: #0a0a0c; }
+  .subtitle { max-width: 460px; margin: 20px auto 0; font-size: clamp(13px, 1.6vw, 15px); line-height: 1.7; color: #8e919a; }
+
+  /* glass CTA */
   .cta {
     display: inline-flex; align-items: center; gap: 8px;
     margin-top: 32px; padding: 13px 28px;
-    font-size: 14px; font-weight: 650;
-    color: #fff; background: rgba(44,42,36,.85);
-    border: 1px solid rgba(255,255,255,.1);
+    font-size: 14px; font-weight: 680; color: #1a1c1e;
+    background: rgba(255,255,255,.4);
+    background-image: linear-gradient(135deg, rgba(255,255,255,.25) 0%, transparent 50%);
+    backdrop-filter: blur(12px) saturate(1.2);
+    -webkit-backdrop-filter: blur(12px) saturate(1.2);
+    border: 1px solid rgba(255,255,255,.55);
     border-radius: 999px; text-decoration: none;
-    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-    box-shadow: 0 2px 12px rgba(90,75,50,.12);
-    transition: transform .2s, box-shadow .2s, background .2s;
+    box-shadow: 0 2px 10px rgba(50,55,80,.08), inset 0 1px 0 rgba(255,255,255,.5);
+    transition: transform .2s, box-shadow .2s, background .2s, color .2s;
   }
-  .cta:hover { transform: translateY(-2px); background: rgba(44,42,36,.95); box-shadow: 0 6px 24px rgba(90,75,50,.2); }
+  .cta:hover {
+    transform: translateY(-2px);
+    background: rgba(30,34,50,.82); background-image: none;
+    color: #fff; border-color: rgba(255,255,255,.15);
+    box-shadow: 0 6px 24px rgba(40,50,80,.2);
+  }
   .cta svg { transition: transform .2s; }
   .cta:hover svg { transform: translateX(3px); }
 
@@ -197,7 +213,8 @@ const bentoBlocks = [
   .showcase { overflow: hidden; padding: clamp(20px, 4vw, 44px) 0 clamp(44px, 6vw, 76px); }
   .showcase-track {
     display: flex; gap: 16px; position: relative;
-    will-change: transform; animation: marquee 50s linear infinite;
+    will-change: transform;
+    animation: marquee 50s linear infinite;
   }
   .showcase:hover .showcase-track { animation-play-state: paused; }
   @keyframes marquee {
@@ -205,48 +222,53 @@ const bentoBlocks = [
     to   { transform: translateX(-50%); }
   }
 
-  /* glass card */
+  /* glass card with category-tinted icon */
   .sc {
     position: relative; flex-shrink: 0;
     width: 105px; height: 142px;
-    background: rgba(255,255,254,.45);
-    backdrop-filter: blur(14px) saturate(1.1);
-    -webkit-backdrop-filter: blur(14px) saturate(1.1);
-    border: 1px solid rgba(255,255,255,.55);
-    border-radius: 18px;
+    background: rgba(255,255,255,.3);
+    background-image: linear-gradient(135deg, rgba(255,255,255,.22) 0%, transparent 50%);
+    backdrop-filter: blur(16px) saturate(1.2);
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+    border: 1px solid rgba(255,255,255,.5); border-radius: 18px;
     display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
     text-decoration: none; color: inherit; cursor: pointer;
-    box-shadow:
-      0 2px 8px rgba(100,85,55,.05),
-      0 8px 24px rgba(100,85,55,.06),
-      inset 0 1px 0 rgba(255,255,255,.5);
-    will-change: transform; transition: box-shadow .3s ease, background .3s ease;
+    box-shadow: 0 2px 8px rgba(50,55,80,.04), 0 8px 24px rgba(50,55,80,.06), inset 0 1px 0 rgba(255,255,255,.55);
+    will-change: transform;
+    transition: box-shadow .3s ease, background .3s ease;
   }
   .sc:hover {
-    background: rgba(255,255,254,.65);
-    box-shadow:
-      0 4px 12px rgba(100,85,55,.08),
-      0 16px 40px rgba(100,85,55,.1),
-      inset 0 1px 0 rgba(255,255,255,.6);
+    background: rgba(255,255,255,.48);
+    box-shadow: 0 4px 12px rgba(50,55,80,.07), 0 16px 40px rgba(50,55,80,.1), inset 0 1px 0 rgba(255,255,255,.65);
   }
   .sc-icon {
     width: 48px; height: 48px; display: grid; place-items: center; border-radius: 14px;
-    background: rgba(255,255,255,.4);
-    border: 1px solid rgba(255,255,255,.5);
+    background: color-mix(in srgb, var(--c) 8%, rgba(255,255,255,.32));
+    border: 1px solid color-mix(in srgb, var(--c) 12%, rgba(255,255,255,.4));
     font-family: Georgia, "Songti SC", serif; font-size: 22px; color: var(--c);
   }
-  .sc-name { font-size: 11px; font-weight: 620; color: #7a756d; text-align: center; line-height: 1.25; padding: 0 6px; }
+  .sc-name { font-size: 11px; font-weight: 620; color: #6a6d76; text-align: center; line-height: 1.25; padding: 0 6px; }
   .sc::after {
     content: ''; position: absolute; bottom: 10px; left: 25%; right: 25%;
-    height: 2.5px; border-radius: 2px; background: var(--c); opacity: .16;
+    height: 2.5px; border-radius: 2px; background: var(--c); opacity: .14;
   }
 
   /* ═══ SECTION HEADING ═══ */
   .section-heading { text-align: center; padding: clamp(24px, 4vw, 48px) 0 clamp(32px, 5vw, 56px); }
-  .section-heading h2 { font-size: clamp(28px, 5vw, 44px); font-weight: 800; letter-spacing: -.04em; line-height: 1.15; }
-  .section-sub { max-width: 480px; margin: 16px auto 0; font-size: clamp(13px, 1.5vw, 14.5px); line-height: 1.7; color: #a5a19a; }
+  .section-rule {
+    width: 40px; height: 2px; margin: 0 auto 24px;
+    background: rgba(50,55,80,.15); border-radius: 2px;
+  }
+  .section-heading h2 {
+    font-size: clamp(28px, 5vw, 44px); font-weight: 800;
+    letter-spacing: -.04em; line-height: 1.15; color: #0a0a0c;
+  }
+  .section-sub {
+    max-width: 480px; margin: 16px auto 0;
+    font-size: clamp(13px, 1.5vw, 14.5px); line-height: 1.7; color: #8e919a;
+  }
 
-  /* ═══ BENTO — frosted glass blocks ═══ */
+  /* ═══ BENTO ═══ */
   .categories { padding-bottom: clamp(60px, 8vw, 100px); }
   .bento-row { display: grid; gap: 14px; margin-bottom: 14px; }
   .bento-row:nth-child(1) { grid-template-columns: 3fr 2fr; }
@@ -258,39 +280,38 @@ const bentoBlocks = [
     border-radius: 22px; padding: 32px 36px;
     display: flex; flex-direction: column; justify-content: flex-end;
     background: var(--bg);
-    backdrop-filter: blur(18px) saturate(1.15);
-    -webkit-backdrop-filter: blur(18px) saturate(1.15);
-    border: 1px solid rgba(255,255,255,.45);
-    box-shadow:
-      0 2px 8px rgba(100,85,55,.04),
-      inset 0 1px 0 rgba(255,255,255,.4);
-    text-decoration: none; color: #2c2a24;
-    transition: transform .3s ease, box-shadow .3s ease, background .3s ease;
+    background-image: linear-gradient(135deg, rgba(255,255,255,.2) 0%, transparent 45%);
+    backdrop-filter: blur(20px) saturate(1.2);
+    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+    border: 1px solid rgba(255,255,255,.42);
+    box-shadow: 0 2px 8px rgba(50,55,80,.03), inset 0 1px 0 rgba(255,255,255,.4);
+    text-decoration: none; color: #1a1c1e;
+    transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease, filter .3s ease;
   }
   .bento:hover {
-    transform: translateY(-3px);
-    box-shadow:
-      0 8px 32px rgba(100,85,55,.08),
-      inset 0 1px 0 rgba(255,255,255,.5);
+    transform: translateY(-4px);
+    border-color: rgba(255,255,255,.65);
+    box-shadow: 0 10px 36px rgba(50,55,80,.09), inset 0 1px 0 rgba(255,255,255,.55);
+    filter: brightness(1.06);
   }
   .bento h3 { font-size: clamp(22px, 2.8vw, 28px); font-weight: 760; letter-spacing: -.03em; margin-bottom: 8px; }
-  .bento p { font-size: 14px; color: rgba(44,42,36,.4); line-height: 1.6; max-width: 280px; }
+  .bento p { font-size: 14px; color: rgba(26,28,30,.36); line-height: 1.6; max-width: 280px; }
   .bento-count {
     display: inline-flex; align-items: center; gap: 4px;
-    margin-top: 14px; font-size: 12.5px; font-weight: 650; color: var(--c); opacity: .6;
+    margin-top: 14px; font-size: 12.5px; font-weight: 650; color: var(--c); opacity: .55;
   }
   .bento-deco {
     position: absolute; top: 50%; right: 24px; transform: translateY(-50%);
     font-family: Georgia, "Songti SC", "STSong", serif;
     font-size: clamp(72px, 10vw, 100px); line-height: .95; letter-spacing: -.06em;
-    color: var(--c); opacity: .07; pointer-events: none; white-space: nowrap;
+    color: var(--c); opacity: .06; pointer-events: none; white-space: nowrap;
   }
 
   /* ═══ FOOTER ═══ */
   footer { border-top: 1px solid rgba(255,255,255,.3); }
-  .footer-inner { padding: 28px 0 48px; display: flex; justify-content: space-between; color: #b0aa9e; font-size: 13px; }
+  .footer-inner { padding: 28px 0 48px; display: flex; justify-content: space-between; color: #9a9da6; font-size: 13px; }
   .footer-inner a { color: inherit; text-decoration: none; transition: color .15s; }
-  .footer-inner a:hover { color: #706d64; }
+  .footer-inner a:hover { color: #555860; }
 
   /* ═══ RESPONSIVE ═══ */
   @media (max-width: 860px) {
@@ -307,6 +328,7 @@ const bentoBlocks = [
     .sc-icon { width: 36px; height: 36px; font-size: 17px; border-radius: 10px; }
     .sc-name { font-size: 9px; }
     .section-heading { padding: 20px 0 28px; }
+    .section-rule { margin-bottom: 16px; }
     .bento-row:nth-child(1),
     .bento-row:nth-child(2) { grid-template-columns: 1fr; }
     .bento { min-height: 180px; padding: 24px 28px; border-radius: 18px; }
@@ -314,6 +336,8 @@ const bentoBlocks = [
     .bento-deco { font-size: 56px; right: 14px; }
   }
   @media (prefers-reduced-motion: reduce) {
+    :global(html) { scroll-behavior: auto; }
+    :global(body)::before { animation: none !important; }
     .showcase-track { animation: none !important; }
     *, *::before, *::after { transition-duration: 0s !important; }
   }
@@ -334,7 +358,7 @@ const bentoBlocks = [
     cards.forEach(card => {
       const mid = card.offsetLeft + tx + card.offsetWidth / 2;
       const n = Math.max(-1.4, Math.min(1.4, (mid - cx) / (box.width * 0.48)));
-      const y  = (1 - n * n) * 26;
+      const y   = (1 - n * n) * 26;
       const rot = n * 5;
       const ry  = n * -8;
       const s   = 1 - Math.abs(n) * 0.04;
