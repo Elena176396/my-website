@@ -1,114 +1,337 @@
 ---
+const categories = [
+  { id: 'decode', label: '人格解码', color: '#a89880', soft: 'rgba(168,152,128,.06)' },
+  { id: 'mystic', label: '玄学引擎', color: '#b07a42', soft: 'rgba(176,122,66,.06)' },
+  { id: 'boost',  label: '效率外挂', color: '#7a8a6e', soft: 'rgba(122,138,110,.06)' },
+  { id: 'spark',  label: '灵感弹珠', color: '#a89880', soft: 'rgba(168,152,128,.06)' },
+];
+
 const tools = [
-  { href: '/tools/bazi-calculator/', title: '八字排盘', desc: '四柱、五行与大运分析', icon: '八' },
-  { href: '/tools/enneagram-pro/', title: '九型人格', desc: '探索核心动机与行为模式', icon: '九' },
-  { href: '/tools/mbti-enneagram-fusion/', title: 'MBTI × 九型', desc: '两套人格模型的融合测试', icon: '融' },
-  { href: '/tools/mbti-simulator/', title: 'MBTI 测试', desc: '认知偏好与人格类型分析', icon: 'M' },
-  { href: '/tools/focus-timer/', title: '专注计时器', desc: '番茄钟、标签与专注记录', icon: '时' },
-  { href: '/tools/quote-wheel/', title: '名言转盘', desc: '发现、竞猜与收藏名言', icon: '言' },
-  { href: '/tools/wuxing-explainer/', title: '五行关系图', desc: '天干地支与相生相克可视化', icon: '五' },
-  { href: '/tools/zodiac-compatibility-chart/', title: '生肖关系盘', desc: '十二生肖关系互动图谱', icon: '肖' },
-  { href: '/tools/have-fun/', title: '拾光读书会', desc: '书籍与电影的个人阅读档案', icon: '书' },
-  { href: '/tools/vocab-1341/', title: '考研词汇 1341', desc: '1341 个高频词复习训练', icon: '词' },
-  { href: '/tools/vocab-3728/', title: '考研词汇 3728', desc: '3728 个考研词汇学习工具', icon: '研' },
-  { href: '/tools/vocab-4533/', title: '考研词汇 4533', desc: '4533 个考研词汇完整训练', icon: '英' },
-  { href: '/tools/mba-vocab-632/', title: 'MBA 词汇 632', desc: '快速识别、例句与复习训练', icon: '商' },
-  { href: '/tools/mba-english-dialogue-practice/', title: 'MBA 英语对话', desc: 'MBA 情景口语陪练', icon: '说' },
-  { href: '/tools/mba-interview-listening/', title: 'MBA 面试听力', desc: '双人对话与面试听力训练', icon: '听' },
+  { cat: 'decode', href: '/tools/mbti-simulator/',            title: 'MBTI 测试',    desc: '认知偏好与人格类型分析',   icon: 'M',  short: 'MBTI' },
+  { cat: 'decode', href: '/tools/enneagram-pro/',              title: '九型人格',      desc: '探索核心动机与行为模式',   icon: '九', short: '九型人格' },
+  { cat: 'decode', href: '/tools/mbti-enneagram-fusion/',      title: 'MBTI × 九型',  desc: '两套人格模型的融合测试',   icon: '融', short: 'MBTI×九型' },
+  { cat: 'mystic', href: '/tools/bazi-calculator/',            title: '八字排盘',      desc: '四柱、五行与大运分析',     icon: '八', short: '八字排盘' },
+  { cat: 'mystic', href: '/tools/wuxing-explainer/',           title: '五行关系图',    desc: '天干地支与相生相克可视化', icon: '五', short: '五行关系' },
+  { cat: 'mystic', href: '/tools/zodiac-compatibility-chart/', title: '生肖关系盘',    desc: '十二生肖关系互动图谱',     icon: '肖', short: '生肖关系' },
+  { cat: 'boost',  href: '/tools/focus-timer/',                title: '专注计时器',    desc: '番茄钟、标签与专注记录',   icon: '时', short: '专注计时' },
+  { cat: 'spark',  href: '/tools/quote-wheel/',                title: '名言转盘',      desc: '发现、竞猜与收藏名言',     icon: '言', short: '名言转盘' },
+  { cat: 'spark',  href: '/tools/have-fun/',                   title: '拾光读书会',    desc: '书籍与电影的个人阅读档案', icon: '书', short: '拾光读书' },
+  { cat: 'boost',  href: '/tools/vocab-1341/',                 title: '考研词汇 1341', desc: '1341 个高频词复习训练',     icon: '词', short: '词汇1341' },
+  { cat: 'boost',  href: '/tools/vocab-3728/',                 title: '考研词汇 3728', desc: '3728 个考研词汇学习工具',   icon: '研', short: '词汇3728' },
+  { cat: 'boost',  href: '/tools/vocab-4533/',                 title: '考研词汇 4533', desc: '4533 个考研词汇完整训练',   icon: '英', short: '词汇4533' },
+  { cat: 'boost',  href: '/tools/mba-vocab-632/',              title: 'MBA 词汇 632',  desc: '快速识别、例句与复习训练', icon: '商', short: 'MBA词汇' },
+  { cat: 'boost',  href: '/tools/mba-english-dialogue-practice/', title: 'MBA 英语对话', desc: 'MBA 情景口语陪练',       icon: '说', short: 'MBA对话' },
+  { cat: 'boost',  href: '/tools/mba-interview-listening/',    title: 'MBA 面试听力',  desc: '双人对话与面试听力训练',   icon: '听', short: 'MBA听力' },
+];
+
+const catMap = Object.fromEntries(categories.map(c => [c.id, c]));
+
+const bentoBlocks = [
+  { cat: 'boost',  label: '效率外挂', desc: '专注计时 · 考研词汇 · MBA 口语 · 面试听力', deco: '时词研\n商说听', bg: '#cad5c8', c: '#5a6e50', count: 7 },
+  { cat: 'decode', label: '人格解码', desc: 'MBTI · 九型人格 · 人格融合测试',              deco: 'M九融',         bg: '#d8d0c4', c: '#8a7e6a', count: 3 },
+  { cat: 'mystic', label: '玄学引擎', desc: '八字排盘 · 五行关系 · 生肖图谱',              deco: '八五肖',        bg: '#ddd2c0', c: '#96703a', count: 3 },
+  { cat: 'spark',  label: '灵感弹珠', desc: '名言转盘 · 拾光读书会',                        deco: '言书',          bg: '#d5cfc4', c: '#8a7e6a', count: 2 },
 ];
 ---
 
 <!doctype html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <meta name="theme-color" content="#f7f5ef" />
-    <title>Song Chaoyang · 模拟器与工具</title>
-    <meta name="description" content="Song Chaoyang 的互动模拟器与实用工具合集" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  </head>
-  <body>
-    <header>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#f4f0e8" />
+  <title>Song Chaoyang · 工具与模拟器</title>
+  <meta name="description" content="宋超洋的互动工具实验场——人格解码、玄学引擎、效率外挂与灵感弹珠。把好奇心做成工具。" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+</head>
+<body>
+
+  <header>
+    <div class="wrap header-inner">
       <a class="brand" href="/">SONG CHAOYANG</a>
-    </header>
+      <a class="gh-link" href="https://github.com/Elena176396" rel="noopener noreferrer" aria-label="GitHub">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.009-.866-.013-1.7-2.782.604-3.369-1.34-3.369-1.34-.454-1.156-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.831.092-.646.35-1.086.636-1.336-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.114 2.504.336 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+      </a>
+    </div>
+  </header>
 
-    <main>
-      <section class="hero">
-        <p class="eyebrow">PLAYGROUND · 2026</p>
-        <h1>用好奇心<br />探索工具</h1>
-        <p class="intro">不会代码也可以做程序，一起来做实验</p>
-      </section>
+  <main>
 
-      <section class="tools" aria-labelledby="tools-title">
-        <div class="section-head">
-          <h2 id="tools-title">全部模拟器</h2>
-          <span>{tools.length} TOOLS</span>
-        </div>
-        <div class="grid">
-          {tools.map((tool, index) => (
-            <a class="card" href={tool.href}>
-              <span class="number">{String(index + 1).padStart(2, '0')}</span>
-              <span class="icon" aria-hidden="true">{tool.icon}</span>
-              <span class="copy">
-                <strong>{tool.title}</strong>
-                <small>{tool.desc}</small>
-              </span>
-              <span class="arrow" aria-hidden="true">↗</span>
+    <section class="hero">
+      <div class="wrap">
+        <h1>把好奇心做成工具</h1>
+        <p class="subtitle">This is a playground — you're invited to come and play.</p>
+        <a class="cta" href="#categories">开始探索 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
+      </div>
+    </section>
+
+    <section class="showcase">
+      <div class="showcase-track" id="track">
+        {/* render twice for seamless loop */}
+        {[...tools, ...tools].map(tool => {
+          const c = catMap[tool.cat];
+          return (
+            <a class="sc" href={tool.href} style={`--c:${c.color};--cs:${c.soft}`}>
+              <span class="sc-icon">{tool.icon}</span>
+              <span class="sc-name">{tool.short}</span>
+            </a>
+          );
+        })}
+      </div>
+    </section>
+
+    <section class="categories" id="categories">
+      <div class="wrap">
+        <div class="bento-row">
+          {bentoBlocks.slice(0, 2).map(b => (
+            <a class="bento" href={`/tools/#${b.cat}`} style={`--bg:${b.bg};--c:${b.c}`}>
+              <div class="bento-deco" set:html={b.deco.replace('\n', '<br/>')} />
+              <h3>{b.label}</h3>
+              <p>{b.desc}</p>
+              <span class="bento-count">{b.count} 个工具 →</span>
             </a>
           ))}
         </div>
-      </section>
-    </main>
+        <div class="bento-row">
+          {bentoBlocks.slice(2, 4).map(b => (
+            <a class="bento" href={`/tools/#${b.cat}`} style={`--bg:${b.bg};--c:${b.c}`}>
+              <div class="bento-deco" set:html={b.deco.replace('\n', '<br/>')} />
+              <h3>{b.label}</h3>
+              <p>{b.desc}</p>
+              <span class="bento-count">{b.count} 个工具 →</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
 
-    <footer>
+  </main>
+
+  <footer>
+    <div class="wrap footer-inner">
       <span>© 2026 Song Chaoyang</span>
       <a href="https://github.com/Elena176396" rel="noopener noreferrer">GitHub ↗</a>
-    </footer>
-  </body>
+    </div>
+  </footer>
+
+</body>
 </html>
 
+
 <style>
-  :global(*) { box-sizing: border-box; }
+  :global(*) { box-sizing: border-box; margin: 0; }
   :global(body) {
-    margin: 0;
-    color: #171714;
-    background:
-      radial-gradient(circle at 88% 10%, rgba(224, 119, 82, .16), transparent 28rem),
-      #f7f5ef;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", sans-serif;
+    color: #2c2a24;
+    background: radial-gradient(ellipse at 50% -8%, rgba(180,150,100,.1), transparent 50%), #f4f0e8;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                 "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
-  header, main, footer { width: min(1160px, calc(100% - 40px)); margin-inline: auto; }
-  header { height: 84px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #d9d5ca; }
-  .brand { color: inherit; text-decoration: none; font-size: 13px; font-weight: 850; letter-spacing: .13em; }
-  .hero { padding: clamp(72px, 12vw, 150px) 0 90px; }
-  .eyebrow { margin: 0 0 28px; color: #d06c49; font-size: 12px; font-weight: 800; letter-spacing: .18em; }
-  h1 { max-width: 900px; margin: 0; font-size: clamp(58px, 11vw, 126px); line-height: .88; letter-spacing: -.075em; font-weight: 820; }
-  .intro { max-width: 570px; margin: 38px 0 0; color: #646158; font-size: clamp(17px, 2.4vw, 22px); line-height: 1.7; }
-  .tools { padding: 0 0 100px; }
-  .section-head { display: flex; justify-content: space-between; align-items: end; margin-bottom: 20px; }
-  h2 { margin: 0; font-size: 24px; letter-spacing: -.03em; }
-  .section-head span { color: #8b877d; font: 700 11px ui-monospace, monospace; letter-spacing: .15em; }
-  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid #cbc6b9; }
-  .card { position: relative; min-height: 190px; padding: 24px; color: inherit; text-decoration: none; border-bottom: 1px solid #cbc6b9; display: grid; grid-template-columns: 36px 64px 1fr 30px; gap: 18px; align-items: center; transition: background .2s, transform .2s; }
-  .card:nth-child(odd) { border-right: 1px solid #cbc6b9; }
-  .card:hover { background: rgba(255,255,255,.68); transform: translateY(-2px); }
-  .number { align-self: start; color: #999488; font: 700 11px ui-monospace, monospace; }
-  .icon { width: 62px; height: 62px; display: grid; place-items: center; border: 1px solid #bcb6a9; border-radius: 20px; font-family: Georgia, "Songti SC", serif; font-size: 27px; }
-  .copy { display: flex; flex-direction: column; gap: 10px; }
-  .copy strong { font-size: clamp(20px, 2.6vw, 29px); letter-spacing: -.04em; }
-  .copy small { color: #777268; font-size: 14px; line-height: 1.5; }
-  .arrow { font-size: 21px; transition: transform .2s; }
-  .card:hover .arrow { transform: translate(3px, -3px); }
-  footer { padding: 28px 0 46px; border-top: 1px solid #d9d5ca; display: flex; justify-content: space-between; color: #777268; font-size: 13px; }
-  footer a { color: inherit; }
-  @media (max-width: 760px) {
-    header, main, footer { width: min(100% - 28px, 1160px); }
-    .hero { padding: 72px 0 64px; }
-    h1 { font-size: clamp(54px, 19vw, 84px); }
-    .grid { grid-template-columns: 1fr; }
-    .card:nth-child(odd) { border-right: 0; }
-    .card { min-height: 150px; padding: 20px 8px; grid-template-columns: 24px 54px 1fr 22px; gap: 12px; }
-    .icon { width: 52px; height: 52px; border-radius: 16px; font-size: 23px; }
+  .wrap { width: min(1100px, calc(100% - 48px)); margin-inline: auto; }
+
+  /* ═══ HEADER ═══ */
+  header {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(244,240,232,.85);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(0,0,0,.06);
+  }
+  .header-inner {
+    height: 64px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .brand {
+    color: inherit; text-decoration: none;
+    font-size: 12.5px; font-weight: 780; letter-spacing: .14em;
+  }
+  .gh-link {
+    display: flex; align-items: center; justify-content: center;
+    width: 38px; height: 38px; color: #9e9a90;
+    border: 1px solid rgba(0,0,0,.08); border-radius: 50%;
+    transition: color .2s, border-color .2s;
+  }
+  .gh-link:hover { color: #2c2a24; border-color: #2c2a24; }
+
+  /* ═══ HERO ═══ */
+  .hero {
+    padding: clamp(72px, 12vw, 150px) 0 clamp(20px, 3vw, 36px);
+    text-align: center;
+  }
+  h1 {
+    font-size: clamp(36px, 7vw, 64px);
+    font-weight: 820; line-height: 1.15; letter-spacing: -.04em;
+  }
+  .subtitle {
+    max-width: 460px; margin: 20px auto 0;
+    font-size: clamp(13px, 1.6vw, 15px); line-height: 1.7; color: #a9a49a;
+  }
+  .cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 32px; padding: 13px 28px;
+    font-size: 14px; font-weight: 650; color: #fff;
+    background: #2c2a24; border-radius: 999px; text-decoration: none;
+    box-shadow: 0 2px 10px rgba(100,80,50,.15);
+    transition: transform .2s, box-shadow .2s;
+  }
+  .cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 24px rgba(100,80,50,.22);
+  }
+  .cta svg { transition: transform .2s; }
+  .cta:hover svg { transform: translateX(3px); }
+
+  /* ═══ SHOWCASE ═══ */
+  .showcase {
+    overflow: hidden;
+    padding: clamp(20px, 4vw, 44px) 0 clamp(44px, 6vw, 76px);
+  }
+  .showcase-track {
+    display: flex; gap: 16px;
+    position: relative; will-change: transform;
+    animation: marquee 50s linear infinite;
+  }
+  .showcase:hover .showcase-track { animation-play-state: paused; }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  .sc {
+    position: relative; flex-shrink: 0;
+    width: 105px; height: 142px;
+    background: #fffefa; border: 1px solid rgba(0,0,0,.06); border-radius: 18px;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: 10px;
+    text-decoration: none; color: inherit; cursor: pointer;
+    box-shadow: 0 4px 18px rgba(110,90,60,.08);
+    will-change: transform; transition: box-shadow .3s ease;
+  }
+  .sc:hover { box-shadow: 0 14px 40px rgba(110,90,60,.16); }
+
+  .sc-icon {
+    width: 48px; height: 48px; display: grid; place-items: center;
+    border-radius: 14px;
+    background: var(--cs);
+    border: 1px solid color-mix(in srgb, var(--c) 16%, rgba(0,0,0,.04));
+    font-family: Georgia, "Songti SC", serif;
+    font-size: 22px; color: var(--c);
+  }
+  .sc-name {
+    font-size: 11px; font-weight: 620; color: #8a857b;
+    text-align: center; line-height: 1.25; padding: 0 6px;
+  }
+  .sc::after {
+    content: ''; position: absolute;
+    bottom: 10px; left: 25%; right: 25%;
+    height: 2.5px; border-radius: 2px;
+    background: var(--c); opacity: .18;
+  }
+
+  /* ═══ BENTO ═══ */
+  .categories { padding-bottom: clamp(60px, 8vw, 100px); }
+
+  .bento-row { display: grid; gap: 14px; margin-bottom: 14px; }
+  .bento-row:nth-child(1) { grid-template-columns: 3fr 2fr; }
+  .bento-row:nth-child(2) { grid-template-columns: 2fr 3fr; }
+
+  .bento {
+    position: relative; overflow: hidden;
+    min-height: clamp(200px, 22vw, 260px);
+    border-radius: 22px; padding: 32px 36px;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    background: var(--bg); text-decoration: none; color: #2c2a24;
+    transition: transform .3s ease, box-shadow .3s ease;
+  }
+  .bento:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 36px rgba(110,90,60,.1);
+  }
+  .bento h3 {
+    font-size: clamp(22px, 2.8vw, 28px);
+    font-weight: 760; letter-spacing: -.03em; margin-bottom: 8px;
+  }
+  .bento p {
+    font-size: 14px; color: rgba(44,42,36,.45);
+    line-height: 1.6; max-width: 280px;
+  }
+  .bento-count {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-top: 14px; font-size: 12.5px; font-weight: 650;
+    color: var(--c); opacity: .65;
+  }
+  .bento-deco {
+    position: absolute; top: 50%; right: 24px;
+    transform: translateY(-50%);
+    font-family: Georgia, "Songti SC", "STSong", serif;
+    font-size: clamp(72px, 10vw, 100px);
+    line-height: .95; letter-spacing: -.06em;
+    color: var(--c); opacity: .07;
+    pointer-events: none; white-space: nowrap;
+  }
+
+  /* ═══ FOOTER ═══ */
+  footer { border-top: 1px solid rgba(0,0,0,.06); }
+  .footer-inner {
+    padding: 28px 0 48px; display: flex;
+    justify-content: space-between; color: #b0aa9e; font-size: 13px;
+  }
+  .footer-inner a { color: inherit; text-decoration: none; transition: color .15s; }
+  .footer-inner a:hover { color: #706d64; }
+
+  /* ═══ RESPONSIVE ═══ */
+  @media (max-width: 860px) {
+    .sc { width: 88px; height: 120px; border-radius: 15px; }
+    .sc-icon { width: 40px; height: 40px; font-size: 19px; border-radius: 12px; }
+    .sc-name { font-size: 10px; }
+    .bento-deco { font-size: 64px; right: 16px; }
+  }
+  @media (max-width: 560px) {
+    .wrap { width: min(100% - 32px, 1100px); }
+    .hero { padding: 48px 0 16px; }
+    .cta { margin-top: 24px; padding: 11px 24px; font-size: 13px; }
+    .sc { width: 76px; height: 104px; border-radius: 14px; gap: 7px; }
+    .sc-icon { width: 36px; height: 36px; font-size: 17px; border-radius: 10px; }
+    .sc-name { font-size: 9px; }
+    .bento-row:nth-child(1),
+    .bento-row:nth-child(2) { grid-template-columns: 1fr; }
+    .bento { min-height: 180px; padding: 24px 28px; border-radius: 18px; }
+    .bento h3 { font-size: 22px; }
+    .bento-deco { font-size: 56px; right: 14px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .showcase-track { animation: none !important; }
+    *, *::before, *::after { transition-duration: 0s !important; }
   }
 </style>
+
+
+<script>
+  // U-curve: sides high, center low — real-time viewport-based transforms
+  const showcase = document.querySelector('.showcase');
+  const track = document.getElementById('track');
+  const cards = track.querySelectorAll('.sc');
+
+  function curve() {
+    const box = showcase.getBoundingClientRect();
+    const cx = box.width / 2;
+    const style = getComputedStyle(track);
+    const mx = new DOMMatrix(style.transform);
+    const tx = mx.m41;
+
+    cards.forEach(card => {
+      const mid = card.offsetLeft + tx + card.offsetWidth / 2;
+      const n = Math.max(-1.4, Math.min(1.4, (mid - cx) / (box.width * 0.48)));
+
+      const y  = (1 - n * n) * 26;       // U-shape dip
+      const rot = n * 5;                  // tilt
+      const ry  = n * -8;                 // 3D perspective
+      const s   = 1 - Math.abs(n) * 0.04; // subtle scale
+
+      card.style.transform =
+        'perspective(900px) rotateY(' + ry + 'deg) translateY(' + y + 'px) rotate(' + rot + 'deg) scale(' + s + ')';
+    });
+
+    requestAnimationFrame(curve);
+  }
+  curve();
+</script>
