@@ -20,11 +20,12 @@
   <script>
     window.storage = {
       async get(key){ const value=localStorage.getItem(key); return value==null?null:{value}; },
-      async set(key,value){ localStorage.setItem(key,value); return true; }
+      async set(key,value){ localStorage.setItem(key,value); return true; },
+      async delete(key){ localStorage.removeItem(key); return true; }
     };
   </script>
   <script type="text/plain" id="app-source">
-    const { useState, useEffect, useRef, useMemo, useCallback } = React;
+const { useState } = React;
 
 // ═══════════ 基础数据表 ═══════════
 const TG = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
@@ -50,23 +51,38 @@ const SS_MAP = {
   '水水':'比劫','水木':'食伤','水火':'财星','水土':'官杀','水金':'印星',
 };
 
-// 纳音白话解释
+// 纳音白话解释（基于传统命理，用大白话重写）
 const NY_DESC = {
-  '海中金':'深海之金，潜力未显，韬光养晦', '炉中火':'熔炉之火，百炼成钢，历练成长',
-  '大林木':'森林之木，蓬勃向上，根基渐稳', '路旁土':'大路之土，承载行人，稳扎稳打',
-  '剑锋金':'利刃之金，锋芒毕露，果敢决断', '山头火':'山巅之火，光芒耀眼，引人注目',
-  '涧下水':'山涧之水，清澈灵动，内秀于心', '城头土':'城墙之土，厚重坚实，守护安稳',
-  '白蜡金':'首饰之金，精致温润，内敛优雅', '杨柳木':'柳枝之木，柔韧灵活，随遇而安',
-  '泉中水':'泉眼之水，源源不断，后劲充足', '屋上土':'屋顶之土，遮风避雨，有靠山庇护',
-  '霹雳火':'雷电之火，爆发力强，变化突然', '松柏木':'松柏之木，四季常青，坚韧不拔',
-  '长流水':'江河之水，奔流向前，势不可挡', '砂石金':'砂砾之金，千磨万击，越磨越亮',
-  '山下火':'野火之光，温暖平和，润物无声', '平地木':'原野之木，自由舒展，发展空间大',
-  '壁上土':'墙壁之土，稳固整洁，安居乐业', '金箔金':'金箔之金，华丽精致，注重外在',
-  '覆灯火':'灯烛之火，温柔照亮，默默发光', '天河水':'银河之水，高远辽阔，志向远大',
-  '大驿土':'驿站之土，四通八达，人脉资源广', '钗钏金':'钗环之金，柔美贵气，人缘好',
-  '桑柘木':'桑树之木，实用务实，脚踏实地', '大溪水':'溪流之水，灵活多变，适应力强',
-  '沙中土':'沙中之土，内藏珍宝，厚积薄发', '天上火':'太阳之火，光明正大，照耀四方',
-  '石榴木':'石榴之木，开花结果，收获丰盛', '大海水':'大洋之水，包容万象，格局开阔',
+  '海中金':'沉在海底的金子，有本事但不爱表现，需要好机会才能发光',
+  '炉中火':'炉子里的火，越炼越旺，在压力下反而成长最快',
+  '大林木':'大森林里的树，根基稳气场大，人越多越自在',
+  '路旁土':'路边的土，看着普通但养育万物，靠谱实用型',
+  '剑锋金':'开了刃的宝剑，做事果断锋利，行动力一流',
+  '山头火':'山顶上的火光，照得远但容易受风，高调也要扎好根基',
+  '涧下水':'山涧小溪，安静清澈，适合深耕细作不适合高调张扬',
+  '城头土':'城墙上的土，稳当靠谱有安全感，天生防守型人格',
+  '白蜡金':'打磨过的金器，精致讲究，对品质和细节有执念',
+  '杨柳木':'柳树枝条，看着柔弱但韧性极强，能屈能伸',
+  '泉中水':'地底冒出来的泉水，后劲足，越到后面日子越顺',
+  '屋上土':'房顶上的瓦，能遮风挡雨保护人，天生适合照顾别人',
+  '霹雳火':'雷电带来的火，爆发力惊人，瞬间能量很大但要控制节奏',
+  '松柏木':'松柏树，冬天也不掉叶子，扛压能力一流，越难越硬气',
+  '长流水':'一直流的河水，耐力强，适合长期坚持慢慢来',
+  '砂石金':'沙里淘出来的金子，需要经历打磨才能出头，大器晚成型',
+  '山下火':'山脚下的野火，温和不张扬，能暖人但不伤人',
+  '平地木':'平原上的树，没有遮挡自由生长，发展空间大路子宽',
+  '壁上土':'粉刷墙壁的土，装点门面有一套，适合跟形象打交道',
+  '金箔金':'贴金用的金箔，薄但亮眼，外在出众但需要内在撑住',
+  '覆灯火':'灯罩里的烛火，不张扬但稳定发光，适合幕后默默发力',
+  '天河水':'银河里的水，格局大志向高，但容易想太多落地不够',
+  '大驿土':'驿站的地，人来人往见多识广，社交强资源多',
+  '钗钏金':'首饰上的金，精致柔美审美好，人缘佳讨人喜欢',
+  '桑柘木':'桑树木头，能养蚕能造纸，实用主义脚踏实地',
+  '大溪水':'山里的溪流，灵活变通，遇到障碍不硬刚绕着走',
+  '沙中土':'沙子底下的土，表面看着一般但底下有货，不能只看外表',
+  '天上火':'太阳的火，能量最强照得最远，有号召力但有时不够亲近',
+  '石榴木':'石榴树，花开得好看果结得实在，面子里子都能兼顾',
+  '大海水':'大海的水，什么都装得下，包容心强但脾气上来像海啸',
 };
 
 // 十神白话
@@ -108,7 +124,7 @@ const PILLAR_NAMES = ['年','月','日','时'];
 // 分析四柱地支关系
 function analyzeZhi(branches) {
   // branches = [yZi, mZi, dZi, hZi] (地支索引0-11)
-  const results = [];
+  const raw = [];
   const pairs = [[0,1],[0,2],[0,3],[1,2],[1,3],[2,3]];
   const triples = [[0,1,2],[0,1,3],[0,2,3],[1,2,3]];
 
@@ -116,7 +132,7 @@ function analyzeZhi(branches) {
   for (const [i,j] of pairs) {
     for (const [a,b,wx,desc] of LIU_HE) {
       if ((branches[i]===a && branches[j]===b)||(branches[i]===b && branches[j]===a)) {
-        results.push({type:'六合',icon:'🤝',color:'teal',pillars:`${PILLAR_NAMES[i]}${PILLAR_NAMES[j]}`,
+        raw.push({type:'六合',color:'teal',i,j,key:`六合-${Math.min(branches[i],branches[j])}-${Math.max(branches[i],branches[j])}`,
           title:`${DZ[branches[i]]}${DZ[branches[j]]}合 (${SX[branches[i]]}${SX[branches[j]]})`,desc});
       }
     }
@@ -126,7 +142,7 @@ function analyzeZhi(branches) {
   for (const [i,j] of pairs) {
     for (const [a,b,desc] of LIU_CHONG) {
       if ((branches[i]===a && branches[j]===b)||(branches[i]===b && branches[j]===a)) {
-        results.push({type:'六冲',icon:'⚡',color:'red',pillars:`${PILLAR_NAMES[i]}${PILLAR_NAMES[j]}`,
+        raw.push({type:'六冲',color:'red',i,j,key:`六冲-${Math.min(branches[i],branches[j])}-${Math.max(branches[i],branches[j])}`,
           title:`${DZ[branches[i]]}${DZ[branches[j]]}冲 (${SX[branches[i]]}${SX[branches[j]]})`,desc});
       }
     }
@@ -137,19 +153,18 @@ function analyzeZhi(branches) {
     for (const [i,j,k] of triples) {
       const s = new Set([branches[i],branches[j],branches[k]]);
       if (idxs.every(x=>s.has(x))) {
-        results.push({type:'三合',icon:'🔗',color:'purple',pillars:`${PILLAR_NAMES[i]}${PILLAR_NAMES[j]}${PILLAR_NAMES[k]}`,
-          title:name,desc});
+        raw.push({type:'三合',color:'purple',pillarsList:[[i,j,k]],key:`三合-${name}`,title:name,desc,tri:true});
       }
     }
   }
 
   // 半合 (只在没有三合时才报)
-  const has3he = results.some(r=>r.type==='三合');
+  const has3he = raw.some(r=>r.type==='三合');
   if (!has3he) {
     for (const [i,j] of pairs) {
       for (const [idxs,name] of BAN_HE) {
         if ((branches[i]===idxs[0]&&branches[j]===idxs[1])||(branches[i]===idxs[1]&&branches[j]===idxs[0])) {
-          results.push({type:'半合',icon:'🔗',color:'purple',pillars:`${PILLAR_NAMES[i]}${PILLAR_NAMES[j]}`,
+          raw.push({type:'半合',color:'purple',i,j,key:`半合-${Math.min(branches[i],branches[j])}-${Math.max(branches[i],branches[j])}`,
             title:`${DZ[branches[i]]}${DZ[branches[j]]}${name}`,desc:'三合局中出现两支，力量减半但方向一致'});
         }
       }
@@ -160,7 +175,7 @@ function analyzeZhi(branches) {
   for (const [i,j] of pairs) {
     for (const [a,b,desc] of XIANG_HAI) {
       if ((branches[i]===a && branches[j]===b)||(branches[i]===b && branches[j]===a)) {
-        results.push({type:'相害',icon:'💔',color:'amber',pillars:`${PILLAR_NAMES[i]}${PILLAR_NAMES[j]}`,
+        raw.push({type:'相害',color:'amber',i,j,key:`相害-${Math.min(branches[i],branches[j])}-${Math.max(branches[i],branches[j])}`,
           title:`${DZ[branches[i]]}${DZ[branches[j]]}害 (${SX[branches[i]]}${SX[branches[j]]})`,desc});
       }
     }
@@ -171,8 +186,7 @@ function analyzeZhi(branches) {
     for (const [i,j,k] of triples) {
       const s = new Set([branches[i],branches[j],branches[k]]);
       if (idxs.every(x=>s.has(x))) {
-        results.push({type:'三刑',icon:'⚠️',color:'coral',pillars:`${PILLAR_NAMES[i]}${PILLAR_NAMES[j]}${PILLAR_NAMES[k]}`,
-          title:'三刑',desc});
+        raw.push({type:'三刑',color:'coral',pillarsList:[[i,j,k]],key:'三刑',title:'三刑',desc,tri:true});
       }
     }
   }
@@ -181,7 +195,7 @@ function analyzeZhi(branches) {
   for (const [i,j] of pairs) {
     for (const [a,b,desc] of ER_XING) {
       if ((branches[i]===a && branches[j]===b)||(branches[i]===b && branches[j]===a)) {
-        results.push({type:'相刑',icon:'⚠️',color:'coral',pillars:`${PILLAR_NAMES[i]}${PILLAR_NAMES[j]}`,
+        raw.push({type:'相刑',color:'coral',i,j,key:`相刑-${Math.min(branches[i],branches[j])}-${Math.max(branches[i],branches[j])}`,
           title:`${DZ[branches[i]]}${DZ[branches[j]]}刑`,desc});
       }
     }
@@ -190,12 +204,29 @@ function analyzeZhi(branches) {
   // 自刑
   for (const [i,j] of pairs) {
     if (branches[i]===branches[j] && ZI_XING.includes(branches[i])) {
-      results.push({type:'自刑',icon:'🔄',color:'gray',pillars:`${PILLAR_NAMES[i]}${PILLAR_NAMES[j]}`,
+      raw.push({type:'自刑',color:'gray',i,j,key:`自刑-${branches[i]}`,
         title:`${DZ[branches[i]]}${DZ[branches[j]]}自刑`,desc:'同支相见，自我内耗、反复纠结'});
     }
   }
 
-  return results;
+  // === 去重合并: 相同 key 的关系合并成一条，列出所有涉及的柱 ===
+  const merged = {};
+  for (const item of raw) {
+    if (!merged[item.key]) {
+      merged[item.key] = { type:item.type, color:item.color, title:item.title, desc:item.desc, pairSets: [] };
+    }
+    if (item.tri) {
+      merged[item.key].pairSets.push(item.pillarsList[0]);
+    } else {
+      merged[item.key].pairSets.push([item.i, item.j]);
+    }
+  }
+
+  // 生成柱标签
+  return Object.values(merged).map(m => {
+    const labels = m.pairSets.map(set => set.map(x=>PILLAR_NAMES[x]).join(m.pairSets[0].length===3?'':'↔'));
+    return { type:m.type, color:m.color, title:m.title, desc:m.desc, pillars: labels.join('、') };
+  });
 }
 
 // 12节气近似日期 [月,日] — 定义月柱分界
@@ -347,25 +378,28 @@ function calcBaZi(year, month, day, scIdx, gender) {
   // === 日主 ===
   const dm = { g: TG[dGi], w: GW[TG[dGi]], yy: dGi % 2 === 0 ? '阳' : '阴' };
 
-  // === 喜用神 (简化判定) ===
+  // === 喜用神 / 忌神 (简化判定) ===
   const dmw = dm.w;
-  const genMap = { '木': '水', '火': '木', '土': '火', '金': '土', '水': '金' };
+  const genMap = { '木': '水', '火': '木', '土': '火', '金': '土', '水': '金' };   // 生我(印)
+  const drainMap = { '木': '火', '火': '土', '土': '金', '金': '水', '水': '木' };  // 我生(食伤)
+  const keMap = { '木': '土', '火': '金', '土': '水', '金': '木', '水': '火' };      // 我克(财)
+  const ctrlMap = { '木': '金', '火': '水', '土': '木', '金': '火', '水': '土' };    // 克我(官杀)
   const sameCount = wx[dmw] || 0;
   const genCount = wx[genMap[dmw]] || 0;
   const strength = sameCount + genCount;
-  // 身弱取印星(生我)或比劫(同我), 身强取食伤(我生)或财星(我克)
-  const cloneMap = { '木': '金', '火': '水', '土': '木', '金': '火', '水': '土' };
-  const drainMap = { '木': '火', '火': '土', '土': '金', '金': '水', '水': '木' };
-  let xy;
-  if (strength <= 2) {
-    // 身弱 → 喜印星(生我)或比劫
-    xy = (wx[genMap[dmw]] || 0) <= (wx[dmw] || 0) ? genMap[dmw] : dmw;
+  const weak = strength <= 2;
+
+  // 身弱: 喜印(生我)+比劫(同我)，忌食伤/财/官杀
+  // 身强: 喜食伤(我生)+财(我克)，忌印/比劫
+  let favSet, avoidSet;
+  if (weak) {
+    favSet = [dmw, genMap[dmw]];
+    avoidSet = [drainMap[dmw], keMap[dmw], ctrlMap[dmw]];
   } else {
-    // 身强 → 喜食伤或财星
-    const drainWx = drainMap[dmw];
-    const keWx = { '木': '土', '火': '金', '土': '水', '金': '木', '水': '火' }[dmw];
-    xy = (wx[drainWx] || 0) <= (wx[keWx] || 0) ? drainWx : keWx;
+    favSet = [drainMap[dmw], keMap[dmw]];
+    avoidSet = [dmw, genMap[dmw]];
   }
+  const xy = favSet[0]; // 主喜用神
 
   // === 缺 ===
   const ms = Object.keys(wx).filter(k => wx[k] === 0);
@@ -406,30 +440,49 @@ function calcBaZi(year, month, day, scIdx, gender) {
   for (let i = 0; i < 8; i++) {
     if (forward) { dyGi = (dyGi + 1) % 10; dyZi = (dyZi + 1) % 12; }
     else { dyGi = (dyGi + 9) % 10; dyZi = (dyZi + 11) % 12; }
-    const gz60 = find60(dyGi, dyZi);
     const dyGw = GW[TG[dyGi]], dyZw = ZW[DZ[dyZi]];
     const rel = SS_MAP[dmw + dyGw] || '';
-    const nName = gz60 >= 0 ? NY[gz60] : '';
-    const hasXy = dyGw === xy || dyZw === xy;
+
+    // 评分: 天干+地支五行，命中喜用+1，命中忌神-1
+    let score = 0;
+    [dyGw, dyZw].forEach(w => {
+      if (favSet.includes(w)) score += 1;
+      else if (avoidSet.includes(w)) score -= 1;
+    });
+
+    // 评级 + 白话
+    let level, levelC, note;
+    if (score >= 2) { level = '顺'; levelC = 'good'; }
+    else if (score === 1) { level = '较顺'; levelC = 'good'; }
+    else if (score === 0) { level = '平'; levelC = 'flat'; }
+    else if (score === -1) { level = '较逆'; levelC = 'bad'; }
+    else { level = '逆'; levelC = 'bad'; }
+
+    // 具体走什么五行、对日主什么作用
+    const favHit = [dyGw, dyZw].filter(w => favSet.includes(w));
+    const avoidHit = [dyGw, dyZw].filter(w => avoidSet.includes(w));
+    const parts = [];
+    if (favHit.length) parts.push(`走${[...new Set(favHit)].join('')}，正好补${dm.g}${dmw}所需`);
+    if (avoidHit.length) parts.push(`走${[...new Set(avoidHit)].join('')}，对${dmw}日主偏耗`);
+    if (!parts.length) parts.push(`五行中和，无明显助力也无大碍`);
+    note = parts.join('；');
+
     dy.push({
       s: startAge + i * 10,
       gz: TG[dyGi] + DZ[dyZi],
       w: dyGw + dyZw,
-      n: nName,
-      nd: NY_DESC[nName] || '',
       rel,
-      relDesc: SS_DESC[rel] || '',
-      fav: hasXy,
+      level, levelC, note, score,
     });
   }
 
   // === 属相 ===
-  const sx = { name: SX[yZi], emoji: SX_E[yZi], zhi: DZ[yZi] };
+  const sx = { name: SX[yZi], emoji: SX_E[yZi], zhi: DZ[yZi], idx: yZi };
 
   // === 地支关系 ===
   const zhiRel = analyzeZhi([yZi, mZi, dZi, hZi]);
 
-  return { p: pillars, dm, wx, xy, ms, rl, dy, sx, zhiRel };
+  return { p: pillars, dm, wx, xy, ms, rl, dy, sx, zhiRel, weak, favSet, avoidSet };
 }
 
 function mkPillar(gi, zi) {
@@ -467,8 +520,9 @@ const RC = {
 };
 
 // ═══════════ UI 组件 ═══════════
+// 强制浅色模式 — 整个排盘器只用浅色系
 function useDark() {
-  return typeof window !== 'undefined' && window.matchMedia?.('(prefers-color-scheme:dark)').matches;
+  return false;
 }
 
 function Tag({ wx }) {
@@ -479,11 +533,15 @@ function Tag({ wx }) {
 function Pillar({ label, data, isDay }) {
   return (
     <div style={{ textAlign: 'center', width: 108, flexShrink: 0 }}>
-      <div style={{ fontSize: 11, color: isDay ? 'var(--text-accent,#534AB7)' : 'var(--text-muted,#888)', marginBottom: 6, fontWeight: isDay ? 600 : 400, letterSpacing: 2 }}>
+      <div style={{ fontSize: 11, color: isDay ? 'var(--day-accent)' : 'var(--text-muted)', marginBottom: 6, fontWeight: isDay ? 600 : 400, letterSpacing: 2 }}>
         {label}{isDay ? ' · 日主' : ''}
       </div>
-      <div style={{ border: isDay ? '1.5px solid var(--border-accent,#534AB7)' : '0.5px solid var(--border-strong,#ccc)', borderRadius: 12, overflow: 'hidden', background: 'var(--surface-1,#fff)' }}>
-        <div style={{ padding: '14px 0', fontSize: 30, fontWeight: 500, borderBottom: '0.5px solid var(--border,#eee)', color: 'var(--text-primary)' }}>{data?.g}</div>
+      <div style={{
+        border: isDay ? '1.5px solid var(--day-accent)' : '0.5px solid var(--border-strong)',
+        borderRadius: 12, overflow: 'hidden',
+        background: isDay ? 'var(--day-bg)' : 'var(--surface-1)',
+      }}>
+        <div style={{ padding: '14px 0', fontSize: 30, fontWeight: isDay ? 600 : 500, borderBottom: '0.5px solid var(--border)', color: isDay ? 'var(--day-accent)' : 'var(--text-primary)' }}>{data?.g}</div>
         <div style={{ padding: '14px 0', fontSize: 30, fontWeight: 500, color: 'var(--text-primary)' }}>{data?.z}</div>
       </div>
       <div style={{ display: 'flex', justifyContent: 'center', gap: 4, marginTop: 6 }}>
@@ -665,11 +723,11 @@ function drawAll(ctx, r, meta, W, pad, measure) {
     const row = Math.floor(i / dyPerRow);
     const dx = pad + col * (dyW + 8);
     const dy2 = y + row * 72;
-    roundRect(dx, dy2, dyW, 64, 6, d.fav ? '#f2f9ed' : '#fff', d.fav ? '#97C459' : '#eee');
+    const lc = { good: ['#3B6D11','#f2f9ed','#97C459'], flat: ['#5F5E5A','#fff','#eee'], bad: ['#A32D2D','#fdf3f3','#E8B4B4'] }[d.levelC];
+    roundRect(dx, dy2, dyW, 64, 6, lc[1], lc[2]);
     txt(`${d.s}~${d.s + 9}岁`, dx + dyW / 2, dy2 + 14, { size: 10, color: '#888' });
     txt(d.gz, dx + dyW / 2, dy2 + 34, { size: 18, weight: '600' });
-    const relC = RC_IMG[d.rel] || '#888';
-    txt(`${d.rel}运 · ${d.w}`, dx + dyW / 2, dy2 + 52, { size: 10, color: relC });
+    txt(`${d.level} · ${d.rel}运`, dx + dyW / 2, dy2 + 52, { size: 10, color: lc[0] });
   });
   y += Math.ceil(r.dy.length / dyPerRow) * 72 + 8;
 
@@ -679,6 +737,13 @@ function drawAll(ctx, r, meta, W, pad, measure) {
   txt('排盘结果仅供参考 · 精确命理分析请咨询专业命理师', cx, y + 10, { size: 11, color: '#bbb' });
   y += pad;
   return y;
+}
+
+// 身强身弱标签
+function weak_label(r) {
+  return r.weak
+    ? `偏弱，喜${r.favSet.join('、')}来帮扶。`
+    : `偏强，喜${r.favSet.join('、')}来发挥。`;
 }
 
 // ═══════════ 主组件 ═══════════
@@ -715,6 +780,26 @@ function BaZi() {
 
   return (
     <div style={{ fontFamily: 'var(--font-sans,system-ui)', maxWidth: 520, margin: '0 auto', padding: '0 0 24px' }}>
+      <style>{`
+        :root {
+          --surface-0: #f5f5f2;
+          --surface-1: #fff;
+          --text-primary: #2C2C2A;
+          --text-secondary: #555;
+          --text-muted: #999;
+          --text-accent: #534AB7;
+          --text-danger: #A32D2D;
+          --bg-accent: #EEEDFE;
+          --bg-danger: #FCEBEB;
+          --border: #E8E8E4;
+          --border-strong: #C8C8C4;
+          --border-accent: #534AB7;
+          --font-sans: system-ui, -apple-system, sans-serif;
+          --day-accent: #534AB7;
+          --day-bg: rgba(83,74,183,0.06);
+          color-scheme: light;
+        }
+      `}</style>
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
         <div style={{ fontSize: 20, fontWeight: 500, color: 'var(--text-primary)', letterSpacing: 2 }}>八字五行排盘</div>
         <div style={{ fontSize: 12, color: 'var(--text-muted,#888)', marginTop: 4 }}>纯本地计算 · 无需网络 · 即时出盘</div>
@@ -811,19 +896,19 @@ function BaZi() {
               <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary,#666)', marginBottom: 10, letterSpacing: 1 }}>
                 地支关系（{DZ[r.p.y.z ? DZ.indexOf(r.p.y.z) : 0]}{DZ[r.p.m.z ? DZ.indexOf(r.p.m.z) : 0]}{DZ[r.p.d.z ? DZ.indexOf(r.p.d.z) : 0]}{DZ[r.p.h.z ? DZ.indexOf(r.p.h.z) : 0]}）
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
                 {r.zhiRel.map((zr, i) => {
                   const cMap = {teal:['#0F6E56','#9FE1CB'],red:['#A32D2D','#F7C1C1'],purple:['#534AB7','#CECBF6'],amber:['#854F0B','#FAC775'],coral:['#993C1D','#F5C4B3'],gray:['#5F5E5A','#D3D1C7']};
                   const cc = cMap[zr.color] || cMap.gray;
                   return (
-                    <div key={i} style={{ padding: '10px 12px', background: 'var(--surface-0,#fafafa)', borderRadius: 10, border: '0.5px solid var(--border,#eee)' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                        <span style={{ fontSize: 14 }}>{zr.icon}</span>
-                        <span style={{ fontSize: 12, fontWeight: 500, color: dk ? cc[1] : cc[0], padding: '1px 8px', borderRadius: 4, background: dk ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }}>{zr.type}</span>
-                        <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>{zr.title}</span>
-                        <span style={{ fontSize: 11, color: 'var(--text-muted,#888)', marginLeft: 'auto' }}>{zr.pillars}柱</span>
+                    <div key={i} style={{ padding: '7px 10px', background: 'var(--surface-0,#fafafa)', borderRadius: 8, border: '0.5px solid var(--border,#eee)' }}>
+                      <div style={{ fontSize: 13, color: 'var(--text-primary)' }}>
+                        <span style={{ fontWeight: 500, color: dk ? cc[1] : cc[0] }}>{zr.type}</span>
+                        <span style={{ margin: '0 4px', color: 'var(--text-muted,#aaa)' }}>·</span>
+                        {zr.title}
+                        <span style={{ fontSize: 11, color: 'var(--text-muted,#888)', marginLeft: 6 }}>（{zr.pillars}）</span>
                       </div>
-                      <div style={{ fontSize: 12, color: 'var(--text-secondary,#666)', paddingLeft: 26 }}>{zr.desc}</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-muted,#888)', marginTop: 2 }}>{zr.desc}</div>
                     </div>
                   );
                 })}
@@ -831,34 +916,82 @@ function BaZi() {
             </div>
           )}
 
-          <div style={{ background: 'var(--surface-1,#fff)', borderRadius: 12, padding: 16, border: '0.5px solid var(--border,#eee)' }}>
-            <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary,#666)', marginBottom: 12, letterSpacing: 1 }}>大运（每步10年）</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {r.dy.map((d, i) => (
-                <div key={i} style={{
-                  display: 'flex', gap: 12, padding: '10px 12px',
-                  background: 'var(--surface-0,#fafafa)', borderRadius: 10,
-                  border: d.fav ? `1px solid ${dk ? '#27500A' : '#97C459'}` : '0.5px solid var(--border,#eee)',
-                  position: 'relative'
-                }}>
-                  <div style={{ textAlign: 'center', minWidth: 56, flexShrink: 0 }}>
-                    <div style={{ fontSize: 10, color: 'var(--text-muted,#888)' }}>{d.s}~{d.s + 9}岁</div>
-                    <div style={{ fontSize: 20, fontWeight: 500, color: 'var(--text-primary)', letterSpacing: 1, margin: '2px 0' }}>{d.gz}</div>
-                    <div style={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
-                      {d.w && <Tag wx={d.w[0]} />}{d.w && d.w[1] && <Tag wx={d.w[1]} />}
-                    </div>
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 3 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-                      {d.rel && <span style={{ fontSize: 12, fontWeight: 500, color: dk ? RC[d.rel]?.[1] : RC[d.rel]?.[0], padding: '1px 6px', borderRadius: 4, background: dk ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' }}>{d.rel}运</span>}
-                      {d.fav && <span style={{ fontSize: 10, fontWeight: 500, color: dk ? '#C0DD97' : '#3B6D11', padding: '1px 6px', borderRadius: 4, background: dk ? '#173404' : '#EAF3DE' }}>喜用神</span>}
-                    </div>
-                    <div style={{ fontSize: 11, color: 'var(--text-muted,#888)' }}>
-                      {d.n}：{d.nd}
-                    </div>
-                  </div>
+          {r.sx && (() => {
+            const zi = r.sx.idx;
+            const heList = LIU_HE.filter(([a,b])=>a===zi||b===zi).map(([a,b,wx,desc])=>({other:a===zi?b:a,wx,desc}));
+            const shList = SAN_HE.filter(([idxs])=>idxs.includes(zi)).map(([idxs,wx,desc])=>({others:idxs.filter(x=>x!==zi),wx,desc}));
+            const chList = LIU_CHONG.filter(([a,b])=>a===zi||b===zi).map(([a,b,desc])=>({other:a===zi?b:a,desc}));
+            const haList = XIANG_HAI.filter(([a,b])=>a===zi||b===zi).map(([a,b,desc])=>({other:a===zi?b:a,desc}));
+            return (
+              <div style={{ background: 'var(--surface-1,#fff)', borderRadius: 12, padding: 16, border: '0.5px solid var(--border,#eee)' }}>
+                <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary,#666)', marginBottom: 10, letterSpacing: 1 }}>
+                  {r.sx.emoji} 属{r.sx.name}的生肖关系
                 </div>
-              ))}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {heList.map((h,i) => (
+                    <div key={'he'+i} style={{ padding: '8px 12px', background: 'var(--surface-0,#fafafa)', borderRadius: 8, border: '0.5px solid var(--border,#eee)' }}>
+                      <div style={{ fontSize: 13, color: 'var(--text-primary)' }}>
+                        <span style={{ color: dk?'#9FE1CB':'#0F6E56', fontWeight: 500 }}>六合</span> · 和{SX_E[h.other]}{SX[h.other]}最亲（{h.wx}）
+                      </div>
+                      <div style={{ fontSize: 12, color: 'var(--text-muted,#888)', marginTop: 2 }}>{h.desc}</div>
+                    </div>
+                  ))}
+                  {shList.map((s,i) => (
+                    <div key={'sh'+i} style={{ padding: '8px 12px', background: 'var(--surface-0,#fafafa)', borderRadius: 8, border: '0.5px solid var(--border,#eee)' }}>
+                      <div style={{ fontSize: 13, color: 'var(--text-primary)' }}>
+                        <span style={{ color: dk?'#CECBF6':'#534AB7', fontWeight: 500 }}>三合{s.wx}</span> · 和{s.others.map(o=>`${SX_E[o]}${SX[o]}`).join('、')}一组
+                      </div>
+                      <div style={{ fontSize: 12, color: 'var(--text-muted,#888)', marginTop: 2 }}>{s.desc}</div>
+                    </div>
+                  ))}
+                  {chList.map((c,i) => (
+                    <div key={'ch'+i} style={{ padding: '8px 12px', background: 'var(--surface-0,#fafafa)', borderRadius: 8, border: '0.5px solid var(--border,#eee)' }}>
+                      <div style={{ fontSize: 13, color: 'var(--text-primary)' }}>
+                        <span style={{ color: dk?'#F7C1C1':'#A32D2D', fontWeight: 500 }}>六冲</span> · 和{SX_E[c.other]}{SX[c.other]}相冲
+                      </div>
+                      <div style={{ fontSize: 12, color: 'var(--text-muted,#888)', marginTop: 2 }}>{c.desc}</div>
+                    </div>
+                  ))}
+                  {haList.map((h,i) => (
+                    <div key={'ha'+i} style={{ padding: '8px 12px', background: 'var(--surface-0,#fafafa)', borderRadius: 8, border: '0.5px solid var(--border,#eee)' }}>
+                      <div style={{ fontSize: 13, color: 'var(--text-primary)' }}>
+                        <span style={{ color: dk?'#FAC775':'#854F0B', fontWeight: 500 }}>相害</span> · 和{SX_E[h.other]}{SX[h.other]}暗耗
+                      </div>
+                      <div style={{ fontSize: 12, color: 'var(--text-muted,#888)', marginTop: 2 }}>{h.desc}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+
+          <div style={{ background: 'var(--surface-1,#fff)', borderRadius: 12, padding: 16, border: '0.5px solid var(--border,#eee)' }}>
+            <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary,#666)', marginBottom: 4, letterSpacing: 1 }}>大运（每步10年）</div>
+            <div style={{ fontSize: 11, color: 'var(--text-muted,#888)', marginBottom: 12, lineHeight: 1.5 }}>
+              顺逆看这十年走的五行：补{r.dm.g}{r.dm.w}所需为顺，反之为耗。{r.dm.g}{r.dm.w}{weak_label(r)}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+              {r.dy.map((d, i) => {
+                const lc = { good: ['#3B6D11','#EAF3DE'], flat: ['#5F5E5A','#F1EFE8'], bad: ['#A32D2D','#FCEBEB'] }[d.levelC];
+                return (
+                  <div key={i} style={{ display: 'flex', gap: 12, padding: '8px 12px', background: 'var(--surface-0,#fafafa)', borderRadius: 8, border: '0.5px solid var(--border,#eee)' }}>
+                    <div style={{ textAlign: 'center', minWidth: 56, flexShrink: 0 }}>
+                      <div style={{ fontSize: 10, color: 'var(--text-muted,#888)' }}>{d.s}~{d.s + 9}岁</div>
+                      <div style={{ fontSize: 20, fontWeight: 500, color: 'var(--text-primary)', letterSpacing: 1, margin: '2px 0' }}>{d.gz}</div>
+                      <div style={{ display: 'flex', justifyContent: 'center', gap: 2 }}>
+                        {d.w && <Tag wx={d.w[0]} />}{d.w && d.w[1] && <Tag wx={d.w[1]} />}
+                      </div>
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', justifyContent: 'center', gap: 3 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: lc[0], padding: '2px 10px', borderRadius: 4, background: lc[1] }}>{d.level}</span>
+                        {d.rel && <span style={{ fontSize: 11, color: 'var(--text-muted,#888)' }}>{d.rel}运</span>}
+                      </div>
+                      <div style={{ fontSize: 12, color: 'var(--text-secondary,#666)', lineHeight: 1.4 }}>{d.note}</div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -901,7 +1034,8 @@ function BaZi() {
   );
 }
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<BaZi />);
+
+ReactDOM.createRoot(document.getElementById('root')).render(<BaZi />);
   </script>
   <script>
     const { code } = Babel.transform(document.getElementById('app-source').textContent, {
