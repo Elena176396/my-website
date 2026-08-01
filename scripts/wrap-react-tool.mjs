@@ -22,13 +22,21 @@ const hooks = importMatch[1]
   .filter(Boolean)
   .join(', ');
 
+const defaultComponentMatch = source.match(
+  /export\s+default\s+function\s+([A-Za-z_$][\w$]*)\s*\(/,
+);
+const componentName = defaultComponentMatch?.[1] ?? 'App';
+
 source = source
   .replace(importMatch[0], `const { ${hooks} } = React;\n\n`)
-  .replace(/export\s+default\s+function\s+App\s*\(/, 'function App(')
+  .replace(
+    /export\s+default\s+function\s+([A-Za-z_$][\w$]*)\s*\(/,
+    (_, name) => `function ${name}(`,
+  )
   .replaceAll('</script', '<\\/script');
 
-if (!/function\s+App\s*\(/.test(source)) {
-  throw new Error(`App component not found in ${sourcePath}`);
+if (!new RegExp(`function\\s+${componentName}\\s*\\(`).test(source)) {
+  throw new Error(`Default component not found in ${sourcePath}`);
 }
 
 const html = `<!doctype html>
@@ -60,7 +68,7 @@ const html = `<!doctype html>
   <script type="text/plain" id="app-source">
 ${source}
 
-ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+ReactDOM.createRoot(document.getElementById('root')).render(<${componentName} />);
   </script>
   <script>
     const { code } = Babel.transform(document.getElementById('app-source').textContent, {
