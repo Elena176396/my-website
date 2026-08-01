@@ -1,36 +1,36 @@
 ---
 const categories = [
-  { id: 'decode', label: '人格解码', color: '#a89880', soft: 'rgba(168,152,128,.06)' },
-  { id: 'mystic', label: '玄学引擎', color: '#b07a42', soft: 'rgba(176,122,66,.06)' },
-  { id: 'boost',  label: '效率外挂', color: '#7a8a6e', soft: 'rgba(122,138,110,.06)' },
-  { id: 'spark',  label: '灵感弹珠', color: '#a89880', soft: 'rgba(168,152,128,.06)' },
+  { id: 'decode', label: '人格解码', color: '#9a9488', soft: 'rgba(154,148,136,.06)' },
+  { id: 'mystic', label: '玄学引擎', color: '#a07a50', soft: 'rgba(160,122,80,.06)' },
+  { id: 'boost',  label: '效率外挂', color: '#768672', soft: 'rgba(118,134,114,.06)' },
+  { id: 'spark',  label: '灵感弹珠', color: '#9a9488', soft: 'rgba(154,148,136,.06)' },
 ];
 
 const tools = [
-  { cat: 'decode', href: '/tools/mbti-simulator/',            title: 'MBTI 测试',    desc: '认知偏好与人格类型分析',   icon: 'M',  short: 'MBTI' },
-  { cat: 'decode', href: '/tools/enneagram-pro/',              title: '九型人格',      desc: '探索核心动机与行为模式',   icon: '九', short: '九型人格' },
-  { cat: 'decode', href: '/tools/mbti-enneagram-fusion/',      title: 'MBTI × 九型',  desc: '两套人格模型的融合测试',   icon: '融', short: 'MBTI×九型' },
-  { cat: 'mystic', href: '/tools/bazi-calculator/',            title: '八字排盘',      desc: '四柱、五行与大运分析',     icon: '八', short: '八字排盘' },
-  { cat: 'mystic', href: '/tools/wuxing-explainer/',           title: '五行关系图',    desc: '天干地支与相生相克可视化', icon: '五', short: '五行关系' },
-  { cat: 'mystic', href: '/tools/zodiac-compatibility-chart/', title: '生肖关系盘',    desc: '十二生肖关系互动图谱',     icon: '肖', short: '生肖关系' },
-  { cat: 'boost',  href: '/tools/focus-timer/',                title: '专注计时器',    desc: '番茄钟、标签与专注记录',   icon: '时', short: '专注计时' },
-  { cat: 'spark',  href: '/tools/quote-wheel/',                title: '名言转盘',      desc: '发现、竞猜与收藏名言',     icon: '言', short: '名言转盘' },
-  { cat: 'spark',  href: '/tools/have-fun/',                   title: '拾光读书会',    desc: '书籍与电影的个人阅读档案', icon: '书', short: '拾光读书' },
-  { cat: 'boost',  href: '/tools/vocab-1341/',                 title: '考研词汇 1341', desc: '1341 个高频词复习训练',     icon: '词', short: '词汇1341' },
-  { cat: 'boost',  href: '/tools/vocab-3728/',                 title: '考研词汇 3728', desc: '3728 个考研词汇学习工具',   icon: '研', short: '词汇3728' },
-  { cat: 'boost',  href: '/tools/vocab-4533/',                 title: '考研词汇 4533', desc: '4533 个考研词汇完整训练',   icon: '英', short: '词汇4533' },
-  { cat: 'boost',  href: '/tools/mba-vocab-632/',              title: 'MBA 词汇 632',  desc: '快速识别、例句与复习训练', icon: '商', short: 'MBA词汇' },
-  { cat: 'boost',  href: '/tools/mba-english-dialogue-practice/', title: 'MBA 英语对话', desc: 'MBA 情景口语陪练',       icon: '说', short: 'MBA对话' },
-  { cat: 'boost',  href: '/tools/mba-interview-listening/',    title: 'MBA 面试听力',  desc: '双人对话与面试听力训练',   icon: '听', short: 'MBA听力' },
+  { cat: 'decode', href: '/tools/mbti-simulator/',            icon: 'M',  short: 'MBTI' },
+  { cat: 'decode', href: '/tools/enneagram-pro/',              icon: '九', short: '九型人格' },
+  { cat: 'decode', href: '/tools/mbti-enneagram-fusion/',      icon: '融', short: 'MBTI×九型' },
+  { cat: 'mystic', href: '/tools/bazi-calculator/',            icon: '八', short: '八字排盘' },
+  { cat: 'mystic', href: '/tools/wuxing-explainer/',           icon: '五', short: '五行关系' },
+  { cat: 'mystic', href: '/tools/zodiac-compatibility-chart/', icon: '肖', short: '生肖关系' },
+  { cat: 'boost',  href: '/tools/focus-timer/',                icon: '时', short: '专注计时' },
+  { cat: 'spark',  href: '/tools/quote-wheel/',                icon: '言', short: '名言转盘' },
+  { cat: 'spark',  href: '/tools/have-fun/',                   icon: '书', short: '拾光读书' },
+  { cat: 'boost',  href: '/tools/vocab-1341/',                 icon: '词', short: '词汇1341' },
+  { cat: 'boost',  href: '/tools/vocab-3728/',                 icon: '研', short: '词汇3728' },
+  { cat: 'boost',  href: '/tools/vocab-4533/',                 icon: '英', short: '词汇4533' },
+  { cat: 'boost',  href: '/tools/mba-vocab-632/',              icon: '商', short: 'MBA词汇' },
+  { cat: 'boost',  href: '/tools/mba-english-dialogue-practice/', icon: '说', short: 'MBA对话' },
+  { cat: 'boost',  href: '/tools/mba-interview-listening/',    icon: '听', short: 'MBA听力' },
 ];
 
 const catMap = Object.fromEntries(categories.map(c => [c.id, c]));
 
 const bentoBlocks = [
-  { cat: 'boost',  label: '效率外挂', desc: '专注计时 · 考研词汇 · MBA 口语 · 面试听力', deco: '时词研\n商说听', bg: '#cad5c8', c: '#5a6e50', count: 7 },
-  { cat: 'decode', label: '人格解码', desc: 'MBTI · 九型人格 · 人格融合测试',              deco: 'M九融',         bg: '#d8d0c4', c: '#8a7e6a', count: 3 },
-  { cat: 'mystic', label: '玄学引擎', desc: '八字排盘 · 五行关系 · 生肖图谱',              deco: '八五肖',        bg: '#ddd2c0', c: '#96703a', count: 3 },
-  { cat: 'spark',  label: '灵感弹珠', desc: '名言转盘 · 拾光读书会',                        deco: '言书',          bg: '#d5cfc4', c: '#8a7e6a', count: 2 },
+  { cat: 'boost',  label: '效率外挂', desc: '专注计时 · 考研词汇 · MBA 口语 · 面试听力', deco: '时词研\n商说听', bg: '#c5cdc6', c: '#566e52', count: 7 },
+  { cat: 'decode', label: '人格解码', desc: 'MBTI · 九型人格 · 人格融合测试',              deco: 'M九融',         bg: '#d4d0ca', c: '#7a756a', count: 3 },
+  { cat: 'mystic', label: '玄学引擎', desc: '八字排盘 · 五行关系 · 生肖图谱',              deco: '八五肖',        bg: '#d8d0c6', c: '#8a7040', count: 3 },
+  { cat: 'spark',  label: '灵感弹珠', desc: '名言转盘 · 拾光读书会',                        deco: '言书',          bg: '#d2cec8', c: '#7a756a', count: 2 },
 ];
 ---
 
@@ -39,7 +39,7 @@ const bentoBlocks = [
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="theme-color" content="#f4f0e8" />
+  <meta name="theme-color" content="#edebe6" />
   <title>Song Chaoyang · 工具与模拟器</title>
   <meta name="description" content="宋超洋的互动工具实验场——人格解码、玄学引擎、效率外挂与灵感弹珠。把好奇心做成工具。" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -57,6 +57,7 @@ const bentoBlocks = [
 
   <main>
 
+    <!-- HERO -->
     <section class="hero">
       <div class="wrap">
         <h1>把好奇心做成工具</h1>
@@ -65,9 +66,9 @@ const bentoBlocks = [
       </div>
     </section>
 
+    <!-- SHOWCASE -->
     <section class="showcase">
       <div class="showcase-track" id="track">
-        {/* render twice for seamless loop */}
         {[...tools, ...tools].map(tool => {
           const c = catMap[tool.cat];
           return (
@@ -80,6 +81,15 @@ const bentoBlocks = [
       </div>
     </section>
 
+    <!-- SECTION HEADING -->
+    <section class="section-heading">
+      <div class="wrap">
+        <h2>15 个实验，4 个方向</h2>
+        <p class="section-sub">Every tool here started as a "what if" — pick a direction and start playing.</p>
+      </div>
+    </section>
+
+    <!-- BENTO CATEGORIES -->
     <section class="categories" id="categories">
       <div class="wrap">
         <div class="bento-row">
@@ -122,7 +132,7 @@ const bentoBlocks = [
   :global(*) { box-sizing: border-box; margin: 0; }
   :global(body) {
     color: #2c2a24;
-    background: radial-gradient(ellipse at 50% -8%, rgba(180,150,100,.1), transparent 50%), #f4f0e8;
+    background: radial-gradient(ellipse at 50% -8%, rgba(160,140,110,.08), transparent 50%), #edebe6;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
                  "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -133,17 +143,12 @@ const bentoBlocks = [
   /* ═══ HEADER ═══ */
   header {
     position: sticky; top: 0; z-index: 10;
-    background: rgba(244,240,232,.85);
+    background: rgba(237,235,230,.85);
     backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
     border-bottom: 1px solid rgba(0,0,0,.06);
   }
-  .header-inner {
-    height: 64px; display: flex; align-items: center; justify-content: space-between;
-  }
-  .brand {
-    color: inherit; text-decoration: none;
-    font-size: 12.5px; font-weight: 780; letter-spacing: .14em;
-  }
+  .header-inner { height: 64px; display: flex; align-items: center; justify-content: space-between; }
+  .brand { color: inherit; text-decoration: none; font-size: 12.5px; font-weight: 780; letter-spacing: .14em; }
   .gh-link {
     display: flex; align-items: center; justify-content: center;
     width: 38px; height: 38px; color: #9e9a90;
@@ -153,42 +158,26 @@ const bentoBlocks = [
   .gh-link:hover { color: #2c2a24; border-color: #2c2a24; }
 
   /* ═══ HERO ═══ */
-  .hero {
-    padding: clamp(72px, 12vw, 150px) 0 clamp(20px, 3vw, 36px);
-    text-align: center;
-  }
-  h1 {
-    font-size: clamp(36px, 7vw, 64px);
-    font-weight: 820; line-height: 1.15; letter-spacing: -.04em;
-  }
-  .subtitle {
-    max-width: 460px; margin: 20px auto 0;
-    font-size: clamp(13px, 1.6vw, 15px); line-height: 1.7; color: #a9a49a;
-  }
+  .hero { padding: clamp(72px, 12vw, 150px) 0 clamp(20px, 3vw, 36px); text-align: center; }
+  h1 { font-size: clamp(36px, 7vw, 64px); font-weight: 820; line-height: 1.15; letter-spacing: -.04em; }
+  .subtitle { max-width: 460px; margin: 20px auto 0; font-size: clamp(13px, 1.6vw, 15px); line-height: 1.7; color: #a5a19a; }
   .cta {
     display: inline-flex; align-items: center; gap: 8px;
     margin-top: 32px; padding: 13px 28px;
     font-size: 14px; font-weight: 650; color: #fff;
     background: #2c2a24; border-radius: 999px; text-decoration: none;
-    box-shadow: 0 2px 10px rgba(100,80,50,.15);
+    box-shadow: 0 2px 10px rgba(90,75,50,.14);
     transition: transform .2s, box-shadow .2s;
   }
-  .cta:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 24px rgba(100,80,50,.22);
-  }
+  .cta:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(90,75,50,.2); }
   .cta svg { transition: transform .2s; }
   .cta:hover svg { transform: translateX(3px); }
 
   /* ═══ SHOWCASE ═══ */
-  .showcase {
-    overflow: hidden;
-    padding: clamp(20px, 4vw, 44px) 0 clamp(44px, 6vw, 76px);
-  }
+  .showcase { overflow: hidden; padding: clamp(20px, 4vw, 44px) 0 clamp(44px, 6vw, 76px); }
   .showcase-track {
-    display: flex; gap: 16px;
-    position: relative; will-change: transform;
-    animation: marquee 50s linear infinite;
+    display: flex; gap: 16px; position: relative;
+    will-change: transform; animation: marquee 50s linear infinite;
   }
   .showcase:hover .showcase-track { animation-play-state: paused; }
   @keyframes marquee {
@@ -199,37 +188,45 @@ const bentoBlocks = [
   .sc {
     position: relative; flex-shrink: 0;
     width: 105px; height: 142px;
-    background: #fffefa; border: 1px solid rgba(0,0,0,.06); border-radius: 18px;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center; gap: 10px;
+    background: #fafaf8; border: 1px solid rgba(0,0,0,.05); border-radius: 18px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
     text-decoration: none; color: inherit; cursor: pointer;
-    box-shadow: 0 4px 18px rgba(110,90,60,.08);
+    box-shadow: 0 4px 18px rgba(100,85,55,.07);
     will-change: transform; transition: box-shadow .3s ease;
   }
-  .sc:hover { box-shadow: 0 14px 40px rgba(110,90,60,.16); }
-
+  .sc:hover { box-shadow: 0 14px 40px rgba(100,85,55,.14); }
   .sc-icon {
-    width: 48px; height: 48px; display: grid; place-items: center;
-    border-radius: 14px;
-    background: var(--cs);
-    border: 1px solid color-mix(in srgb, var(--c) 16%, rgba(0,0,0,.04));
-    font-family: Georgia, "Songti SC", serif;
-    font-size: 22px; color: var(--c);
+    width: 48px; height: 48px; display: grid; place-items: center; border-radius: 14px;
+    background: var(--cs); border: 1px solid color-mix(in srgb, var(--c) 14%, rgba(0,0,0,.04));
+    font-family: Georgia, "Songti SC", serif; font-size: 22px; color: var(--c);
   }
-  .sc-name {
-    font-size: 11px; font-weight: 620; color: #8a857b;
-    text-align: center; line-height: 1.25; padding: 0 6px;
-  }
+  .sc-name { font-size: 11px; font-weight: 620; color: #8a857b; text-align: center; line-height: 1.25; padding: 0 6px; }
   .sc::after {
-    content: ''; position: absolute;
-    bottom: 10px; left: 25%; right: 25%;
-    height: 2.5px; border-radius: 2px;
-    background: var(--c); opacity: .18;
+    content: ''; position: absolute; bottom: 10px; left: 25%; right: 25%;
+    height: 2.5px; border-radius: 2px; background: var(--c); opacity: .16;
+  }
+
+  /* ═══ SECTION HEADING ═══ */
+  .section-heading {
+    text-align: center;
+    padding: clamp(24px, 4vw, 48px) 0 clamp(32px, 5vw, 56px);
+  }
+  .section-heading h2 {
+    font-size: clamp(28px, 5vw, 44px);
+    font-weight: 800;
+    letter-spacing: -.04em;
+    line-height: 1.15;
+  }
+  .section-sub {
+    max-width: 480px;
+    margin: 16px auto 0;
+    font-size: clamp(13px, 1.5vw, 14.5px);
+    line-height: 1.7;
+    color: #a5a19a;
   }
 
   /* ═══ BENTO ═══ */
   .categories { padding-bottom: clamp(60px, 8vw, 100px); }
-
   .bento-row { display: grid; gap: 14px; margin-bottom: 14px; }
   .bento-row:nth-child(1) { grid-template-columns: 3fr 2fr; }
   .bento-row:nth-child(2) { grid-template-columns: 2fr 3fr; }
@@ -242,39 +239,23 @@ const bentoBlocks = [
     background: var(--bg); text-decoration: none; color: #2c2a24;
     transition: transform .3s ease, box-shadow .3s ease;
   }
-  .bento:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 36px rgba(110,90,60,.1);
-  }
-  .bento h3 {
-    font-size: clamp(22px, 2.8vw, 28px);
-    font-weight: 760; letter-spacing: -.03em; margin-bottom: 8px;
-  }
-  .bento p {
-    font-size: 14px; color: rgba(44,42,36,.45);
-    line-height: 1.6; max-width: 280px;
-  }
+  .bento:hover { transform: translateY(-3px); box-shadow: 0 10px 36px rgba(100,85,55,.09); }
+  .bento h3 { font-size: clamp(22px, 2.8vw, 28px); font-weight: 760; letter-spacing: -.03em; margin-bottom: 8px; }
+  .bento p { font-size: 14px; color: rgba(44,42,36,.42); line-height: 1.6; max-width: 280px; }
   .bento-count {
     display: inline-flex; align-items: center; gap: 4px;
-    margin-top: 14px; font-size: 12.5px; font-weight: 650;
-    color: var(--c); opacity: .65;
+    margin-top: 14px; font-size: 12.5px; font-weight: 650; color: var(--c); opacity: .6;
   }
   .bento-deco {
-    position: absolute; top: 50%; right: 24px;
-    transform: translateY(-50%);
+    position: absolute; top: 50%; right: 24px; transform: translateY(-50%);
     font-family: Georgia, "Songti SC", "STSong", serif;
-    font-size: clamp(72px, 10vw, 100px);
-    line-height: .95; letter-spacing: -.06em;
-    color: var(--c); opacity: .07;
-    pointer-events: none; white-space: nowrap;
+    font-size: clamp(72px, 10vw, 100px); line-height: .95; letter-spacing: -.06em;
+    color: var(--c); opacity: .07; pointer-events: none; white-space: nowrap;
   }
 
   /* ═══ FOOTER ═══ */
   footer { border-top: 1px solid rgba(0,0,0,.06); }
-  .footer-inner {
-    padding: 28px 0 48px; display: flex;
-    justify-content: space-between; color: #b0aa9e; font-size: 13px;
-  }
+  .footer-inner { padding: 28px 0 48px; display: flex; justify-content: space-between; color: #b0aa9e; font-size: 13px; }
   .footer-inner a { color: inherit; text-decoration: none; transition: color .15s; }
   .footer-inner a:hover { color: #706d64; }
 
@@ -292,6 +273,7 @@ const bentoBlocks = [
     .sc { width: 76px; height: 104px; border-radius: 14px; gap: 7px; }
     .sc-icon { width: 36px; height: 36px; font-size: 17px; border-radius: 10px; }
     .sc-name { font-size: 9px; }
+    .section-heading { padding: 20px 0 28px; }
     .bento-row:nth-child(1),
     .bento-row:nth-child(2) { grid-template-columns: 1fr; }
     .bento { min-height: 180px; padding: 24px 28px; border-radius: 18px; }
@@ -306,7 +288,6 @@ const bentoBlocks = [
 
 
 <script>
-  // U-curve: sides high, center low — real-time viewport-based transforms
   const showcase = document.querySelector('.showcase');
   const track = document.getElementById('track');
   const cards = track.querySelectorAll('.sc');
@@ -314,23 +295,19 @@ const bentoBlocks = [
   function curve() {
     const box = showcase.getBoundingClientRect();
     const cx = box.width / 2;
-    const style = getComputedStyle(track);
-    const mx = new DOMMatrix(style.transform);
+    const mx = new DOMMatrix(getComputedStyle(track).transform);
     const tx = mx.m41;
 
     cards.forEach(card => {
       const mid = card.offsetLeft + tx + card.offsetWidth / 2;
       const n = Math.max(-1.4, Math.min(1.4, (mid - cx) / (box.width * 0.48)));
-
-      const y  = (1 - n * n) * 26;       // U-shape dip
-      const rot = n * 5;                  // tilt
-      const ry  = n * -8;                 // 3D perspective
-      const s   = 1 - Math.abs(n) * 0.04; // subtle scale
-
+      const y  = (1 - n * n) * 26;
+      const rot = n * 5;
+      const ry  = n * -8;
+      const s   = 1 - Math.abs(n) * 0.04;
       card.style.transform =
         'perspective(900px) rotateY(' + ry + 'deg) translateY(' + y + 'px) rotate(' + rot + 'deg) scale(' + s + ')';
     });
-
     requestAnimationFrame(curve);
   }
   curve();
