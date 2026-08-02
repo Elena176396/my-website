@@ -201,7 +201,7 @@ Rules:
       let detail = "";
       try {
         const eb = await response.json();
-        detail = (eb.error && eb.error.message) || "";
+        detail = (eb.error && eb.error.message) || eb.message || "";
       } catch (e) {}
       throw new Error(`接口返回 ${response.status}${detail ? "：" + detail.slice(0, 80) : ""}`);
     }
@@ -236,7 +236,8 @@ Rules:
       let d = {};
       try { d = await r.json(); } catch (e) {}
       if (!r.ok || d.error) {
-        setErr(`测试：HTTP ${r.status}${d.error && d.error.message ? "：" + d.error.message.slice(0, 100) : ""}`);
+        const detail = (d.error && d.error.message) || d.message || "";
+        setErr(`测试：HTTP ${r.status}${detail ? "：" + detail.slice(0, 100) : ""}`);
       } else {
         setErr("测试通过 ✓ 接口是通的，直接点上面的开始对话");
       }

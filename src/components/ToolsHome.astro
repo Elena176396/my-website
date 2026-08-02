@@ -1,30 +1,23 @@
 ---
 const categories = [
-  { id: 'decode', label: '人格解码', color: '#6e7488', soft: 'rgba(110,116,136,.1)' },
-  { id: 'mystic', label: '玄学引擎', color: '#706888', soft: 'rgba(112,104,136,.1)' },
-  { id: 'boost',  label: '效率外挂', color: '#5e7080', soft: 'rgba(94,112,128,.1)' },
-  { id: 'spark',  label: '灵感弹珠', color: '#6e7488', soft: 'rgba(110,116,136,.1)' },
-];
-
-const tools = [
-  { cat: 'decode', href: '/tools/mbti-simulator/',            icon: 'M',  short: 'MBTI' },
-  { cat: 'decode', href: '/tools/enneagram-pro/',              icon: '九', short: '九型人格' },
-  { cat: 'decode', href: '/tools/mbti-enneagram-fusion/',      icon: '融', short: 'MBTI×九型' },
-  { cat: 'mystic', href: '/tools/bazi-calculator/',            icon: '八', short: '八字排盘' },
-  { cat: 'mystic', href: '/tools/wuxing-explainer/',           icon: '五', short: '五行关系' },
-  { cat: 'mystic', href: '/tools/zodiac-compatibility-chart/', icon: '肖', short: '生肖关系' },
-  { cat: 'boost',  href: '/tools/focus-timer/',                icon: '时', short: '专注计时' },
-  { cat: 'spark',  href: '/tools/quote-wheel/',                icon: '言', short: '名言转盘' },
-  { cat: 'spark',  href: '/tools/have-fun/',                   icon: '书', short: '拾光读书' },
-  { cat: 'boost',  href: '/tools/vocab-1341/',                 icon: '词', short: '词汇1341' },
-  { cat: 'boost',  href: '/tools/vocab-3728/',                 icon: '研', short: '词汇3728' },
-  { cat: 'boost',  href: '/tools/vocab-4533/',                 icon: '英', short: '词汇4533' },
-  { cat: 'boost',  href: '/tools/mba-vocab-632/',              icon: '商', short: 'MBA词汇' },
-  { cat: 'boost',  href: '/tools/mba-english-dialogue-practice/', icon: '说', short: 'MBA对话' },
-  { cat: 'boost',  href: '/tools/mba-interview-listening/',    icon: '听', short: 'MBA听力' },
+  { id: 'decode', label: '人格解码', color: '#6e7488', soft: 'rgba(110,116,136,.1)', light: '#8b92aa' },
+  { id: 'mystic', label: '玄学引擎', color: '#706888', soft: 'rgba(112,104,136,.1)', light: '#8d84a6' },
+  { id: 'boost',  label: '效率外挂', color: '#5e7080', soft: 'rgba(94,112,128,.1)',  light: '#7a919f' },
+  { id: 'spark',  label: '灵感弹珠', color: '#6e7488', soft: 'rgba(110,116,136,.1)', light: '#8b92aa' },
 ];
 
 const catMap = Object.fromEntries(categories.map(c => [c.id, c]));
+
+/* ── Spotlight: change this to feature any tool ── */
+const spotlight = {
+  cat: 'decode',
+  href: '/tools/mbti-enneagram-fusion/',
+  label: '✦ 最近上新',
+  title: 'MBTI × 九型人格',
+  desc: '把两套人格理论撞在一起，看能碰出什么火花。一次测试，两份解读，交叉验证你到底是谁。',
+  icon: '融',
+  btnText: '立刻试试',
+};
 
 const bentoBlocks = [
   { cat: 'boost',  label: '效率外挂', desc: '专注计时 · 考研词汇 · MBA 口语 · 面试听力', deco: '时词研\n商说听', bg: 'rgba(140,160,175,.32)', c: '#48606e', count: 7 },
@@ -57,28 +50,40 @@ const bentoBlocks = [
 
   <main>
 
+    <!-- ② HERO with keyword tag line -->
     <section class="hero">
       <div class="wrap">
+        <div class="hero-tag">不会写代码 · 好奇心驱动 · AI 辅助造工具</div>
         <h1>把好奇心做成工具</h1>
         <p class="subtitle">This is a playground — you're invited to come and play.</p>
         <a class="cta" href="#categories">开始探索 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></a>
       </div>
     </section>
 
-    <section class="showcase">
-      <div class="showcase-track" id="track">
-        {[...tools, ...tools].map(tool => {
-          const c = catMap[tool.cat];
-          return (
-            <a class="sc" href={tool.href} style={`--c:${c.color};--cs:${c.soft}`}>
-              <span class="sc-icon">{tool.icon}</span>
-              <span class="sc-name">{tool.short}</span>
-            </a>
-          );
-        })}
+    <!-- ① SPOTLIGHT -->
+    <section class="spotlight-section">
+      <div class="wrap">
+        <div class="spotlight">
+          <div class="spotlight-text">
+            <div class="spotlight-label" style={`color:${catMap[spotlight.cat].light}`}>{spotlight.label}</div>
+            <h2>{spotlight.title}</h2>
+            <p class="spotlight-desc">{spotlight.desc}</p>
+            <div class="spotlight-actions">
+              <a class="btn-primary" href={spotlight.href}>{spotlight.btnText}</a>
+              <a class="btn-ghost" href="/tools/">查看全部工具</a>
+            </div>
+          </div>
+          <div class="spotlight-visual">
+            <div class="spot-deco" style={`--sc:${catMap[spotlight.cat].color}`}>
+              <span class="spot-glyph">{spotlight.icon}</span>
+              <span class="spot-label">{catMap[spotlight.cat].label}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
+    <!-- SECTION HEADING -->
     <section class="section-heading">
       <div class="wrap">
         <div class="section-rule" aria-hidden="true"></div>
@@ -87,6 +92,7 @@ const bentoBlocks = [
       </div>
     </section>
 
+    <!-- BENTO -->
     <section class="categories" id="categories">
       <div class="wrap">
         <div class="bento-row">
@@ -129,19 +135,13 @@ const bentoBlocks = [
   :global(*) { box-sizing: border-box; margin: 0; }
   :global(html) { scroll-behavior: smooth; }
   :global(body) {
-    color: #1a1c1e;
-    background: #e7e9ed;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
-                 "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
+    color: #1a1c1e; background: #e7e9ed;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
     position: relative; min-height: 100vh; overflow-x: hidden;
   }
-
-  /* animated cold orbs */
   :global(body)::before {
-    content: ''; position: fixed; top: 0; left: 0;
-    width: 140%; height: 140%;
+    content: ''; position: fixed; top: 0; left: 0; width: 140%; height: 140%;
     background:
       radial-gradient(circle 550px at 10% 15%, rgba(80,100,180,.18), transparent),
       radial-gradient(circle 450px at 85% 10%, rgba(120,90,170,.14), transparent),
@@ -151,12 +151,11 @@ const bentoBlocks = [
     animation: drift 28s ease-in-out infinite alternate;
   }
   @keyframes drift {
-    0%   { transform: translate(0, 0) scale(1); }
-    33%  { transform: translate(-4%, 2%) scale(1.02); }
-    66%  { transform: translate(3%, -3%) scale(.98); }
-    100% { transform: translate(-2%, 4%) scale(1.01); }
+    0%  { transform: translate(0,0) scale(1); }
+    33% { transform: translate(-4%,2%) scale(1.02); }
+    66% { transform: translate(3%,-3%) scale(.98); }
+    100%{ transform: translate(-2%,4%) scale(1.01); }
   }
-
   :global(body) > * { position: relative; z-index: 1; }
   .wrap { width: min(1100px, calc(100% - 48px)); margin-inline: auto; }
 
@@ -164,8 +163,7 @@ const bentoBlocks = [
   header {
     position: sticky; top: 0; z-index: 10;
     background: rgba(231,233,237,.48);
-    backdrop-filter: blur(24px) saturate(1.3);
-    -webkit-backdrop-filter: blur(24px) saturate(1.3);
+    backdrop-filter: blur(24px) saturate(1.3); -webkit-backdrop-filter: blur(24px) saturate(1.3);
     border-bottom: 1px solid rgba(255,255,255,.4);
     background-image: linear-gradient(135deg, rgba(255,255,255,.15) 0%, transparent 40%);
   }
@@ -175,135 +173,120 @@ const bentoBlocks = [
     display: flex; align-items: center; justify-content: center;
     width: 38px; height: 38px; color: #8a8d96;
     background: rgba(255,255,255,.25); border: 1px solid rgba(255,255,255,.45);
-    border-radius: 50%;
-    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border-radius: 50%; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
     transition: color .2s, background .2s;
   }
   .gh-link:hover { color: #1a1c1e; background: rgba(255,255,255,.45); }
 
   /* ═══ HERO ═══ */
-  .hero { padding: clamp(72px, 12vw, 150px) 0 clamp(20px, 3vw, 36px); text-align: center; }
-  h1 { font-size: clamp(36px, 7vw, 64px); font-weight: 820; line-height: 1.15; letter-spacing: -.04em; color: #0a0a0c; }
-  .subtitle { max-width: 460px; margin: 20px auto 0; font-size: clamp(13px, 1.6vw, 15px); line-height: 1.7; color: #8e919a; }
-
-  /* glass CTA */
+  .hero { padding: clamp(72px,12vw,140px) 0 clamp(48px,7vw,80px); text-align: center; }
+  .hero-tag {
+    font-size: 12px; letter-spacing: .06em; color: #8b92aa;
+    margin-bottom: 20px;
+  }
+  h1 { font-size: clamp(36px,7vw,64px); font-weight: 820; line-height: 1.15; letter-spacing: -.04em; color: #0a0a0c; }
+  .subtitle { max-width: 460px; margin: 18px auto 0; font-size: clamp(13px,1.6vw,15px); line-height: 1.7; color: #8e919a; }
   .cta {
     display: inline-flex; align-items: center; gap: 8px;
-    margin-top: 32px; padding: 13px 28px;
+    margin-top: 28px; padding: 13px 28px;
     font-size: 14px; font-weight: 680; color: #1a1c1e;
     background: rgba(255,255,255,.4);
     background-image: linear-gradient(135deg, rgba(255,255,255,.25) 0%, transparent 50%);
-    backdrop-filter: blur(12px) saturate(1.2);
-    -webkit-backdrop-filter: blur(12px) saturate(1.2);
-    border: 1px solid rgba(255,255,255,.55);
-    border-radius: 999px; text-decoration: none;
+    backdrop-filter: blur(12px) saturate(1.2); -webkit-backdrop-filter: blur(12px) saturate(1.2);
+    border: 1px solid rgba(255,255,255,.55); border-radius: 999px; text-decoration: none;
     box-shadow: 0 2px 10px rgba(50,55,80,.08), inset 0 1px 0 rgba(255,255,255,.5);
     transition: transform .2s, box-shadow .2s, background .2s, color .2s;
   }
   .cta:hover {
-    transform: translateY(-2px);
-    background: rgba(30,34,50,.82); background-image: none;
-    color: #fff; border-color: rgba(255,255,255,.15);
-    box-shadow: 0 6px 24px rgba(40,50,80,.2);
+    transform: translateY(-2px); background: rgba(30,34,50,.82); background-image: none;
+    color: #fff; border-color: rgba(255,255,255,.15); box-shadow: 0 6px 24px rgba(40,50,80,.2);
   }
   .cta svg { transition: transform .2s; }
   .cta:hover svg { transform: translateX(3px); }
 
-  /* ═══ SHOWCASE ═══ */
-  .showcase { overflow: hidden; padding: clamp(20px, 4vw, 44px) 0 clamp(44px, 6vw, 76px); }
-  .showcase-track {
-    display: flex; gap: 16px; position: relative;
-    will-change: transform;
-    animation: marquee 50s linear infinite;
+  /* ═══ SPOTLIGHT ═══ */
+  .spotlight-section { padding: 0 0 clamp(36px,5vw,56px); }
+  .spotlight {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+    border-radius: 16px; overflow: hidden;
+    background: rgba(255,255,255,.22);
+    background-image: linear-gradient(135deg, rgba(255,255,255,.18) 0%, transparent 40%);
+    backdrop-filter: blur(20px) saturate(1.2); -webkit-backdrop-filter: blur(20px) saturate(1.2);
+    border: 1px solid rgba(255,255,255,.4);
+    box-shadow: 0 2px 10px rgba(50,55,80,.04), inset 0 1px 0 rgba(255,255,255,.4);
   }
-  .showcase:hover .showcase-track { animation-play-state: paused; }
-  @keyframes marquee {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
+  .spotlight-text { padding: 40px 44px; display: flex; flex-direction: column; justify-content: center; }
+  .spotlight-label { font-size: 11px; letter-spacing: .08em; margin-bottom: 14px; font-weight: 600; }
+  .spotlight h2 { font-size: 26px; font-weight: 720; letter-spacing: -.02em; margin-bottom: 12px; color: #0a0a0c; }
+  .spotlight-desc { font-size: 14px; color: #6a6d76; line-height: 1.7; margin-bottom: 28px; }
+  .spotlight-actions { display: flex; gap: 10px; }
+  .btn-primary {
+    display: inline-flex; align-items: center; font-size: 13px; font-weight: 600;
+    padding: 9px 20px; border-radius: 8px; text-decoration: none;
+    background: #5e6478; color: #fff; transition: background .2s;
   }
+  .btn-primary:hover { background: #6e7488; }
+  .btn-ghost {
+    display: inline-flex; align-items: center; font-size: 13px; font-weight: 500;
+    padding: 9px 20px; border-radius: 8px; text-decoration: none;
+    background: transparent; color: #8a8d96;
+    border: 1px solid rgba(0,0,0,.08); transition: border-color .2s, color .2s;
+  }
+  .btn-ghost:hover { border-color: rgba(0,0,0,.18); color: #1a1c1e; }
 
-  /* glass card with category-tinted icon */
-  .sc {
-    position: relative; flex-shrink: 0;
-    width: 105px; height: 142px;
-    background: rgba(255,255,255,.3);
-    background-image: linear-gradient(135deg, rgba(255,255,255,.22) 0%, transparent 50%);
-    backdrop-filter: blur(16px) saturate(1.2);
-    -webkit-backdrop-filter: blur(16px) saturate(1.2);
-    border: 1px solid rgba(255,255,255,.5); border-radius: 18px;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
-    text-decoration: none; color: inherit; cursor: pointer;
-    box-shadow: 0 2px 8px rgba(50,55,80,.04), 0 8px 24px rgba(50,55,80,.06), inset 0 1px 0 rgba(255,255,255,.55);
-    will-change: transform;
-    transition: box-shadow .3s ease, background .3s ease;
+  .spotlight-visual {
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,.06);
+    border-left: 1px solid rgba(255,255,255,.3);
+    min-height: 260px; position: relative; overflow: hidden;
   }
-  .sc:hover {
-    background: rgba(255,255,255,.48);
-    box-shadow: 0 4px 12px rgba(50,55,80,.07), 0 16px 40px rgba(50,55,80,.1), inset 0 1px 0 rgba(255,255,255,.65);
+  .spot-deco {
+    width: 130px; height: 180px; border-radius: 14px;
+    border: 1px solid rgba(255,255,255,.35);
+    background: linear-gradient(145deg, color-mix(in srgb, var(--sc) 15%, rgba(255,255,255,.2)), rgba(255,255,255,.08));
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+    transform: rotate(-3deg);
+    transition: transform .4s ease;
+    box-shadow: 0 8px 32px rgba(50,55,80,.08);
   }
-  .sc-icon {
-    width: 48px; height: 48px; display: grid; place-items: center; border-radius: 14px;
-    background: color-mix(in srgb, var(--c) 8%, rgba(255,255,255,.32));
-    border: 1px solid color-mix(in srgb, var(--c) 12%, rgba(255,255,255,.4));
-    font-family: Georgia, "Songti SC", serif; font-size: 22px; color: var(--c);
+  .spotlight:hover .spot-deco { transform: rotate(0deg) scale(1.03); }
+  .spot-glyph {
+    font-family: Georgia, "Songti SC", serif;
+    font-size: 42px; line-height: 1; color: var(--sc); opacity: .6;
   }
-  .sc-name { font-size: 11px; font-weight: 620; color: #6a6d76; text-align: center; line-height: 1.25; padding: 0 6px; }
-  .sc::after {
-    content: ''; position: absolute; bottom: 10px; left: 25%; right: 25%;
-    height: 2.5px; border-radius: 2px; background: var(--c); opacity: .14;
-  }
+  .spot-label { font-size: 11px; letter-spacing: .06em; color: #8a8d96; }
 
   /* ═══ SECTION HEADING ═══ */
-  .section-heading { text-align: center; padding: clamp(24px, 4vw, 48px) 0 clamp(32px, 5vw, 56px); }
-  .section-rule {
-    width: 40px; height: 2px; margin: 0 auto 24px;
-    background: rgba(50,55,80,.15); border-radius: 2px;
-  }
-  .section-heading h2 {
-    font-size: clamp(28px, 5vw, 44px); font-weight: 800;
-    letter-spacing: -.04em; line-height: 1.15; color: #0a0a0c;
-  }
-  .section-sub {
-    max-width: 480px; margin: 16px auto 0;
-    font-size: clamp(13px, 1.5vw, 14.5px); line-height: 1.7; color: #8e919a;
-  }
+  .section-heading { text-align: center; padding: clamp(24px,4vw,48px) 0 clamp(32px,5vw,56px); }
+  .section-rule { width: 40px; height: 2px; margin: 0 auto 24px; background: rgba(50,55,80,.15); border-radius: 2px; }
+  .section-heading h2 { font-size: clamp(28px,5vw,44px); font-weight: 800; letter-spacing: -.04em; line-height: 1.15; color: #0a0a0c; }
+  .section-sub { max-width: 480px; margin: 16px auto 0; font-size: clamp(13px,1.5vw,14.5px); line-height: 1.7; color: #8e919a; }
 
   /* ═══ BENTO ═══ */
-  .categories { padding-bottom: clamp(60px, 8vw, 100px); }
+  .categories { padding-bottom: clamp(60px,8vw,100px); }
   .bento-row { display: grid; gap: 14px; margin-bottom: 14px; }
   .bento-row:nth-child(1) { grid-template-columns: 3fr 2fr; }
   .bento-row:nth-child(2) { grid-template-columns: 2fr 3fr; }
-
   .bento {
-    position: relative; overflow: hidden;
-    min-height: clamp(200px, 22vw, 260px);
+    position: relative; overflow: hidden; min-height: clamp(200px,22vw,260px);
     border-radius: 22px; padding: 32px 36px;
     display: flex; flex-direction: column; justify-content: flex-end;
     background: var(--bg);
     background-image: linear-gradient(135deg, rgba(255,255,255,.2) 0%, transparent 45%);
-    backdrop-filter: blur(20px) saturate(1.2);
-    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+    backdrop-filter: blur(20px) saturate(1.2); -webkit-backdrop-filter: blur(20px) saturate(1.2);
     border: 1px solid rgba(255,255,255,.42);
     box-shadow: 0 2px 8px rgba(50,55,80,.03), inset 0 1px 0 rgba(255,255,255,.4);
     text-decoration: none; color: #1a1c1e;
     transition: transform .3s ease, box-shadow .3s ease, border-color .3s ease, filter .3s ease;
   }
-  .bento:hover {
-    transform: translateY(-4px);
-    border-color: rgba(255,255,255,.65);
-    box-shadow: 0 10px 36px rgba(50,55,80,.09), inset 0 1px 0 rgba(255,255,255,.55);
-    filter: brightness(1.06);
-  }
-  .bento h3 { font-size: clamp(22px, 2.8vw, 28px); font-weight: 760; letter-spacing: -.03em; margin-bottom: 8px; }
+  .bento:hover { transform: translateY(-4px); border-color: rgba(255,255,255,.65); box-shadow: 0 10px 36px rgba(50,55,80,.09), inset 0 1px 0 rgba(255,255,255,.55); filter: brightness(1.06); }
+  .bento h3 { font-size: clamp(22px,2.8vw,28px); font-weight: 760; letter-spacing: -.03em; margin-bottom: 8px; }
   .bento p { font-size: 14px; color: rgba(26,28,30,.36); line-height: 1.6; max-width: 280px; }
-  .bento-count {
-    display: inline-flex; align-items: center; gap: 4px;
-    margin-top: 14px; font-size: 12.5px; font-weight: 650; color: var(--c); opacity: .55;
-  }
+  .bento-count { display: inline-flex; align-items: center; gap: 4px; margin-top: 14px; font-size: 12.5px; font-weight: 650; color: var(--c); opacity: .55; }
   .bento-deco {
     position: absolute; top: 50%; right: 24px; transform: translateY(-50%);
     font-family: Georgia, "Songti SC", "STSong", serif;
-    font-size: clamp(72px, 10vw, 100px); line-height: .95; letter-spacing: -.06em;
+    font-size: clamp(72px,10vw,100px); line-height: .95; letter-spacing: -.06em;
     color: var(--c); opacity: .06; pointer-events: none; white-space: nowrap;
   }
 
@@ -315,22 +298,18 @@ const bentoBlocks = [
 
   /* ═══ RESPONSIVE ═══ */
   @media (max-width: 860px) {
-    .sc { width: 88px; height: 120px; border-radius: 15px; }
-    .sc-icon { width: 40px; height: 40px; font-size: 19px; border-radius: 12px; }
-    .sc-name { font-size: 10px; }
+    .spotlight { grid-template-columns: 1fr; }
+    .spotlight-visual { border-left: none; border-top: 1px solid rgba(255,255,255,.3); min-height: 180px; }
+    .spotlight-text { padding: 32px 28px; }
     .bento-deco { font-size: 64px; right: 16px; }
   }
   @media (max-width: 560px) {
     .wrap { width: min(100% - 32px, 1100px); }
-    .hero { padding: 48px 0 16px; }
+    .hero { padding: 48px 0 44px; }
     .cta { margin-top: 24px; padding: 11px 24px; font-size: 13px; }
-    .sc { width: 76px; height: 104px; border-radius: 14px; gap: 7px; }
-    .sc-icon { width: 36px; height: 36px; font-size: 17px; border-radius: 10px; }
-    .sc-name { font-size: 9px; }
     .section-heading { padding: 20px 0 28px; }
     .section-rule { margin-bottom: 16px; }
-    .bento-row:nth-child(1),
-    .bento-row:nth-child(2) { grid-template-columns: 1fr; }
+    .bento-row:nth-child(1), .bento-row:nth-child(2) { grid-template-columns: 1fr; }
     .bento { min-height: 180px; padding: 24px 28px; border-radius: 18px; }
     .bento h3 { font-size: 22px; }
     .bento-deco { font-size: 56px; right: 14px; }
@@ -338,34 +317,6 @@ const bentoBlocks = [
   @media (prefers-reduced-motion: reduce) {
     :global(html) { scroll-behavior: auto; }
     :global(body)::before { animation: none !important; }
-    .showcase-track { animation: none !important; }
     *, *::before, *::after { transition-duration: 0s !important; }
   }
 </style>
-
-
-<script>
-  const showcase = document.querySelector('.showcase');
-  const track = document.getElementById('track');
-  const cards = track.querySelectorAll('.sc');
-
-  function curve() {
-    const box = showcase.getBoundingClientRect();
-    const cx = box.width / 2;
-    const mx = new DOMMatrix(getComputedStyle(track).transform);
-    const tx = mx.m41;
-
-    cards.forEach(card => {
-      const mid = card.offsetLeft + tx + card.offsetWidth / 2;
-      const n = Math.max(-1.4, Math.min(1.4, (mid - cx) / (box.width * 0.48)));
-      const y   = (1 - n * n) * 26;
-      const rot = n * 5;
-      const ry  = n * -8;
-      const s   = 1 - Math.abs(n) * 0.04;
-      card.style.transform =
-        'perspective(900px) rotateY(' + ry + 'deg) translateY(' + y + 'px) rotate(' + rot + 'deg) scale(' + s + ')';
-    });
-    requestAnimationFrame(curve);
-  }
-  curve();
-</script>

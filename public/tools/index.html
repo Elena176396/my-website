@@ -5,145 +5,54 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#e7e9ed" />
   <title>工具与模拟器 · Song Chaoyang</title>
-  <meta name="description" content="Song Chaoyang 的互动工具与模拟器合集——人格解码、玄学引擎、效率外挂与灵感弹珠。" />
   <style>
     *{box-sizing:border-box;margin:0}
     html{scroll-behavior:smooth}
-    body{
-      color:#1a1c1e;background:#e7e9ed;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
-      -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
-      position:relative;min-height:100vh;overflow-x:hidden;
-    }
-    body::before{
-      content:'';position:fixed;top:0;left:0;width:140%;height:140%;
-      background:
-        radial-gradient(circle 550px at 10% 15%,rgba(80,100,180,.18),transparent),
-        radial-gradient(circle 450px at 85% 10%,rgba(120,90,170,.14),transparent),
-        radial-gradient(circle 600px at 55% 60%,rgba(70,140,160,.12),transparent),
-        radial-gradient(circle 400px at 30% 80%,rgba(90,110,170,.1),transparent);
-      z-index:0;pointer-events:none;
-      animation:drift 28s ease-in-out infinite alternate;
-    }
-    @keyframes drift{
-      0%{transform:translate(0,0) scale(1)}
-      33%{transform:translate(-4%,2%) scale(1.02)}
-      66%{transform:translate(3%,-3%) scale(.98)}
-      100%{transform:translate(-2%,4%) scale(1.01)}
-    }
+    body{color:#1a1c1e;background:#e7e9ed;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;position:relative;min-height:100vh;overflow-x:hidden}
+    body::before{content:'';position:fixed;top:0;left:0;width:140%;height:140%;background:radial-gradient(circle 550px at 10% 15%,rgba(80,100,180,.18),transparent),radial-gradient(circle 450px at 85% 10%,rgba(120,90,170,.14),transparent),radial-gradient(circle 600px at 55% 60%,rgba(70,140,160,.12),transparent),radial-gradient(circle 400px at 30% 80%,rgba(90,110,170,.1),transparent);z-index:0;pointer-events:none;animation:drift 28s ease-in-out infinite alternate}
+    @keyframes drift{0%{transform:translate(0,0) scale(1)}33%{transform:translate(-4%,2%) scale(1.02)}66%{transform:translate(3%,-3%) scale(.98)}100%{transform:translate(-2%,4%) scale(1.01)}}
     body>*{position:relative;z-index:1}
-
-    /* layout */
     main{max-width:1100px;margin:auto;padding:0 24px 96px}
 
-    /* header */
-    .top-bar{
-      position:sticky;top:0;z-index:10;
-      background:rgba(231,233,237,.48);
-      backdrop-filter:blur(24px) saturate(1.3);-webkit-backdrop-filter:blur(24px) saturate(1.3);
-      border-bottom:1px solid rgba(255,255,255,.4);
-      background-image:linear-gradient(135deg,rgba(255,255,255,.15) 0%,transparent 40%);
-      padding:0 24px;margin-bottom:48px;
-    }
+    .top-bar{position:sticky;top:0;z-index:10;background:rgba(231,233,237,.48);backdrop-filter:blur(24px) saturate(1.3);-webkit-backdrop-filter:blur(24px) saturate(1.3);border-bottom:1px solid rgba(255,255,255,.4);background-image:linear-gradient(135deg,rgba(255,255,255,.15) 0%,transparent 40%);padding:0 24px;margin-bottom:48px}
     .top-bar-inner{max-width:1100px;margin:auto;height:64px;display:flex;align-items:center;justify-content:space-between}
     .back{color:#6a6d76;text-decoration:none;font-size:14px;font-weight:600;transition:color .2s}
     .back:hover{color:#1a1c1e}
     .top-brand{color:inherit;text-decoration:none;font-size:12.5px;font-weight:780;letter-spacing:.14em}
 
-    /* hero */
     .hero{padding:clamp(32px,6vw,64px) 0 clamp(24px,4vw,40px)}
     h1{font-size:clamp(32px,6vw,52px);font-weight:820;letter-spacing:-.04em;line-height:1.15;color:#0a0a0c}
     .hero p{color:#8e919a;font-size:clamp(14px,1.6vw,16px);margin-top:14px;line-height:1.6}
 
-    /* tabs */
-    .tabs{
-      display:flex;gap:6px;padding-bottom:20px;margin-bottom:24px;
-      border-bottom:1px solid rgba(255,255,255,.35);
-      overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
-    }
+    .tabs{display:flex;gap:6px;padding-bottom:20px;margin-bottom:24px;border-bottom:1px solid rgba(255,255,255,.35);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
     .tabs::-webkit-scrollbar{display:none}
-    .tab{
-      all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:7px;
-      padding:9px 18px;font-size:13.5px;font-weight:600;color:#8a8d96;
-      border-radius:999px;white-space:nowrap;
-      transition:color .2s,background .2s,box-shadow .2s;
-      -webkit-tap-highlight-color:transparent;
-    }
+    .tab{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:7px;padding:9px 18px;font-size:13.5px;font-weight:600;color:#8a8d96;border-radius:999px;white-space:nowrap;transition:color .2s,background .2s,box-shadow .2s}
     .tab:hover{color:#1a1c1e;background:rgba(255,255,255,.3)}
-    .tab.active{
-      color:#fff;background:var(--tc,rgba(30,34,50,.8));
-      box-shadow:0 2px 8px rgba(50,55,80,.12);
-    }
+    .tab.active{color:#fff;background:var(--tc,rgba(30,34,50,.8));box-shadow:0 2px 8px rgba(50,55,80,.12)}
     .tab-n{font-size:11px;font-weight:700;opacity:.5}
     .tab.active .tab-n{opacity:.7}
 
-    /* grid */
-    .grid{
-      display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
-      transition:opacity .2s ease,transform .2s ease;
-    }
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;transition:opacity .2s ease,transform .2s ease}
     .grid.is-filtering{opacity:0;transform:translateY(8px)}
 
-    /* card */
-    .card{
-      position:relative;display:flex;flex-direction:column;gap:16px;
-      padding:28px 24px 24px;min-height:190px;
-      background:rgba(255,255,255,.3);
-      background-image:linear-gradient(135deg,rgba(255,255,255,.2) 0%,transparent 50%);
-      backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);
-      border:1px solid rgba(255,255,255,.45);border-radius:20px;
-      color:inherit;text-decoration:none;
-      box-shadow:0 2px 8px rgba(50,55,80,.03),inset 0 1px 0 rgba(255,255,255,.45);
-      transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease;
-    }
-    .card:hover{
-      transform:translateY(-4px);
-      border-color:rgba(255,255,255,.65);
-      box-shadow:0 8px 32px rgba(50,55,80,.08),inset 0 1px 0 rgba(255,255,255,.55);
-    }
-    .card-icon{
-      width:52px;height:52px;display:grid;place-items:center;border-radius:15px;
-      background:color-mix(in srgb,var(--c) 8%,rgba(255,255,255,.32));
-      border:1px solid color-mix(in srgb,var(--c) 12%,rgba(255,255,255,.4));
-      font-family:Georgia,"Songti SC",serif;font-size:24px;color:var(--c);
-    }
-    .card-body{flex:1;display:flex;flex-direction:column;gap:5px}
-    .card-body strong{font-size:clamp(17px,2.2vw,20px);font-weight:720;letter-spacing:-.02em}
-    .card-body small{color:#8a8d96;font-size:13px;line-height:1.5}
-    .card-label{
-      margin-top:auto;padding-top:8px;
-      font-size:11px;font-weight:600;letter-spacing:.03em;
-      color:var(--c);opacity:.45;
-    }
-    .card-go{
-      position:absolute;top:22px;right:22px;
-      width:30px;height:30px;display:grid;place-items:center;
-      border-radius:50%;background:rgba(255,255,255,.25);
-      border:1px solid rgba(255,255,255,.35);
-      font-size:13px;color:#9a9da6;
-      transition:background .2s,color .2s,transform .2s;
-    }
-    .card:hover .card-go{
-      background:rgba(255,255,255,.45);color:#555;transform:translateX(2px);
-    }
+    .card{position:relative;display:flex;flex-direction:column;gap:12px;padding:24px;min-height:190px;background:rgba(255,255,255,.3);background-image:linear-gradient(135deg,rgba(255,255,255,.2) 0%,transparent 50%);backdrop-filter:blur(16px) saturate(1.2);-webkit-backdrop-filter:blur(16px) saturate(1.2);border:1px solid rgba(255,255,255,.45);border-radius:16px;color:inherit;text-decoration:none;box-shadow:0 2px 8px rgba(50,55,80,.03),inset 0 1px 0 rgba(255,255,255,.45);transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
+    .card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.65);box-shadow:0 8px 32px rgba(50,55,80,.08),inset 0 1px 0 rgba(255,255,255,.55)}
 
-    /* footer */
+    /* ④ category pill */
+    .card-pill{display:inline-flex;align-self:flex-start;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:.02em;background:color-mix(in srgb,var(--c) 12%,rgba(255,255,255,.25));color:var(--cl);border:1px solid color-mix(in srgb,var(--c) 10%,rgba(255,255,255,.3))}
+
+    .card-title{font-size:17px;font-weight:700;letter-spacing:-.02em;color:#0a0a0c}
+    .card-desc{color:#6a6d76;font-size:13.5px;line-height:1.6;flex:1}
+    .card-link{font-size:13px;font-weight:600;text-decoration:none;color:var(--cl);transition:opacity .2s}
+    .card-link:hover{opacity:.7}
+
     footer{border-top:1px solid rgba(255,255,255,.3);max-width:1100px;margin:auto;padding:28px 24px 48px;display:flex;justify-content:space-between;color:#9a9da6;font-size:13px}
     footer a{color:inherit;text-decoration:none;transition:color .15s}
     footer a:hover{color:#555860}
 
     @media(max-width:860px){.grid{grid-template-columns:repeat(2,1fr)}}
-    @media(max-width:560px){
-      .hero{padding:24px 0 20px}
-      .grid{grid-template-columns:1fr;gap:12px}
-      .card{padding:22px 20px 20px;min-height:160px;gap:12px}
-      .card-icon{width:44px;height:44px;font-size:20px;border-radius:12px}
-      .card-go{width:26px;height:26px;top:18px;right:16px;font-size:12px}
-    }
-    @media(prefers-reduced-motion:reduce){
-      body::before{animation:none !important}
-      *,*::before,*::after{transition-duration:0s !important}
-    }
+    @media(max-width:560px){.hero{padding:24px 0 20px}.grid{grid-template-columns:1fr;gap:12px}.card{padding:20px;min-height:160px;gap:10px}}
+    @media(prefers-reduced-motion:reduce){body::before{animation:none !important}*,*::before,*::after{transition-duration:0s !important}}
   </style>
 </head>
 <body>
@@ -156,7 +65,7 @@
   <main>
     <div class="hero">
       <h1>工具与模拟器</h1>
-      <p>一些用于思考、学习和自我探索的互动小工具。</p>
+      <p>每个工具都从一个"如果能这样就好了"的念头开始。</p>
     </div>
 
     <nav class="tabs" role="tablist">
@@ -169,53 +78,98 @@
 
     <div class="grid" id="tools-grid">
       <!-- 人格解码 -->
-      <a class="card" href="/tools/mbti-simulator/" data-cat="decode" style="--c:#6e7488">
-        <span class="card-icon">M</span><div class="card-body"><strong>MBTI 测试</strong><small>认知偏好与人格类型分析</small><span class="card-label">人格解码</span></div><span class="card-go">→</span>
+      <a class="card" href="/tools/mbti-simulator/" data-cat="decode" style="--c:#6e7488;--cl:#8b92aa">
+        <span class="card-pill">人格解码</span>
+        <div class="card-title">MBTI 测试</div>
+        <p class="card-desc">8 道情境题，3 分钟出结果。你到底是 I 人还是在装 E。</p>
+        <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/enneagram-pro/" data-cat="decode" style="--c:#6e7488">
-        <span class="card-icon">九</span><div class="card-body"><strong>九型人格</strong><small>探索核心动机与行为模式</small><span class="card-label">人格解码</span></div><span class="card-go">→</span>
+      <a class="card" href="/tools/enneagram-pro/" data-cat="decode" style="--c:#6e7488;--cl:#8b92aa">
+        <span class="card-pill">人格解码</span>
+        <div class="card-title">九型人格</div>
+        <p class="card-desc">找到驱动你的核心动机——为什么你总是那个操心的人。</p>
+        <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/mbti-enneagram-fusion/" data-cat="decode" style="--c:#6e7488">
-        <span class="card-icon">融</span><div class="card-body"><strong>MBTI × 九型</strong><small>两套人格模型的融合测试</small><span class="card-label">人格解码</span></div><span class="card-go">→</span>
+      <a class="card" href="/tools/mbti-enneagram-fusion/" data-cat="decode" style="--c:#6e7488;--cl:#8b92aa">
+        <span class="card-pill">人格解码</span>
+        <div class="card-title">MBTI × 九型</div>
+        <p class="card-desc">把两套人格理论撞在一起，看能碰出什么火花。</p>
+        <span class="card-link">试试看 →</span>
       </a>
       <!-- 玄学引擎 -->
-      <a class="card" href="/tools/bazi-calculator/" data-cat="mystic" style="--c:#706888">
-        <span class="card-icon">八</span><div class="card-body"><strong>八字排盘</strong><small>四柱、五行与大运分析</small><span class="card-label">玄学引擎</span></div><span class="card-go">→</span>
+      <a class="card" href="/tools/bazi-calculator/" data-cat="mystic" style="--c:#706888;--cl:#8d84a6">
+        <span class="card-pill">玄学引擎</span>
+        <div class="card-title">八字排盘</div>
+        <p class="card-desc">输入生辰，排出你的命盘。信不信由你，看看无妨。</p>
+        <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/wuxing-explainer/" data-cat="mystic" style="--c:#706888">
-        <span class="card-icon">五</span><div class="card-body"><strong>五行关系图</strong><small>天干地支与相生相克可视化</small><span class="card-label">玄学引擎</span></div><span class="card-go">→</span>
+      <a class="card" href="/tools/wuxing-explainer/" data-cat="mystic" style="--c:#706888;--cl:#8d84a6">
+        <span class="card-pill">玄学引擎</span>
+        <div class="card-title">五行关系图</div>
+        <p class="card-desc">金木水火土谁克谁？拖一拖，五行关系一目了然。</p>
+        <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/zodiac-compatibility-chart/" data-cat="mystic" style="--c:#706888">
-        <span class="card-icon">肖</span><div class="card-body"><strong>生肖关系盘</strong><small>十二生肖关系互动图谱</small><span class="card-label">玄学引擎</span></div><span class="card-go">→</span>
+      <a class="card" href="/tools/zodiac-compatibility-chart/" data-cat="mystic" style="--c:#706888;--cl:#8d84a6">
+        <span class="card-pill">玄学引擎</span>
+        <div class="card-title">生肖关系盘</div>
+        <p class="card-desc">你和谁合，和谁冲？十二生肖关系全景图。</p>
+        <span class="card-link">试试看 →</span>
       </a>
       <!-- 效率外挂 -->
-      <a class="card" href="/tools/focus-timer/" data-cat="boost" style="--c:#5e7080">
-        <span class="card-icon">时</span><div class="card-body"><strong>专注计时器</strong><small>番茄钟、标签与专注记录</small><span class="card-label">效率外挂</span></div><span class="card-go">→</span>
+      <a class="card" href="/tools/focus-timer/" data-cat="boost" style="--c:#5e7080;--cl:#7a919f">
+        <span class="card-pill">效率外挂</span>
+        <div class="card-title">专注计时器</div>
+        <p class="card-desc">25 分钟一轮，专注数据自动记录。对抗手机的物理疗法。</p>
+        <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/vocab-1341/" data-cat="boost" style="--c:#5e7080">
-        <span class="card-icon">词</span><div class="card-body"><strong>考研词汇 1341</strong><small>1341 个高频词复习训练</small><span class="card-label">效率外挂</span></div><span class="card-go">→</span>
+      <a class="card" href="/tools/vocab-1341/" data-cat="boost" style="--c:#5e7080;--cl:#7a919f">
+        <span class="card-pill">效率外挂</span>
+        <div class="card-title">考研词汇 1341</div>
+        <p class="card-desc">1341 个考研高频词，随手刷，碎片时间不浪费。</p>
+        <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/vocab-3728/" data-cat="boost" style="--c:#5e7080">
-        <span class="card-icon">研</span><div class="card-body"><strong>考研词汇 3728</strong><small>3728 个考研词汇学习工具</small><span class="card-label">效率外挂</span></div><span class="card-go">→</span>
+      <a class="card" href="/tools/vocab-3728/" data-cat="boost" style="--c:#5e7080;--cl:#7a919f">
+        <span class="card-pill">效率外挂</span>
+        <div class="card-title">考研词汇 3728</div>
+        <p class="card-desc">3728 词完整版，适合系统过一遍的人。</p>
+        <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/vocab-4533/" data-cat="boost" style="--c:#5e7080">
-        <span class="card-icon">英</span><div class="card-body"><strong>考研词汇 4533</strong><small>4533 个考研词汇完整训练</small><span class="card-label">效率外挂</span></div><span class="card-go">→</span>
+      <a class="card" href="/tools/vocab-4533/" data-cat="boost" style="--c:#5e7080;--cl:#7a919f">
+        <span class="card-pill">效率外挂</span>
+        <div class="card-title">考研词汇 4533</div>
+        <p class="card-desc">4533 词全量版，考研词汇一网打尽。</p>
+        <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/mba-vocab-632/" data-cat="boost" style="--c:#5e7080">
-        <span class="card-icon">商</span><div class="card-body"><strong>MBA 词汇 632</strong><small>快速识别、例句与复习训练</small><span class="card-label">效率外挂</span></div><span class="card-go">→</span>
+      <a class="card" href="/tools/mba-vocab-632/" data-cat="boost" style="--c:#5e7080;--cl:#7a919f">
+        <span class="card-pill">效率外挂</span>
+        <div class="card-title">MBA 词汇 632</div>
+        <p class="card-desc">632 个 MBA 核心词，面试前突击的好朋友。</p>
+        <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/mba-english-dialogue-practice/" data-cat="boost" style="--c:#5e7080">
-        <span class="card-icon">说</span><div class="card-body"><strong>MBA 英语对话</strong><small>MBA 情景口语陪练</small><span class="card-label">效率外挂</span></div><span class="card-go">→</span>
+      <a class="card" href="/tools/mba-english-dialogue-practice/" data-cat="boost" style="--c:#5e7080;--cl:#7a919f">
+        <span class="card-pill">效率外挂</span>
+        <div class="card-title">MBA 英语对话</div>
+        <p class="card-desc">模拟 MBA 面试对话，AI 当你的口语陪练。</p>
+        <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/mba-interview-listening/" data-cat="boost" style="--c:#5e7080">
-        <span class="card-icon">听</span><div class="card-body"><strong>MBA 面试听力</strong><small>双人对话与面试听力训练</small><span class="card-label">效率外挂</span></div><span class="card-go">→</span>
+      <a class="card" href="/tools/mba-interview-listening/" data-cat="boost" style="--c:#5e7080;--cl:#7a919f">
+        <span class="card-pill">效率外挂</span>
+        <div class="card-title">MBA 面试听力</div>
+        <p class="card-desc">听两个人聊 MBA 话题，练耳朵也练脑子。</p>
+        <span class="card-link">试试看 →</span>
       </a>
       <!-- 灵感弹珠 -->
-      <a class="card" href="/tools/quote-wheel/" data-cat="spark" style="--c:#6e7488">
-        <span class="card-icon">言</span><div class="card-body"><strong>名言转盘</strong><small>发现、竞猜与收藏名言</small><span class="card-label">灵感弹珠</span></div><span class="card-go">→</span>
+      <a class="card" href="/tools/quote-wheel/" data-cat="spark" style="--c:#6e7488;--cl:#8b92aa">
+        <span class="card-pill">灵感弹珠</span>
+        <div class="card-title">名言转盘</div>
+        <p class="card-desc">转一转，遇见一句可能改变今天的话。</p>
+        <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/have-fun/" data-cat="spark" style="--c:#6e7488">
-        <span class="card-icon">书</span><div class="card-body"><strong>拾光读书会</strong><small>书籍与电影的个人阅读档案</small><span class="card-label">灵感弹珠</span></div><span class="card-go">→</span>
+      <a class="card" href="/tools/have-fun/" data-cat="spark" style="--c:#6e7488;--cl:#8b92aa">
+        <span class="card-pill">灵感弹珠</span>
+        <div class="card-title">拾光读书会</div>
+        <p class="card-desc">记录你看过的书和电影，整理出属于你的精神食谱。</p>
+        <span class="card-link">试试看 →</span>
       </a>
     </div>
   </main>
@@ -226,37 +180,16 @@
   </footer>
 
   <script>
-    const tabs=document.querySelectorAll('.tab');
-    const cards=document.querySelectorAll('.card');
-    const grid=document.getElementById('tools-grid');
-
+    const tabs=document.querySelectorAll('.tab'),cards=document.querySelectorAll('.card'),grid=document.getElementById('tools-grid');
     function filterTo(cat){
-      tabs.forEach(t=>{
-        t.classList.remove('active');
-        t.setAttribute('aria-selected','false');
-        if(t.dataset.cat===cat){
-          t.classList.add('active');
-          t.setAttribute('aria-selected','true');
-        }
-      });
+      tabs.forEach(t=>{t.classList.remove('active');t.setAttribute('aria-selected','false');if(t.dataset.cat===cat){t.classList.add('active');t.setAttribute('aria-selected','true')}});
       grid.classList.add('is-filtering');
-      setTimeout(()=>{
-        cards.forEach(c=>{c.style.display=(cat==='all'||c.dataset.cat===cat)?'':'none'});
-        grid.classList.remove('is-filtering');
-      },200);
+      setTimeout(()=>{cards.forEach(c=>{c.style.display=(cat==='all'||c.dataset.cat===cat)?'':'none'});grid.classList.remove('is-filtering')},200);
     }
-
     tabs.forEach(tab=>{tab.addEventListener('click',()=>filterTo(tab.dataset.cat))});
-
-    // hash-based filtering from bento links
     const hash=location.hash.replace('#','');
-    if(hash&&['decode','mystic','boost','spark'].includes(hash)){
-      filterTo(hash);
-    }
-    window.addEventListener('hashchange',()=>{
-      const h=location.hash.replace('#','');
-      if(h)filterTo(h);
-    });
+    if(hash&&['decode','mystic','boost','spark'].includes(hash))filterTo(hash);
+    window.addEventListener('hashchange',()=>{const h=location.hash.replace('#','');if(h)filterTo(h)});
   </script>
 </body>
 </html>
