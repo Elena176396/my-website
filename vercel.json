@@ -1,0 +1,22 @@
+{
+  "headers": [
+    {
+      "source": "/tools/wuxing-explainer/",
+      "headers": [
+        {
+          "key": "Link",
+          "value": "<https://songchaoyang.com/tools/wuxing-explainer/>; rel=\"canonical\""
+        }
+      ]
+    },
+    {
+      "source": "/tools/zodiac-compatibility-chart/",
+      "headers": [
+        {
+          "key": "Link",
+          "value": "<https://songchaoyang.com/tools/zodiac-compatibility-chart/>; rel=\"canonical\""
+        }
+      ]
+    }
+  ]
+}
