@@ -88,7 +88,6 @@ function App() {
   const [msgs, setMsgs] = useState([]); // {role:'user'|'ai', text, zh, fix}
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
-  const [err, setErr] = useState("");
   const [showZh, setShowZh] = useState({});
   const [wordTip, setWordTip] = useState(null);
   const [listening, setListening] = useState(false);
@@ -149,106 +148,65 @@ function App() {
     rec.start();
   };
 
-  // ---------- AI call ----------
-  const callAI = async (history) => {
-    const scen = SCENARIOS.find((s) => s[0] === cfgRef.current.scen);
-    const level =
-      cfgRef.current.level === "easy"
-        ? "Use very simple English (A2 level): short sentences, common grammar, no idioms."
-        : "Use clear intermediate English (B1-B2): natural but not difficult.";
-    const tw = targets.map((t) => t.w).join(", ");
-    const sys = `You are Alex, a warm and patient English conversation partner for a Chinese adult preparing for the MBA entrance exam. Their English is weak, so keep it simple and encouraging.
-
-Scenario: ${scen[2]}.
-${level}
-
-Rules:
-1. Reply with 1-3 SHORT sentences, then exactly ONE easy follow-up question to keep the chat going.
-2. Naturally weave in 2-3 of these target words where they truly fit (do not force all): ${tw}.
-3. If the user's latest message contains an English mistake, write ONE short correction tip in Chinese (max 25 chars), e.g. "应说 I have been, 不是 I have being". If no real mistake, use empty string. Never correct punctuation or minor style.
-4. If the user writes in Chinese, gently reply in English anyway and encourage them to try English.
-5. Respond with ONLY minified JSON, no markdown, no code fences, exactly: {"reply":"...","zh":"reply的中文翻译","fix":""}`;
-
-    const apiMsgs = history.slice(-16).map((m) => ({
-      role: m.role === "ai" ? "assistant" : "user",
-      content: m.role === "ai" ? JSON.stringify({ reply: m.text, zh: m.zh || "", fix: m.fix || "" }) : m.text,
-    }));
-    if (apiMsgs.length && apiMsgs[0].role !== "user") {
-      apiMsgs.unshift({ role: "user", content: "(Please start the conversation with a friendly opening.)" });
-    }
-
-    let response;
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 30000);
-    try {
-      response = await fetch("/api/english-chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        signal: ctrl.signal,
-        body: JSON.stringify({
-          model: "claude-sonnet-4-6",
-          max_tokens: 1000,
-          system: sys,
-          messages: apiMsgs,
-        }),
-      });
-    } catch (e) {
-      clearTimeout(timer);
-      throw new Error(e.name === "AbortError" ? "30秒没响应，已超时" : "网络请求没发出去（沙箱网络受限或断网）");
-    }
-    clearTimeout(timer);
-    if (!response.ok) {
-      let detail = "";
-      try {
-        const eb = await response.json();
-        detail = (eb.error && eb.error.message) || eb.message || "";
-      } catch (e) {}
-      throw new Error(`接口返回 ${response.status}${detail ? "：" + detail.slice(0, 80) : ""}`);
-    }
-    const data = await response.json();
-    if (data.error) throw new Error(`接口错误：${(data.error.message || "").slice(0, 80)}`);
-    const text = (data.content || []).map((i) => (i.type === "text" ? i.text : "")).filter(Boolean).join("\n");
-    const clean = text.replace(/```json|```/g, "").trim();
-    try {
-      const j = JSON.parse(clean);
-      return { text: j.reply || clean, zh: j.zh || "", fix: j.fix || "" };
-    } catch (e) {
-      const m = clean.match(/"reply"\s*:\s*"((?:[^"\\]|\\.)*)"/);
-      if (m) {
-        const un = (s) => s.replace(/\\n/g, "\n").replace(/\\"/g, '"');
-        const zh = clean.match(/"zh"\s*:\s*"((?:[^"\\]|\\.)*)"/);
-        const fx = clean.match(/"fix"\s*:\s*"((?:[^"\\]|\\.)*)"/);
-        return { text: un(m[1]), zh: zh ? un(zh[1]) : "", fix: fx ? un(fx[1]) : "" };
-      }
-      return { text: clean || "Sorry, let's try again. How's your day going?", zh: "", fix: "" };
-    }
+  // ---------- fully offline conversation engine ----------
+  const OFFLINE_LINES = {
+    daily: [
+      ["It is nice to talk with you. How was your day?", "很高兴和你聊天。你今天过得怎么样？"],
+      ["That sounds good. What do you usually do after work?", "听起来不错。你下班后通常做什么？"],
+      ["I see. What is one small plan you have for this weekend?", "明白了。这个周末你有什么小计划？"],
+    ],
+    work: [
+      ["Let's talk about your work. What project are you working on now?", "我们聊聊工作吧。你现在正在做什么项目？"],
+      ["That is interesting. What is the biggest challenge for your team?", "很有意思。你的团队目前最大的挑战是什么？"],
+      ["Good point. How would you explain your solution in a meeting?", "说得好。你会怎样在会议中说明你的解决方案？"],
+    ],
+    interview: [
+      ["Welcome to the interview. Could you briefly introduce yourself?", "欢迎参加面试。可以简短介绍一下自己吗？"],
+      ["Thank you. Why do you want to study for an MBA?", "谢谢。你为什么想读 MBA？"],
+      ["What is one strength that will help you in business school?", "哪项优势能帮助你完成商学院学习？"],
+    ],
+    news: [
+      ["Let's discuss a simple topic. Does technology make daily life better?", "我们讨论一个简单话题。科技让日常生活变得更好了吗？"],
+      ["I understand your view. What is one possible disadvantage?", "我理解你的观点。它可能有什么缺点？"],
+      ["That is a fair idea. What should companies do about it?", "这个观点很合理。企业应该怎么做？"],
+    ],
+    travel: [
+      ["Let's practice travel English. Where would you like to go?", "我们练习旅行英语吧。你想去哪里？"],
+      ["Great choice. How would you ask for a room at a hotel?", "选得很好。你会怎样在酒店询问房间？"],
+      ["Good. What would you say if you needed directions?", "很好。如果需要问路，你会怎么说？"],
+    ],
   };
 
-  const testAPI = async () => {
-    setErr("");
-    setBusy(true);
-    try {
-      const r = await fetch("/api/english-chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ test: true }),
-      });
-      let d = {};
-      try { d = await r.json(); } catch (e) {}
-      if (!r.ok || d.error) {
-        const detail = (d.error && d.error.message) || d.message || "";
-        setErr(`测试：HTTP ${r.status}${detail ? "：" + detail.slice(0, 100) : ""}`);
-      } else {
-        setErr("测试通过 ✓ 接口是通的，直接点上面的开始对话");
-      }
-    } catch (e) {
-      setErr("测试：请求发不出去（" + (e.message || e.name || "未知") + "）");
-    }
-    setBusy(false);
+  const localFix = (text) => {
+    if (/\bI\s+am\s+agree\b/i.test(text)) return "应说 I agree";
+    if (/\bI\s+very\s+like\b/i.test(text)) return "应说 I really like";
+    if (/\b(he|she)\s+have\b/i.test(text)) return "第三人称用 has";
+    if (/\bI\s+have\s+went\b/i.test(text)) return "应说 I have gone";
+    if (/\bI\s+am\s+work\b/i.test(text)) return "应说 I am working";
+    return "";
+  };
+
+  const callAI = async (history) => {
+    await new Promise((resolve) => setTimeout(resolve, 180));
+    const userTurns = history.filter((m) => m.role === "user");
+    const latest = userTurns[userTurns.length - 1]?.text || "";
+    const isOpening = latest.startsWith("(Please start");
+    const lines = OFFLINE_LINES[cfgRef.current.scen] || OFFLINE_LINES.daily;
+    const line = lines[Math.min(isOpening ? 0 : userTurns.length - 1, lines.length - 1) % lines.length];
+    const wordA = targets[(userTurns.length - 1) % targets.length].w;
+    const wordB = targets[userTurns.length % targets.length].w;
+    const practice = cfgRef.current.level === "easy"
+      ? ` Try to use “${wordA}” in your answer.`
+      : ` If possible, connect “${wordA}” and “${wordB}” in your answer.`;
+    const chineseInput = /[\u3400-\u9fff]/.test(latest);
+    return {
+      text: (chineseInput ? "Please try to answer in English. " : "") + line[0] + practice,
+      zh: line[1] + ` 请尝试在回答中使用“${wordA}”。`,
+      fix: chineseInput ? "试着用英文回答" : localFix(latest),
+    };
   };
 
   const startChat = async () => {
-    setErr("");
     setMsgs([]);
     setBusy(true);
     try {
@@ -256,22 +214,6 @@ Rules:
       setMsgs([{ role: "ai", ...ai }]);
       if (cfgRef.current.auto) speak(ai.text);
     } catch (e) {
-      setErr("连接失败：" + (e.message || "未知原因"));
-    }
-    setBusy(false);
-  };
-
-  const retryLast = async () => {
-    if (busy) return;
-    if (msgs.length === 0) return startChat();
-    setErr("");
-    setBusy(true);
-    try {
-      const ai = await callAI(msgs);
-      setMsgs([...msgs, { role: "ai", ...ai }]);
-      if (cfgRef.current.auto) speak(ai.text);
-    } catch (e) {
-      setErr("重试失败：" + (e.message || "未知原因"));
     }
     setBusy(false);
   };
@@ -280,7 +222,6 @@ Rules:
     const t = input.trim();
     if (!t || busy) return;
     setInput("");
-    setErr("");
     const hist = [...msgs, { role: "user", text: t }];
     setMsgs(hist);
     setBusy(true);
@@ -289,7 +230,6 @@ Rules:
       setMsgs([...hist, { role: "ai", ...ai }]);
       if (cfgRef.current.auto) speak(ai.text);
     } catch (e) {
-      setErr("发送失败：" + (e.message || "未知原因"));
       setMsgs(hist);
     }
     setBusy(false);
@@ -388,21 +328,14 @@ Rules:
           <div style={{ textAlign: "center", marginTop: 60 }}>
             <p style={{ color: "var(--dim)", fontSize: 14, lineHeight: 1.8, padding: "0 20px" }}>
               Alex 会围绕左上角的场景开聊，并把<b style={{ color: "var(--accent)" }}>目标词</b>自然编进对话里。
-              你用英文回（打字或按住🎤说），说错了他会轻轻纠正。点AI消息可看中文。
+              你用英文回（打字或按住🎤说），常见错误会在本地提示。点Alex消息可看中文。
             </p>
             <button className="tk-btn" onClick={startChat}
               style={{ background: "var(--accent)", color: "#0e1116", fontSize: 16, fontWeight: 700,
                 padding: "14px 36px", borderRadius: 14, marginTop: 16 }}>
               开始对话
             </button>
-            <div>
-              <button className="tk-btn" onClick={testAPI} disabled={busy}
-                style={{ background: "none", color: "var(--dim)", fontSize: 13,
-                  border: "1px solid var(--line)", borderRadius: 10, padding: "8px 18px", marginTop: 12 }}>
-                连不上？点这里测试接口
-              </button>
-            </div>
-            {err && <div className="fadein" style={{ fontSize: 13, color: "var(--amber)", marginTop: 10, padding: "0 20px" }}>{err}</div>}
+            <div style={{ color: "var(--dim)", fontSize: 12.5, marginTop: 12 }}>离线练习 · 不消耗 API 额度</div>
           </div>
         )}
         {msgs.map((m, i) =>
@@ -441,13 +374,6 @@ Rules:
           )
         )}
         {busy && <div style={{ color: "var(--dim)", fontSize: 13.5 }}>Alex 正在输入…</div>}
-        {err && (
-          <div style={{ color: "var(--rose)", fontSize: 13.5 }}>
-            {err}{" "}
-            <button className="tk-btn" onClick={retryLast}
-              style={{ background: "none", color: "var(--accent)", fontSize: 13.5, padding: 0 }}>重试</button>
-          </div>
-        )}
         <div ref={bottomRef} />
       </div>
 
