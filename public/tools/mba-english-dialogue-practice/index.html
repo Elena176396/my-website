@@ -181,7 +181,7 @@ Rules:
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), 30000);
     try {
-      response = await fetch("https://api.anthropic.com/v1/messages", {
+      response = await fetch("/api/english-chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         signal: ctrl.signal,
@@ -228,14 +228,10 @@ Rules:
     setErr("");
     setBusy(true);
     try {
-      const r = await fetch("https://api.anthropic.com/v1/messages", {
+      const r = await fetch("/api/english-chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: "claude-sonnet-4-6",
-          max_tokens: 1000,
-          messages: [{ role: "user", content: "Reply with exactly: OK" }],
-        }),
+        body: JSON.stringify({ test: true }),
       });
       let d = {};
       try { d = await r.json(); } catch (e) {}
