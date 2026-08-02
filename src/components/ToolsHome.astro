@@ -56,6 +56,10 @@ const bentoBlocks = [
         <div class="hero-tag">不会写代码 · 好奇心驱动 · AI 辅助造工具</div>
         <h1>把好奇心做成工具</h1>
         <p class="subtitle">This is a playground — you're invited to come and play.</p>
+        <a class="cta" href="#categories">
+          开始探索
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
       </div>
     </section>
 
@@ -188,6 +192,23 @@ const bentoBlocks = [
   }
   h1 { font-size: clamp(36px,7vw,64px); font-weight: 820; line-height: 1.15; letter-spacing: -.04em; color: #0a0a0c; }
   .subtitle { max-width: 460px; margin: 18px auto 0; font-size: clamp(13px,1.6vw,15px); line-height: 1.7; color: #8e919a; }
+  .cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin-top: 28px; padding: 13px 28px;
+    font-size: 14px; font-weight: 680; color: #1a1c1e;
+    background: rgba(255,255,255,.28);
+    background-image: linear-gradient(135deg, rgba(255,255,255,.22) 0%, transparent 50%);
+    backdrop-filter: blur(12px) saturate(1.2); -webkit-backdrop-filter: blur(12px) saturate(1.2);
+    border: 1px solid rgba(255,255,255,.55); border-radius: 999px; text-decoration: none;
+    box-shadow: 0 2px 10px rgba(50,55,80,.08), inset 0 1px 0 rgba(255,255,255,.5);
+    transition: transform .2s, box-shadow .2s, background .2s, color .2s;
+  }
+  .cta:hover {
+    transform: translateY(-2px); background: rgba(30,34,50,.82); background-image: none;
+    color: #fff; border-color: rgba(255,255,255,.15); box-shadow: 0 6px 24px rgba(40,50,80,.2);
+  }
+  .cta svg { transition: transform .2s; }
+  .cta:hover svg { transform: translateX(3px); }
   /* ═══ SPOTLIGHT ═══ */
   .spotlight-section { padding: 0 0 clamp(36px,5vw,56px); }
   .spotlight {
@@ -300,6 +321,7 @@ const bentoBlocks = [
   @media (max-width: 560px) {
     .wrap { width: min(100% - 32px, 1100px); }
     .hero { padding: 48px 0 44px; }
+    .cta { margin-top: 24px; padding: 11px 24px; font-size: 13px; }
     .spotlight-actions { align-items: flex-start; flex-direction: column; gap: 10px; }
     .btn-primary { padding: 11px 24px; font-size: 13px; }
     .section-heading { padding: 20px 0 28px; }
