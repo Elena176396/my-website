@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="canonical" href="https://songchaoyang.com/tools/worldview-antifragile-quest/" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>世界观 · 打破控制幻觉 · 闯关游戏</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#F7F6F3;font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;color:#1A1816;min-height:100vh;padding:24px 16px}
+.container{max-width:720px;margin:0 auto}
+.header{margin-bottom:20px}
+.header h1{font-size:20px;font-weight:500;color:#1A1816}
+.header p{font-size:12px;color:#6B6560;margin-top:3px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.stat{background:#fff;border:0.5px solid #E8E5DF;border-radius:8px;padding:10px 12px}
+.stat-l{font-size:11px;color:#A09A93;margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em}
+.stat-v{font-size:20px;font-weight:500;color:#1A1816}
+.xp-wrap{height:6px;background:#E8E5DF;border-radius:3px;overflow:hidden;margin-bottom:14px}
+.xp-fill{height:100%;background:#7F77DD;border-radius:3px;transition:width .5s ease}
+.map{display:flex;align-items:center;gap:0;margin-bottom:16px;overflow-x:auto;padding-bottom:4px}
+.stage{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0}
+.stage-dot{width:38px;height:38px;border-radius:50%;border:0.5px solid #E8E5DF;background:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#A09A93}
+.stage.current .stage-dot{border:1.5px solid #7F77DD;color:#7F77DD;background:#EEEDFE}
+.stage.done .stage-dot{background:#E1F5EE;border-color:#1D9E75;color:#1D9E75}
+.stage-label{font-size:10px;color:#A09A93;text-align:center;max-width:64px;line-height:1.3}
+.stage.current .stage-label{color:#534AB7}
+.stage.done .stage-label{color:#1D9E75}
+.conn{width:24px;height:1px;background:#E8E5DF;flex-shrink:0;margin-bottom:18px}
+.book-badge{font-size:11px;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:8px}
+.badge-black{background:#2C2C2A;color:#D3D1C7}
+.badge-anti{background:#EEEDFE;color:#3C3489}
+.badge-both{background:#F1EFE8;color:#444441}
+.qcard{background:#fff;border:0.5px solid #E8E5DF;border-radius:12px;padding:1.25rem;margin-bottom:12px}
+.qmeta{font-size:11px;color:#A09A93;margin-bottom:8px}
+.qtext{font-size:15px;font-weight:500;color:#1A1816;line-height:1.6;margin-bottom:6px}
+.qcontext{font-size:13px;color:#6B6560;line-height:1.6;margin-bottom:14px;padding:10px 12px;background:#F7F6F3;border-radius:8px;border-left:2px solid #AFA9EC}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.choice{padding:10px 14px;border:0.5px solid #D0CBC0;border-radius:8px;background:#fff;cursor:pointer;font-size:13px;color:#1A1816;line-height:1.4;text-align:left;transition:border-color .15s}
+.choice:hover:not(:disabled){border-color:#7F77DD;background:#EEEDFE}
+.choice.correct{background:#E1F5EE;border-color:#1D9E75;color:#085041}
+.choice.wrong{background:#FCEBEB;border-color:#A32D2D;color:#4A1B0C}
+.choice.reveal{background:#E1F5EE;border-color:#1D9E75;color:#085041}
+.explain{font-size:13px;color:#6B6560;line-height:1.8;padding:12px 14px;background:#F7F6F3;border-radius:8px;margin-bottom:12px;display:none;border-left:2px solid #7F77DD}
+.explain.show{display:block}
+.explain strong{color:#1A1816;font-weight:500}
+.worldview{font-size:13px;color:#534AB7;line-height:1.7;padding:10px 14px;background:#EEEDFE;border-radius:8px;margin-top:8px;display:none}
+.worldview.show{display:block}
+.worldview-label{font-size:11px;font-weight:500;color:#3C3489;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.fb{font-size:13px;font-weight:500;margin-bottom:8px;display:none}
+.fb-ok{color:#1D9E75}
+.fb-no{color:#A32D2D}
+.next-btn{font-size:13px;padding:8px 20px;border:0.5px solid #D0CBC0;border-radius:8px;background:#fff;cursor:pointer;display:none}
+.next-btn:hover{background:#F7F6F3}
+.result{background:#fff;border:0.5px solid #E8E5DF;border-radius:12px;padding:1.5rem}
+.result-score{font-size:42px;font-weight:500;margin:10px 0 4px;text-align:center}
+.result-pct{font-size:26px;font-weight:500;margin-bottom:12px;text-align:center}
+.result-msg{font-size:13px;color:#6B6560;line-height:1.8;margin-bottom:16px}
+.result-crack{font-size:13px;color:#534AB7;line-height:1.8;padding:12px 14px;background:#EEEDFE;border-radius:8px;margin-bottom:16px}
+.result-crack strong{color:#3C3489;font-weight:500}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.btn{font-size:13px;padding:8px 20px;border:0.5px solid #D0CBC0;border-radius:8px;background:#fff;cursor:pointer}
+.btn:hover{background:#F7F6F3}
+.btn-primary{background:#EEEDFE;border-color:#534AB7;color:#534AB7}
+.btn-primary:hover{background:#CECBF6}
+.finale{background:#fff;border:0.5px solid #E8E5DF;border-radius:12px;padding:1.5rem}
+.finale h2{font-size:18px;font-weight:500;margin-bottom:16px}
+.belief-row{display:flex;align-items:flex-start;gap:12px;margin-bottom:14px;padding:12px;border:0.5px solid #E8E5DF;border-radius:8px}
+.belief-old{flex:1;font-size:13px;color:#A09A93;text-decoration:line-through;line-height:1.6}
+.belief-arrow{color:#7F77DD;font-size:16px;flex-shrink:0;margin-top:2px}
+.belief-new{flex:1;font-size:13px;color:#1A1816;line-height:1.6;font-weight:500}
+@media(max-width:600px){.choices{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+.site-back{position:fixed;z-index:9999;left:14px;top:14px;padding:8px 12px;border-radius:999px;background:rgba(20,20,20,.82);color:#fff;text-decoration:none;font-size:13px;backdrop-filter:blur(8px)}
+</style>
+</head>
+<body>
+<a class="site-back" href="/tools/">← 工具中心</a>
+<div class="container">
+  <div class="header">
+    <h1>世界观 · 打破控制幻觉</h1>
+    <p>《黑天鹅》·《反脆弱》· 世界观重塑 · 共5关</p>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-l">当前关卡</div><div class="stat-v" id="sStage">1/5</div></div>
+    <div class="stat"><div class="stat-l">本关得分</div><div class="stat-v" id="sScore">0</div></div>
+    <div class="stat"><div class="stat-l">连击</div><div class="stat-v" id="sStreak">0</div></div>
+    <div class="stat"><div class="stat-l">总经验</div><div class="stat-v" id="sXP">0</div></div>
+  </div>
+  <div class="xp-wrap"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
+  <div class="map" id="stageMap"></div>
+  <div id="gameArea"></div>
+</div>
+<script>
+const stages=[
+  {name:'计划的幻觉',sub:'黑天鹅'},
+  {name:'看不见的世界',sub:'黑天鹅'},
+  {name:'脆弱的代价',sub:'反脆弱'},
+  {name:'反脆弱策略',sub:'反脆弱'},
+  {name:'世界观重建',sub:'综合'},
+];
+
+const allQ=[
+  {s:0,book:'黑天鹅',badge:'badge-black',
+   ctx:'2001年9月10日，全球最顶尖的风险分析师正在用历史数据预测未来的市场走势。他们的模型精确到小数点后四位。',
+   q:'第二天发生了什么，这对"用历史数据预测未来"这件事说明了什么？',
+   c:['说明模型还不够精确，需要更多数据','说明真正改变历史的事件，恰恰是模型无法预测的','说明应该关注更多新闻','说明风险管理是徒劳的'],
+   a:1,
+   e:'<strong>黑天鹅的核心</strong>：塔勒布说，历史不是由平均值驱动的，而是由极端事件驱动的。911、金融危机、互联网崛起——这些改变世界的事件，在发生之前的所有历史数据中都找不到预兆。你的计划越依赖"过去会重复"，它就越脆弱。',
+   wv:'旧信念：只要数据足够多，就能预测未来。\n新认知：数据告诉你的，只是那些已经发生过的事。真正重要的事，从未在数据中出现过。'},
+  {s:0,book:'黑天鹅',badge:'badge-black',
+   ctx:'一只火鸡被人类喂养了1000天。每一天的数据都显示：人类是友善的，食物是充足的，生活是安全的。第1001天是感恩节。',
+   q:'塔勒布用这个故事说明什么？',
+   c:['不要相信人类','过去的安全感会制造对未来的错误预期','应该多样化饮食','数据收集要更长时间'],
+   a:1,
+   e:'<strong>火鸡问题</strong>：1000天的正面证据，不能证明第1001天是安全的。你的职业稳定了10年、关系维持了5年、公司增长了8个季度——这些都不能保证明天。越是平稳的历史，越容易制造"一切都在掌控中"的错觉。',
+   wv:'旧信念：过去越稳定，未来越可预测。\n新认知：长期稳定可能只是意味着压力在积累，断裂正在临近。'},
+  {s:0,book:'黑天鹅',badge:'badge-black',
+   ctx:'你用5年时间制定了一份详细的职业规划：每一步都有时间节点，每一个里程碑都有量化指标。',
+   q:'根据黑天鹅理论，这份计划最大的风险是什么？',
+   c:['目标设得太高','计划本身会制造僵化，让你对计划之外的机会和威胁视而不见','没有备用方案','太依赖外部环境'],
+   a:1,
+   e:'<strong>计划的副作用</strong>：详细的计划给你安全感，但同时会让你的注意力固定在"计划内的事"上。真正改变你命运的，往往是计划之外的黑天鹅——一次意外的对话、一个没想到的机会、一场突如其来的危机。计划越详细，你对意外的感知就越迟钝。',
+   wv:'旧信念：计划越详细，掌控感越强。\n新认知：详细的计划是认知滤镜，让你只看见计划内的世界。'},
+
+  {s:1,book:'黑天鹅',badge:'badge-black',
+   ctx:'地图不是领土。你对世界的认知模型，和真实世界之间，永远存在一个缺口。',
+   q:'塔勒布说"沉默的证据"（silent evidence）是什么意思？',
+   c:['没有被记录下来的历史事件','那些失败了、消失了、因此无法发声的案例——它们才是真实概率的大多数','被政府隐瞒的信息','无法用数据表达的直觉'],
+   a:1,
+   e:'<strong>沉默的证据</strong>：你听说的成功故事，是因为他们成功了所以你才听说。无数个用同样方法失败的人，已经沉默了。赌场里的赢家在欢呼，输家已经离开。历史是幸存者写的——这让你系统性地高估了"成功方法"的有效性，低估了运气的作用。',
+   wv:'旧信念：看见成功案例，就能复制成功。\n新认知：你看见的只是幸存者。真实的成功率，藏在那些你永远看不见的失败里。'},
+  {s:1,book:'黑天鹅',badge:'badge-black',
+   ctx:'你观察到100只白天鹅，得出结论"所有天鹅都是白色的"。这个逻辑有什么根本问题？',
+   q:'这个逻辑错误的本质是？',
+   c:['样本量不够大','正面证据无法证明普遍规律，但一个黑天鹅就能推翻它','观察方法有问题','结论表述不够严谨'],
+   a:1,
+   e:'<strong>归纳法的陷阱</strong>：这是塔勒布整本书的哲学基础。你积累再多"支持"的证据，也无法证明一个规律是普遍成立的。但只需要一个反例，就能推翻它。你对世界的所有"确定性"，都只是"目前还没有遇到反例"而已。',
+   wv:'旧信念：积累足够的证据，就能确定某件事。\n新认知：确定性是幻觉。你只是还没遇到那只黑天鹅。'},
+  {s:1,book:'黑天鹅',badge:'badge-black',
+   ctx:'极端斯坦（Extremistan）vs 平均斯坦（Mediocristan）：财富分配属于极端斯坦，人的身高属于平均斯坦。',
+   q:'为什么用"平均斯坦"的思维方式处理"极端斯坦"的问题会导致系统性失误？',
+   c:['因为极端斯坦的数据更难收集','在极端斯坦中，极少数极端事件贡献了大部分结果，平均值毫无意义','因为两个领域的计算方法不同','因为极端斯坦缺乏历史数据'],
+   a:1,
+   e:'<strong>两个世界的错位</strong>：人的身高服从正态分布，平均值有意义。但财富、影响力、创业成功——这些领域，前1%占据了90%以上。用"平均思维"在这里做决策，会让你系统性地低估极端结果的概率和影响。你所在的商业世界是极端斯坦。',
+   wv:'旧信念：结果会围绕平均值波动，极端情况很罕见。\n新认知：在真正重要的领域，极端事件才是主角，平均值是幻觉。'},
+
+  {s:2,book:'反脆弱',badge:'badge-anti',
+   ctx:'塔勒布提出三元组：脆弱（Fragile）、强韧（Robust）、反脆弱（Antifragile）。',
+   q:'以下哪个例子最准确地体现了"反脆弱"——不只是抵抗冲击，而是从冲击中变得更强？',
+   c:['防弹背心，被击中不受伤','肌肉，适度压力后变得更强壮','钻石，极其坚硬不易损坏','保险箱，无论外部变化都保持不变'],
+   a:1,
+   e:'<strong>反脆弱的本质</strong>：脆弱的东西怕冲击；强韧的东西抵抗冲击；反脆弱的东西需要冲击才能成长。肌肉、免疫系统、企业家精神、科学知识——这些东西在压力和失败中变得更强。你的目标不是避免波动，而是让自己从波动中获益。',
+   wv:'旧信念：稳定是好的，波动是需要避免的。\n新认知：没有波动，就没有成长。真正的问题是：这个波动能让我变强，还是会压垮我？'},
+  {s:2,book:'反脆弱',badge:'badge-anti',
+   ctx:'一个孩子从小被过度保护：从不摔跤、从不失败、从不遭受挫折。',
+   q:'根据反脆弱理论，这个孩子长大后会面临什么风险？',
+   c:['他会更感激父母','他的免疫系统和心理韧性都会更脆弱，因为缺乏适度的压力训练','他会变得更谨慎','他会更善于规避风险'],
+   a:1,
+   e:'<strong>过度保护制造脆弱</strong>：免疫系统需要接触病菌才能强大；心理韧性需要经历挫折才能建立；判断力需要错误才能校准。试图消除所有风险，实际上是在制造更大的脆弱性——当真正的冲击来临时，毫无准备。',
+   wv:'旧信念：保护自己免受伤害，就是在变强。\n新认知：适度的伤害是成长的代价。消除所有波动，等于消除所有成长机会。'},
+  {s:2,book:'反脆弱',badge:'badge-anti',
+   ctx:'你的备考计划非常详细，每天任务清单满满，不允许任何偏差。某天突发状况打乱了计划。',
+   q:'一个脆弱的备考系统和一个反脆弱的备考系统，核心区别是什么？',
+   c:['任务量多少的区别','脆弱系统一旦被打乱就崩溃；反脆弱系统被打乱后会调整，甚至从中找到优化机会','是否有人督促的区别','计划详细程度的区别'],
+   a:1,
+   e:'<strong>应用到备考</strong>：如果你的系统只在"一切按计划"时才能运转，它是脆弱的。反脆弱的系统：知道哪些是核心不可动摇的（每天做题），哪些可以灵活调整（顺序和时间）；被打乱之后，能从混乱中找到信息——"哪里最容易被打断"本身就是优化系统的数据。',
+   wv:'旧信念：计划一旦被打乱，就是失败。\n新认知：被打乱是系统给你的反馈，告诉你哪里需要加固或放松。'},
+
+  {s:3,book:'反脆弱',badge:'badge-anti',
+   ctx:'塔勒布的"杠铃策略"：把资产的90%放在极度安全的地方，把10%放在高风险高回报的地方。避开中间。',
+   q:'为什么"中等风险"往往比"极高风险+极低风险"的组合更危险？',
+   c:['中等风险需要更复杂的计算','中等风险让你以为在掌控，但实际上既没有足够的安全垫，也没有足够的上行空间','中等风险的收益太低','中等风险更难以分析'],
+   a:1,
+   e:'<strong>杠铃策略</strong>：中等风险是最糟糕的位置——你以为在"合理范围"内，实际上既可能被黑天鹅摧毁，又错过了极端上行的机会。杠铃策略的核心是：用一端的极度稳定保护生存，用另一端的极度冒险博取超额回报。这适用于投资、职业、甚至学习策略。',
+   wv:'旧信念：最优策略是找到中间平衡点。\n新认知：中间地带往往是最脆弱的。极端的组合，有时比温和的平衡更安全。'},
+  {s:3,book:'反脆弱',badge:'badge-anti',
+   ctx:'"选择权"（Optionality）：你有权利但没有义务去做某件事。',
+   q:'为什么塔勒布认为"保持选择权"是在不确定世界中最重要的能力之一？',
+   c:['因为选择权让你显得更聪明','选择权让你在黑天鹅来临时能够行动，而不是被动承受——好的黑天鹅你能抓住，坏的黑天鹅你能规避','因为选择权可以买卖','因为选择权让你不需要做决定'],
+   a:1,
+   e:'<strong>选择权的价值</strong>：你不需要预测未来，只需要在未来到来时有能力做出选择。这就是为什么财务自由重要（不被迫）、技能多样重要（随时切换）、不过度承诺重要（保留空间）。反脆弱不是预测黑天鹅，而是让自己在黑天鹅来临时处于能行动的位置。',
+   wv:'旧信念：尽早做出承诺，把资源集中在一条路上。\n新认知：在不确定的环境中，保持选择权本身就是最重要的资产。'},
+  {s:3,book:'反脆弱',badge:'badge-anti',
+   ctx:'塔勒布说："通过错误学习"是自然界最古老的反脆弱机制。',
+   q:'为什么"小错误频繁发生"比"大错误偶尔发生"更健康？',
+   c:['因为小错误成本更低','频繁的小错误提供持续的反馈和调整机会，防止压力积累成系统性崩溃','因为小错误更容易被原谅','因为大错误会损害声誉'],
+   a:1,
+   e:'<strong>小错误的价值</strong>：航空业是最安全的交通方式，因为每一个小故障都被彻底调查和修复。金融体系试图消除所有小波动，结果把压力积累成2008年的大崩溃。你的学习、你的职业、你的人际关系——允许小的失败和调整，才能避免大的断裂。',
+   wv:'旧信念：错误越少越好，要尽量避免犯错。\n新认知：小错误是系统的免疫训练。压制小错误，是在为大崩溃积蓄能量。'},
+
+  {s:4,book:'两书综合',badge:'badge-both',
+   ctx:'你花了半年时间制定了一份精密的MBA备考计划，每天的任务精确到小时。',
+   q:'综合黑天鹅和反脆弱，这份计划的核心设计缺陷是什么？',
+   c:['计划太复杂，执行难度高','计划假设未来是可预测的，没有为黑天鹅留空间，也没有让系统从波动中变强的机制','计划没有设置里程碑','计划忽略了休息时间'],
+   a:1,
+   e:'<strong>两书的共同判决</strong>：黑天鹅说，你的计划会被意外打断；反脆弱说，被打断本身不是问题，问题是你的系统是否能从打断中变强。一个好的备考系统不是"永不被打断"，而是"被打断后能重新校准，并且每次校准都让系统更好"。',
+   wv:'旧信念：好的计划就是被严格执行的计划。\n新认知：好的系统是在波动中自我校准、持续进化的系统。'},
+  {s:4,book:'两书综合',badge:'badge-both',
+   ctx:'面对一个重大的不确定性（比如考试结果、职业转型、创业），你面临两种心态。',
+   q:'哪种心态更符合反脆弱原则？',
+   c:['尽力消除不确定性，直到有足够把握再行动','接受不确定性无法消除，设计一个让自己从各种结果中都能学到东西的系统，然后行动'],
+   a:1,
+   e:'<strong>与不确定性共存</strong>：试图消除不确定性会让你陷入无止境的准备——因为你永远无法确定到什么程度才算"足够"。反脆弱的策略是：接受结果的不可预测性，但设计一个无论结果如何都能从中获益的系统。MBA考上了是收获，没考上也是关于你当前状态的有价值的信息。',
+   wv:'旧信念：只有消除不确定性，才能安全行动。\n新认知：不确定性无法消除。真正的安全感来自"无论发生什么，我都能处理"。'},
+  {s:4,book:'两书综合',badge:'badge-both',
+   ctx:'塔勒布说："强韧不是目标，反脆弱才是。"',
+   q:'你现在对"控制"这件事的理解，和6个月前相比，应该发生什么根本性的转变？',
+   c:['应该追求更强的控制能力','应该放弃所有计划，随机行动','应该从"控制结果"转向"设计系统"——让系统对波动免疫，甚至从波动中获益','应该接受命运，减少行动'],
+   a:2,
+   e:'<strong>世界观的转变</strong>：控制结果是脆弱的——因为结果依赖无数你无法掌控的变量。设计系统是反脆弱的——因为好的系统在任何结果下都能运转和进化。这不是放弃努力，而是把努力从"控制输出"转向"优化输入和反馈机制"。这是两本书最终要传递的东西。',
+   wv:'旧信念：掌控感来自控制结果。\n新认知：真正的掌控感来自设计一个无论结果如何都能运转的系统。'},
+];
+
+const cracks=[
+  {old:'只要数据足够多，就能预测未来',nw:'数据告诉你的，只是已经发生过的事'},
+  {old:'过去越稳定，未来越可预测',nw:'长期稳定可能是断裂前的积压'},
+  {old:'计划越详细，掌控感越强',nw:'详细计划是认知滤镜，遮蔽了计划外的世界'},
+  {old:'稳定是好的，波动需要避免',nw:'没有波动就没有成长，反脆弱需要压力'},
+  {old:'保护自己免受所有伤害就是在变强',nw:'适度的伤害是成长的代价'},
+  {old:'控制结果就是掌控',nw:'设计能从任何结果中学习的系统，才是真正的掌控'},
+];
+
+let st={stage:0,qIdx:0,score:0,streak:0,xp:0,stageScore:0,stageQs:[],answered:false};
+
+function shuffled(arr){return [...arr].sort(()=>Math.random()-.5)}
+function initStage(){st.stageQs=shuffled(allQ.filter(q=>q.s===st.stage));st.qIdx=0;st.stageScore=0;}
+
+function renderMap(){
+  const el=document.getElementById('stageMap');el.innerHTML='';
+  stages.forEach((s,i)=>{
+    if(i>0){const c=document.createElement('div');c.className='conn';el.appendChild(c);}
+    const d=document.createElement('div');
+    d.className='stage'+(i<st.stage?' done':i===st.stage?' current':'');
+    d.innerHTML=`<div class="stage-dot">${i<st.stage?'✓':i+1}</div><div class="stage-label">${s.name}<br><span style="font-size:10px;opacity:.7">${s.sub}</span></div>`;
+    el.appendChild(d);
+  });
+}
+
+function renderStats(){
+  document.getElementById('sStage').textContent=`${st.stage+1}/5`;
+  document.getElementById('sScore').textContent=`${st.stageScore}/${st.stageQs.length||0}`;
+  document.getElementById('sStreak').textContent=st.streak;
+  document.getElementById('sXP').textContent=st.xp;
+  document.getElementById('xpFill').style.width=Math.min(100,st.xp%100)+'%';
+}
+
+function renderQ(){
+  const area=document.getElementById('gameArea');
+  if(st.qIdx>=st.stageQs.length){renderResult();return;}
+  const q=st.stageQs[st.qIdx];st.answered=false;
+  const wvLines=q.wv.split('\n');
+  area.innerHTML=`
+    <div class="qcard">
+      <span class="book-badge ${q.badge}">${q.book}</span>
+      <div class="qmeta">第${st.qIdx+1}题 / 共${st.stageQs.length}题 · ${stages[st.stage].name}</div>
+      ${q.ctx?`<div class="qcontext">${q.ctx}</div>`:''}
+      <div class="qtext">${q.q}</div>
+      <div class="choices" id="choices">
+        ${q.c.map((c,i)=>`<button class="choice" onclick="answer(${i})">${c}</button>`).join('')}
+      </div>
+      <div class="fb fb-ok" id="fb-ok">✓ 正确！+${st.streak>=2?20:10} XP${st.streak>=2?' 连击加成':''}</div>
+      <div class="fb fb-no" id="fb-no">✗ 错误，连击中断</div>
+      <div class="explain" id="explain">${q.e}</div>
+      <div class="worldview" id="worldview">
+        <div class="worldview-label">世界观更新</div>
+        ${wvLines.map(l=>`<div style="margin-bottom:4px">${l}</div>`).join('')}
+      </div>
+      <button class="next-btn" id="nextBtn" onclick="nextQ()">${st.qIdx+1<st.stageQs.length?'下一题 →':'查看本关结果 →'}</button>
+    </div>`;
+}
+
+window.answer=function(idx){
+  if(st.answered)return;st.answered=true;
+  const q=st.stageQs[st.qIdx];
+  const btns=document.querySelectorAll('.choice');
+  btns.forEach(b=>b.disabled=true);
+  btns[q.a].classList.add('reveal');
+  if(idx===q.a){
+    btns[idx].classList.add('correct');
+    st.streak++;const xp=st.streak>=2?20:10;st.xp+=xp;st.stageScore++;
+    document.getElementById('fb-ok').style.display='block';
+  }else{
+    btns[idx].classList.add('wrong');st.streak=0;
+    document.getElementById('fb-no').style.display='block';
+  }
+  document.getElementById('explain').classList.add('show');
+  document.getElementById('worldview').classList.add('show');
+  document.getElementById('nextBtn').style.display='inline-block';
+  renderStats();
+};
+
+window.nextQ=function(){st.qIdx++;renderQ();};
+
+const stageMsgs=[
+  {pass:'计划的幻觉已经开始裂缝。你开始看见，那个"掌控感"建立在多么薄弱的基础上。',fail:'重新挑战。这一关的核心是：你的计划从未真正预测过未来，只是让你感觉预测了。'},
+  {pass:'你开始看见那些"看不见的东西"。幸存者偏差和沉默的证据，每天都在扭曲你对世界的判断。',fail:'重新挑战。这一关很重要——你看见的世界，不是真实的世界，只是真实世界里活下来的那部分。'},
+  {pass:'脆弱的根源变得清晰：不是外部的冲击，而是你对稳定的执念。',fail:'重新挑战。理解脆弱的本质，是构建反脆弱系统的前提。'},
+  {pass:'反脆弱策略已经进入你的工具箱。杠铃、选择权、小错误——这些是在不确定世界中真正有用的武器。',fail:'重新挑战。这些策略不是理论，是你接下来每一个决策都可以用的框架。'},
+  {pass:'世界观的重建开始了。不是放弃控制，而是把控制从"结果"移向"系统"。',fail:'重新挑战。最后一关是整个旅程的结晶，值得反复思考。'},
+];
+
+function renderResult(){
+  const area=document.getElementById('gameArea');
+  const total=st.stageQs.length;
+  const pct=Math.round(st.stageScore/total*100);
+  const passed=pct>=60;const isLast=st.stage>=4;
+  const msg=stageMsgs[st.stage];
+  area.innerHTML=`
+    <div class="result">
+      <div style="font-size:13px;color:#6B6560;text-align:center">${stages[st.stage].name} · 关卡结束</div>
+      <div class="result-score">${st.stageScore} / ${total}</div>
+      <div class="result-pct" style="color:${passed?'#1D9E75':'#A32D2D'}">${pct}%</div>
+      <div class="result-msg">${passed?msg.pass:msg.fail}</div>
+      <div class="btn-row">
+        ${!isLast&&passed?`<button class="btn btn-primary" onclick="nextStage()">进入下一关 →</button>`:''}
+        <button class="btn" onclick="retryStage()">重挑本关</button>
+        ${isLast&&passed?`<button class="btn btn-primary" onclick="showFinale()">查看我的世界观重建报告 →</button>`:''}
+      </div>
+    </div>`;
+}
+
+window.nextStage=function(){st.stage++;initStage();renderMap();renderStats();renderQ();};
+window.retryStage=function(){initStage();renderMap();renderStats();renderQ();};
+
+window.showFinale=function(){
+  const area=document.getElementById('gameArea');
+  area.innerHTML=`
+    <div class="finale">
+      <h2>你的世界观重建报告</h2>
+      <div style="font-size:13px;color:#6B6560;margin-bottom:16px;line-height:1.7">
+        以下是这5关攻击并重建的6个核心信念。从旧认知到新认知，每一条都是一道裂缝。
+      </div>
+      ${cracks.map(c=>`
+        <div class="belief-row">
+          <div class="belief-old">${c.old}</div>
+          <div class="belief-arrow">→</div>
+          <div class="belief-new">${c.nw}</div>
+        </div>
+      `).join('')}
+      <div style="margin-top:16px;padding:14px;background:#F7F6F3;border-radius:8px;font-size:13px;color:#6B6560;line-height:1.8">
+        <strong style="color:#1A1816;font-weight:500">接下来最重要的一件事：</strong><br>
+        把"控制结果"的能量，转移到"设计系统"上。你的备考系统、职业规划、人际关系——
+        不要问"我能控制什么结果"，要问"我能设计一个从任何结果中都能学习和进化的系统吗"。
+      </div>
+      <div class="btn-row" style="margin-top:16px">
+        <button class="btn" onclick="location.reload()">重新挑战</button>
+      </div>
+    </div>`;
+};
+
+initStage();renderMap();renderStats();renderQ();
+</script>
+</body>
+</html>

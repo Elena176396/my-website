@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="canonical" href="https://songchaoyang.com/tools/cognitive-learning-quest/" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>认知学习与思维闯关游戏</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#F7F6F3;font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;color:#1A1816;min-height:100vh;padding:24px 16px}
+.container{max-width:720px;margin:0 auto}
+.header{margin-bottom:20px}
+.header h1{font-size:20px;font-weight:500;color:#1A1816}
+.header p{font-size:12px;color:#6B6560;margin-top:3px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.stat{background:#fff;border:0.5px solid #E8E5DF;border-radius:8px;padding:10px 12px}
+.stat-l{font-size:11px;color:#A09A93;margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em}
+.stat-v{font-size:20px;font-weight:500;color:#1A1816}
+.xp-wrap{height:6px;background:#E8E5DF;border-radius:3px;overflow:hidden;margin-bottom:14px}
+.xp-fill{height:100%;background:#2B5CE6;border-radius:3px;transition:width .5s ease}
+.map{display:flex;align-items:center;gap:0;margin-bottom:16px;overflow-x:auto;padding-bottom:4px}
+.stage{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0}
+.stage-dot{width:38px;height:38px;border-radius:50%;border:0.5px solid #E8E5DF;background:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:500;color:#A09A93}
+.stage.current .stage-dot{border:1.5px solid #2B5CE6;color:#2B5CE6;background:#EEF2FD}
+.stage.done .stage-dot{background:#E1F5EE;border-color:#1D9E75;color:#1D9E75}
+.stage-label{font-size:10px;color:#A09A93;text-align:center;max-width:64px;line-height:1.3}
+.stage.current .stage-label{color:#2B5CE6}
+.stage.done .stage-label{color:#1D9E75}
+.conn{width:24px;height:1px;background:#E8E5DF;flex-shrink:0;margin-bottom:18px}
+.book-badge{font-size:11px;padding:3px 10px;border-radius:20px;display:inline-block;margin-bottom:8px}
+.badge-cog{background:#EEF2FD;color:#185FA5}
+.badge-think{background:#E1F5EE;color:#0F6E56}
+.badge-wake{background:#FAEEDA;color:#854F0B}
+.qcard{background:#fff;border:0.5px solid #E8E5DF;border-radius:12px;padding:1.25rem;margin-bottom:12px}
+.qmeta{font-size:11px;color:#A09A93;margin-bottom:8px}
+.qtext{font-size:15px;font-weight:500;color:#1A1816;line-height:1.6;margin-bottom:14px}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.choice{padding:10px 14px;border:0.5px solid #D0CBC0;border-radius:8px;background:#fff;cursor:pointer;font-size:13px;color:#1A1816;line-height:1.4;text-align:left;transition:border-color .15s}
+.choice:hover:not(:disabled){border-color:#2B5CE6;background:#EEF2FD}
+.choice.correct{background:#E1F5EE;border-color:#1D9E75;color:#085041}
+.choice.wrong{background:#FCEBEB;border-color:#A32D2D;color:#4A1B0C}
+.choice.reveal{background:#E1F5EE;border-color:#1D9E75;color:#085041}
+.explain{font-size:13px;color:#6B6560;line-height:1.7;padding:12px 14px;background:#F7F6F3;border-radius:8px;margin-bottom:12px;display:none;border-left:2px solid #2B5CE6}
+.explain.show{display:block}
+.explain strong{color:#1A1816;font-weight:500}
+.fb{font-size:13px;font-weight:500;margin-bottom:8px;display:none}
+.fb-ok{color:#1D9E75}
+.fb-no{color:#A32D2D}
+.next-btn{font-size:13px;padding:8px 20px;border:0.5px solid #D0CBC0;border-radius:8px;background:#fff;cursor:pointer;display:none}
+.next-btn:hover{background:#F7F6F3}
+.result{background:#fff;border:0.5px solid #E8E5DF;border-radius:12px;padding:1.5rem;text-align:center}
+.result-score{font-size:42px;font-weight:500;margin:10px 0 4px}
+.result-pct{font-size:26px;font-weight:500;margin-bottom:8px}
+.result-msg{font-size:13px;color:#6B6560;line-height:1.7;margin-bottom:16px;max-width:480px;margin-left:auto;margin-right:auto}
+.btn-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.btn{font-size:13px;padding:8px 20px;border:0.5px solid #D0CBC0;border-radius:8px;background:#fff;cursor:pointer}
+.btn:hover{background:#F7F6F3}
+.btn-primary{background:#EEF2FD;border-color:#185FA5;color:#185FA5}
+.btn-primary:hover{background:#B5D4F4}
+@media(max-width:600px){.choices{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+.site-back{position:fixed;z-index:9999;left:14px;top:14px;padding:8px 12px;border-radius:999px;background:rgba(20,20,20,.82);color:#fff;text-decoration:none;font-size:13px;backdrop-filter:blur(8px)}
+</style>
+</head>
+<body>
+<a class="site-back" href="/tools/">← 工具中心</a>
+<div class="container">
+  <div class="header">
+    <h1>认知学习与思维闯关</h1>
+    <p>《认知天性》·《认知觉醒》·《思考，快与慢》· 共6关</p>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-l">当前关卡</div><div class="stat-v" id="sStage">1/6</div></div>
+    <div class="stat"><div class="stat-l">本关得分</div><div class="stat-v" id="sScore">0</div></div>
+    <div class="stat"><div class="stat-l">连击</div><div class="stat-v" id="sStreak">0</div></div>
+    <div class="stat"><div class="stat-l">总经验</div><div class="stat-v" id="sXP">0</div></div>
+  </div>
+  <div class="xp-wrap"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
+  <div class="map" id="stageMap"></div>
+  <div id="gameArea"></div>
+</div>
+<script>
+const stages=[
+  {name:'检索练习',sub:'认知天性',badge:'badge-cog'},
+  {name:'间隔·交错',sub:'认知天性',badge:'badge-cog'},
+  {name:'系统一二',sub:'思考快慢',badge:'badge-think'},
+  {name:'认知偏误',sub:'思考快慢',badge:'badge-think'},
+  {name:'觉醒之路',sub:'认知觉醒',badge:'badge-wake'},
+  {name:'终极融合',sub:'三书综合',badge:'badge-cog'},
+];
+const allQ=[
+  {s:0,book:'认知天性',badge:'badge-cog',q:'你反复重读笔记，感觉越来越熟悉。这种"熟悉感"意味着什么？',c:['你已真正掌握了这些知识','这是识别记忆，不代表能检索提取','重读是最佳学习方式','你的理解力在提升'],a:1,e:'<strong>流利感陷阱</strong>：重读制造了熟悉感，但熟悉≠记住。考场上没有书，你需要的是从记忆中主动提取知识，而非认出它。检索练习（合上书自测）才能真正强化记忆痕迹。'},
+  {s:0,book:'认知天性',badge:'badge-cog',q:'以下哪种行为最能体现"检索练习"原则？',c:['用荧光笔标记重点','看完一节课立刻重温笔记','合上书尝试默写核心概念','把重点内容抄写三遍'],a:2,e:'<strong>检索练习</strong>的本质是强迫大脑从零开始"找"信息，而非"认出"信息。合上书默写，每一次成功检索都在加固记忆神经通路。抄写和标记本质上仍是在"看"。'},
+  {s:0,book:'认知天性',badge:'badge-cog',q:'为什么"测验效应"比重读更有效？',c:['测验更省时间','每次检索都重新激活并强化记忆痕迹','测验可以发现错别字','测验让人更紧张因此更专注'],a:1,e:'<strong>测验效应</strong>：检索一次记忆，就像锻炼一块肌肉。大脑重新激活记忆痕迹的过程本身，会使这条通路变得更强、更持久。这就是为什么"做题"远比"看书"更接近考试状态。'},
+  {s:1,book:'认知天性',badge:'badge-cog',q:'今天学了10个英语单词。根据间隔效应，最佳复习时机是？',c:['今天睡前再背一遍','明天复习一次，三天后再复习','一周后集中复习','背完就够，无需复习'],a:1,e:'<strong>间隔效应</strong>的核心：在即将遗忘但尚未完全忘记的节点复习，编码效率最高。连续重复没有留出遗忘空间；等太久则已完全忘记。初次学习后1-2天是黄金复习窗口。'},
+  {s:1,book:'认知天性',badge:'badge-cog',q:'交错学习（今天阅读、明天语法、后天阅读）比集中练习同一科目更有效，原因是？',c:['交错学习更省时','每次切换都迫使大脑重新调取解题策略','人天生喜欢多样性','老师推荐了这个方法'],a:1,e:'<strong>交错效应</strong>：每次切换题型，大脑必须先判断"这是什么类型、该用什么框架"，这个判断过程本身就是深度加工。集中练习同一类型会让大脑"自动驾驶"，看似流畅，实则浅层。'},
+  {s:1,book:'认知天性',badge:'badge-cog',q:'集中练习感觉比间隔练习更有效，这是因为？',c:['集中练习确实更有效','集中练习产生了流利感，让人误以为已经学会','集中练习激活了更多神经元','集中练习节省时间'],a:1,e:'<strong>元认知偏差</strong>：集中练习在短期内反复成功，制造强烈的"我会了"感觉。但这种流利感来自工作记忆，不是长期记忆。间隔练习中那种"费力感"，恰恰是深度编码的信号。'},
+  {s:2,book:'思考快与慢',badge:'badge-think',q:'你看到"12×13"立刻感到困难，需要动脑；但看到"生气的脸"却瞬间识别。卡尼曼用什么框架解释这种差异？',c:['左脑与右脑的分工','系统一（快）与系统二（慢）的双进程理论','显意识与潜意识的对立','理性与感性的博弈'],a:1,e:'<strong>双系统理论</strong>：系统一自动、快速、无意识运作（识别表情、直觉判断）；系统二缓慢、费力、需要专注（数学运算、逻辑推理）。大脑倾向于让系统一主导，因为它更省能量。'},
+  {s:2,book:'思考快与慢',badge:'badge-think',q:'超市把牛奶放在最里面，面包放在门口，这利用了消费者的哪种心理机制？',c:['系统二的理性计算','系统一的自动化联想和路径依赖','镜像神经元效应','海马体的空间记忆'],a:1,e:'<strong>系统一的路径依赖</strong>：系统一会走阻力最小的路径，倾向于接受最先接触的信息和最方便的选项。超市布局利用了这一点——让你在取牛奶的路上经过更多商品，触发系统一的冲动购买。'},
+  {s:2,book:'思考快与慢',badge:'badge-think',q:'卡尼曼认为，系统一最大的问题是什么？',c:['运算速度太慢','过于自信，且不知道自己的局限边界','消耗大量认知资源','容易被情绪干扰'],a:1,e:'<strong>系统一的傲慢</strong>：系统一不仅频繁出错，更危险的是它不知道自己的局限——它永远不会说"我不确定"，而是直接给出一个看起来合理的答案。这就是为什么直觉判断在复杂情境下如此危险。'},
+  {s:3,book:'思考快与慢',badge:'badge-think',q:'你买了一张500元的演唱会票，当天发现票丢了。你会再买一张吗？大多数人说"不"，但如果是现金丢了500元，大多数人会买。这体现了？',c:['人们不喜欢音乐','心理账户效应——不同来源的钱被分开计算','损失厌恶——丢票比丢钱痛苦','沉没成本谬误'],a:1,e:'<strong>心理账户</strong>：大脑把"演唱会预算账户"单独记账。丢票意味着这个账户已经支出了500元，再买就是花了1000元看一场演唱会——太贵了。但丢现金在另一个账户，演唱会账户仍是500元。这是非理性的，但极为普遍。'},
+  {s:3,book:'思考快与慢',badge:'badge-think',q:'"损失100元的痛苦"与"获得100元的快乐"相比，哪个更强烈？',c:['一样强烈','损失的痛苦约是收益快乐的2倍','收益的快乐更强烈','取决于个人性格'],a:1,e:'<strong>损失厌恶</strong>：卡尼曼的前景理论表明，损失带来的负效用约是同等收益带来正效用的2-2.5倍。这解释了为什么人们宁愿不赚也不愿亏损，为什么止损那么难。'},
+  {s:3,book:'思考快与慢',badge:'badge-think',q:'医生说"手术存活率90%"与"手术死亡率10%"是同一件事，但患者对前者更愿意手术。这是？',c:['患者数学能力差','框架效应——同一信息的不同表述影响决策','确认偏误','锚定效应'],a:1,e:'<strong>框架效应</strong>：系统一对信息的呈现方式极为敏感，而非信息本身的逻辑内容。"90%存活"触发系统一的积极联想，"10%死亡"触发恐惧。理性上两者等价，但感受上天差地别。'},
+  {s:4,book:'认知觉醒',badge:'badge-wake',q:'《认知觉醒》中，周岭把人的成长困境归结为什么根本原因？',c:['智商不够高','天赋不足','本能脑和情绪脑占主导，理智脑太弱','环境和教育的缺失'],a:2,e:'<strong>三脑理论</strong>：本能脑（求生）、情绪脑（感受）是进化早期产物，力量强大；理智脑（前额叶）是进化新产物，力量薄弱。大多数人被前两者主导——刷手机、拖延、逃避困难——理智脑知道该做什么，却拗不过本能和情绪。'},
+  {s:4,book:'认知觉醒',badge:'badge-wake',q:'《认知觉醒》中"元认知"的核心含义是？',c:['记忆力的高级形式','对自己思维过程的觉察和调控能力','一种冥想练习方法','读书速度的提升'],a:1,e:'<strong>元认知</strong>：简单说，就是"想自己在想什么"的能力。当你能在情绪爆发时觉察到"我现在在生气，这影响了我的判断"，你就在使用元认知。它是自我改变的开关——没有觉察，就没有改变的可能。'},
+  {s:4,book:'认知觉醒',badge:'badge-wake',q:'《认知觉醒》提出的"心流"体验最容易在什么条件下产生？',c:['任务极简单，压力为零','任务难度略高于当前能力，且目标明确','完全按照兴趣行事，无任何外部压力','在安静的环境中长时间专注'],a:1,e:'<strong>心流区间</strong>：挑战难度比当前能力略高15-20%时，大脑既不无聊也不焦虑，会进入专注的心流状态。太简单→无聊；太难→焦虑。这就是为什么好的学习材料应该让你"够得着但需要努力"。'},
+  {s:4,book:'认知觉醒',badge:'badge-wake',q:'《认知觉醒》中"舒适区-拉伸区-恐慌区"模型，最有效的成长发生在？',c:['舒适区，稳定积累','拉伸区，适度挑战','恐慌区，极限压迫','在三个区间随机切换'],a:1,e:'<strong>拉伸区法则</strong>：舒适区没有成长压力；恐慌区产生崩溃和逃避；只有拉伸区——有挑战但可应对——才能激活大脑的可塑性，产生真实进步。这和认知天性的"有益的困难"是同一个原理。'},
+  {s:5,book:'三书综合',badge:'badge-cog',q:'你在备考时感到学习效率很低。综合三本书的视角，最可能的根本原因是？',c:['天赋不够，努力也没用','用了让人感觉好但实际无效的学习方法（重读、集中练习）','考试太难，超出能力范围','时间不够用'],a:1,e:'<strong>三书共同核心</strong>：认知天性说"流利感≠学会"；认知觉醒说"本能脑追求舒适"；思考快慢说"系统一喜欢阻力最小的路径"。三者都指向同一个真相：让你感觉好的学习方式，往往是最低效的。'},
+  {s:5,book:'三书综合',badge:'badge-cog',q:'你即将做一个重要决策（如选择MBA学校）。综合卡尼曼和《认知觉醒》，最危险的决策陷阱是？',c:['考虑了太多因素','让系统一主导，依赖第一感觉和情绪，且没有元认知觉察','决策速度太慢','没有咨询足够多的人'],a:1,e:'<strong>双重危险</strong>：系统一会给出一个看起来合理的直觉答案，同时情绪脑会让你感觉这个答案"对"。如果缺乏元认知——没有意识到自己正在被直觉和情绪驱动——你会把偏见当作判断。激活系统二+元认知，才是高质量决策的基础。'},
+  {s:5,book:'三书综合',badge:'badge-cog',q:'把"检索练习"（认知天性）、"拉伸区学习"（认知觉醒）、"激活系统二"（思考快慢）放在一起，它们共同指向什么核心原理？',c:['学习要有好老师','真正有效的成长都需要主动、费力的认知投入','多读书比什么都重要','找到适合自己的学习风格'],a:1,e:'<strong>三书统一原理</strong>：检索练习要你主动提取而非被动接受；拉伸区要你承受适度困难而非停留舒适；系统二要你费力思考而非依赖直觉。它们都是同一件事的不同表达：<strong>有效的学习和成长，必须主动、费力、不舒适</strong>。'},
+];
+
+let st={stage:0,qIdx:0,score:0,streak:0,xp:0,stageScore:0,stageQs:[],answered:false};
+
+function shuffled(arr){return [...arr].sort(()=>Math.random()-.5)}
+function initStage(){st.stageQs=shuffled(allQ.filter(q=>q.s===st.stage));st.qIdx=0;st.stageScore=0;}
+
+function renderMap(){
+  const el=document.getElementById('stageMap');el.innerHTML='';
+  stages.forEach((s,i)=>{
+    if(i>0){const c=document.createElement('div');c.className='conn';el.appendChild(c);}
+    const d=document.createElement('div');
+    d.className='stage'+(i<st.stage?' done':i===st.stage?' current':'');
+    d.innerHTML=`<div class="stage-dot">${i<st.stage?'✓':i+1}</div><div class="stage-label">${s.name}<br><span style="font-size:10px;opacity:.7">${s.sub}</span></div>`;
+    el.appendChild(d);
+  });
+}
+
+function renderStats(){
+  document.getElementById('sStage').textContent=`${st.stage+1}/6`;
+  document.getElementById('sScore').textContent=`${st.stageScore}/${st.stageQs.length||0}`;
+  document.getElementById('sStreak').textContent=st.streak;
+  document.getElementById('sXP').textContent=st.xp;
+  document.getElementById('xpFill').style.width=Math.min(100,st.xp%100)+'%';
+}
+
+function renderQ(){
+  const area=document.getElementById('gameArea');
+  if(st.qIdx>=st.stageQs.length){renderResult();return;}
+  const q=st.stageQs[st.qIdx];st.answered=false;
+  area.innerHTML=`
+    <div class="qcard">
+      <span class="book-badge ${q.badge}">${q.book}</span>
+      <div class="qmeta">第${st.qIdx+1}题 / 共${st.stageQs.length}题 · ${stages[st.stage].name}</div>
+      <div class="qtext">${q.q}</div>
+      <div class="choices" id="choices">
+        ${q.c.map((c,i)=>`<button class="choice" onclick="answer(${i})">${c}</button>`).join('')}
+      </div>
+      <div class="fb fb-ok" id="fb-ok">✓ 正确！+${st.streak>=2?20:10} XP${st.streak>=2?' 连击加成':''}
+      </div>
+      <div class="fb fb-no" id="fb-no">✗ 错误，连击中断</div>
+      <div class="explain" id="explain">${q.e}</div>
+      <button class="next-btn" id="nextBtn" onclick="nextQ()">${st.qIdx+1<st.stageQs.length?'下一题 →':'查看本关结果 →'}</button>
+    </div>`;
+}
+
+window.answer=function(idx){
+  if(st.answered)return;st.answered=true;
+  const q=st.stageQs[st.qIdx];
+  const btns=document.querySelectorAll('.choice');
+  btns.forEach(b=>b.disabled=true);
+  btns[q.a].classList.add('reveal');
+  if(idx===q.a){
+    btns[idx].classList.add('correct');
+    st.streak++;const xp=st.streak>=2?20:10;st.xp+=xp;st.stageScore++;
+    document.getElementById('fb-ok').style.display='block';
+  }else{
+    btns[idx].classList.add('wrong');st.streak=0;
+    document.getElementById('fb-no').style.display='block';
+  }
+  document.getElementById('explain').classList.add('show');
+  document.getElementById('nextBtn').style.display='inline-block';
+  renderStats();
+};
+
+window.nextQ=function(){st.qIdx++;renderQ();};
+
+function renderResult(){
+  const area=document.getElementById('gameArea');
+  const total=st.stageQs.length;
+  const pct=Math.round(st.stageScore/total*100);
+  const passed=pct>=60;const isLast=st.stage>=5;
+  const msgs={
+    0:passed?'检索练习的原理已掌握。现在去实践：合上书，自测一遍今天学的内容。':'重新挑战。记住：做错题本身就是最好的检索练习。',
+    1:passed?'间隔与交错的逻辑清晰了。检查你的备考计划，是否真的做到了交错学习？':'重新挑战。这两个原理是备考效率的核心杠杆。',
+    2:passed?'系统一和系统二的边界更清晰了。下次做决定前，问自己：我用的是哪个系统？':'重新挑战。理解双系统是洞察自己行为模式的基础。',
+    3:passed?'认知偏误的地图已经初步绘制。这些偏误每天都在影响你，看不见它才是真正的危险。':'重新挑战。这些偏误越早识别，代价越小。',
+    4:passed?'觉醒之路的第一步是元认知。你已经开始觉察了——这本身就是改变。':'重新挑战。认知觉醒的核心就是不断地看见自己。',
+    5:passed?'三书的核心原理已融会贯通。真正有效的成长，必须主动、费力、不舒适。你已经知道了——现在去做到。':'重新挑战。综合关是真正的检验，不通过说明有些原理还没内化。',
+  };
+  area.innerHTML=`
+    <div class="result">
+      <div style="font-size:13px;color:#6B6560">${stages[st.stage].name} · 关卡结束</div>
+      <div class="result-score">${st.stageScore} / ${total}</div>
+      <div class="result-pct" style="color:${passed?'#1D9E75':'#A32D2D'}">${pct}%</div>
+      <div class="result-msg">${msgs[st.stage]}</div>
+      <div class="btn-row">
+        ${!isLast&&passed?`<button class="btn btn-primary" onclick="nextStage()">进入下一关 →</button>`:''}
+        <button class="btn" onclick="retryStage()">重挑本关</button>
+        ${isLast&&passed?`<button class="btn btn-primary" onclick="allDone()">生成我的学习系统诊断 →</button>`:''}
+      </div>
+    </div>`;
+}
+
+window.nextStage=function(){st.stage++;initStage();renderMap();renderStats();renderQ();};
+window.retryStage=function(){initStage();renderMap();renderStats();renderQ();};
+window.allDone=function(){
+  document.getElementById('gameArea').innerHTML=`
+    <div class="result">
+      <div style="font-size:15px;font-weight:500;margin-bottom:12px">全部关卡通关</div>
+      <div style="font-size:13px;color:#6B6560;line-height:1.8;margin-bottom:16px;text-align:left">
+        你已掌握三本书的核心原理。它们说的是同一件事：<br><br>
+        <strong>有效学习 = 主动检索 + 间隔复习 + 适度困难 + 元认知觉察</strong><br><br>
+        你的备考系统已经有了间隔复习（Mòmò）和检索练习（做题）。<br>
+        现在缺的是：每天练习后的元认知复盘——"今天哪里用的是系统一在偷懒？哪里真的在拉伸？"
+      </div>
+      <div class="btn-row">
+        <button class="btn" onclick="location.reload()">重新挑战</button>
+      </div>
+    </div>`;
+};
+
+initStage();renderMap();renderStats();renderQ();
+</script>
+</body>
+</html>

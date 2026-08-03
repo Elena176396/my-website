@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="canonical" href="https://songchaoyang.com/tools/wholebrain-parenting-quest/" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>亲子全脑教养 · 知识闯关</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#F7F6F3;font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;color:#1A1816;min-height:100vh;padding:24px 16px}
+.container{max-width:700px;margin:0 auto}
+.header{margin-bottom:20px}
+.header h1{font-size:20px;font-weight:500}
+.header p{font-size:12px;color:#6B6560;margin-top:3px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.stat{background:#fff;border:0.5px solid #E8E5DF;border-radius:8px;padding:10px 12px}
+.stat-l{font-size:11px;color:#A09A93;margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em}
+.stat-v{font-size:20px;font-weight:500;color:#1A1816}
+.xp-wrap{height:5px;background:#E8E5DF;border-radius:3px;overflow:hidden;margin-bottom:14px}
+.xp-fill{height:100%;background:#7B6FA0;border-radius:3px;transition:width .5s}
+.map{display:flex;align-items:center;gap:0;margin-bottom:16px;overflow-x:auto;padding-bottom:4px}
+.stage{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0}
+.stage-dot{width:36px;height:36px;border-radius:50%;border:0.5px solid #E8E5DF;background:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;color:#A09A93}
+.stage.current .stage-dot{border:1.5px solid #7B6FA0;color:#7B6FA0;background:#F5F3FB}
+.stage.done .stage-dot{background:#E1F5EE;border-color:#1D9E75;color:#1D9E75}
+.stage-label{font-size:10px;color:#A09A93;text-align:center;max-width:60px;line-height:1.3}
+.stage.current .stage-label{color:#534AB7}
+.stage.done .stage-label{color:#1D9E75}
+.conn{width:20px;height:1px;background:#E8E5DF;flex-shrink:0;margin-bottom:18px}
+.qcard{background:#fff;border:0.5px solid #E8E5DF;border-radius:12px;padding:1.25rem;margin-bottom:12px}
+.card-meta{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.book-badge{font-size:11px;padding:3px 9px;border-radius:20px}
+.b1{background:#F5F3FB;color:#534AB7}
+.b2{background:#E8F5F0;color:#0F6E56}
+.b3{background:#FEF3E2;color:#854F0B}
+.case-box{font-size:13px;color:#6B6560;line-height:1.7;padding:10px 12px;background:#F7F6F3;border-radius:8px;border-left:2px solid #C4BDE8;margin-bottom:12px;font-style:italic}
+.qmeta{font-size:11px;color:#A09A93}
+.qtext{font-size:15px;font-weight:500;color:#1A1816;line-height:1.6;margin-bottom:14px;margin-top:8px}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.choice{padding:10px 14px;border:0.5px solid #D0CBC0;border-radius:8px;background:#fff;cursor:pointer;font-size:13px;color:#1A1816;line-height:1.4;text-align:left;transition:all .15s}
+.choice:hover:not(:disabled){border-color:#7B6FA0;background:#F5F3FB}
+.choice.correct{background:#E1F5EE;border-color:#1D9E75;color:#085041}
+.choice.wrong{background:#FCEBEB;border-color:#A32D2D;color:#4A1B0C}
+.choice.reveal{background:#E1F5EE;border-color:#1D9E75;color:#085041}
+.explain{font-size:13px;color:#6B6560;line-height:1.8;padding:12px 14px;background:#F7F6F3;border-radius:8px;margin-bottom:12px;display:none;border-left:2px solid #7B6FA0}
+.explain.show{display:block}
+.explain strong{color:#1A1816;font-weight:500}
+.fb{font-size:13px;font-weight:500;margin-bottom:8px;display:none}
+.fb-ok{color:#1D9E75}
+.fb-no{color:#A32D2D}
+.next-btn{font-size:13px;padding:8px 20px;border:0.5px solid #D0CBC0;border-radius:8px;background:#fff;cursor:pointer;display:none}
+.next-btn:hover{background:#F7F6F3}
+.result{background:#fff;border:0.5px solid #E8E5DF;border-radius:12px;padding:1.5rem;text-align:center}
+.result-score{font-size:40px;font-weight:500;margin:10px 0 4px}
+.result-pct{font-size:24px;font-weight:500;margin-bottom:10px}
+.result-msg{font-size:13px;color:#6B6560;line-height:1.8;margin-bottom:16px;max-width:480px;margin-left:auto;margin-right:auto;text-align:left}
+.btn-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.btn{font-size:13px;padding:8px 20px;border:0.5px solid #D0CBC0;border-radius:8px;background:#fff;cursor:pointer}
+.btn:hover{background:#F7F6F3}
+.btn-primary{background:#F5F3FB;border-color:#7B6FA0;color:#534AB7}
+.btn-primary:hover{background:#E8E4F8}
+@media(max-width:600px){.choices{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+.site-back{position:fixed;z-index:9999;left:14px;top:14px;padding:8px 12px;border-radius:999px;background:rgba(20,20,20,.82);color:#fff;text-decoration:none;font-size:13px;backdrop-filter:blur(8px)}
+</style>
+</head>
+<body>
+<a class="site-back" href="/tools/">← 工具中心</a>
+<div class="container">
+  <div class="header">
+    <h1>亲子全脑教养 · 知识闯关</h1>
+    <p>《全脑教养法》·《无戏剧性管教》·《是的大脑》· 共5关 · 40题</p>
+  </div>
+  <div class="stats">
+    <div class="stat"><div class="stat-l">当前关卡</div><div class="stat-v" id="sStage">1/5</div></div>
+    <div class="stat"><div class="stat-l">本关得分</div><div class="stat-v" id="sScore">0</div></div>
+    <div class="stat"><div class="stat-l">连击</div><div class="stat-v" id="sStreak">0</div></div>
+    <div class="stat"><div class="stat-l">总经验</div><div class="stat-v" id="sXP">0</div></div>
+  </div>
+  <div class="xp-wrap"><div class="xp-fill" id="xpFill" style="width:0%"></div></div>
+  <div class="map" id="stageMap"></div>
+  <div id="gameArea"></div>
+</div>
+<script>
+const stages=[
+  {name:'上下层大脑',sub:'全脑教养法'},
+  {name:'整合与连接',sub:'全脑教养法'},
+  {name:'连接先于纠正',sub:'无戏剧性管教'},
+  {name:'是的大脑',sub:'是的大脑'},
+  {name:'综合应用',sub:'三书融合'},
+];
+
+const allQ=[
+  // 关卡1：上下层大脑（8题）
+  {s:0,book:'全脑教养法',bc:'b1',
+   case:'丹尼尔·西格尔在书中描述：一个4岁的男孩因为饼干碎了而崩溃大哭，完全无法被安慰。',
+   q:'西格尔用什么概念解释这种行为？',
+   c:['孩子在故意操控父母','下层大脑被触发，上层大脑暂时下线','孩子缺乏自控力，需要更严格的规则','这是正常的撒娇行为'],
+   a:1,e:'<strong>上下层大脑模型</strong>：下层大脑（脑干+边缘系统）负责生存反应和情绪；上层大脑（前额叶）负责理性、自控、同理心。当情绪激烈时，下层大脑"劫持"了上层大脑，孩子暂时失去理性控制能力。饼干碎了引发的崩溃，不是态度问题，是神经系统的真实状态。'},
+  {s:0,book:'全脑教养法',bc:'b1',
+   case:'西格尔说，想象大脑是一栋房子：楼下住着本能和情绪，楼上住着理性和自控。',
+   q:'"楼梯被锁上了"是什么意思？',
+   c:['孩子拒绝沟通','上下层大脑之间的连接中断，理性无法调节情绪','孩子需要单独待一会儿','父母说话声音太大'],
+   a:1,e:'<strong>楼梯隐喻</strong>：正常状态下，上层大脑通过"楼梯"调节下层大脑的情绪。当孩子（或大人）处于极度情绪状态时，这条楼梯被锁上——上层大脑无法下来帮忙。此时讲道理是无效的，因为道理需要上层大脑来处理，但上层大脑暂时不在线。'},
+  {s:0,book:'全脑教养法',bc:'b1',
+   case:'妮娜的女儿因为朋友不跟她玩而哭泣。妮娜第一反应是说："没什么大不了的，你还有其他朋友。"',
+   q:'根据全脑教养法，妮娜这个回应的问题是？',
+   c:['说的内容不正确','在孩子的上层大脑还没上线时，试图用道理绕过情绪','声音太轻，孩子没听见','没有给出具体的解决方案'],
+   a:1,e:'<strong>先连接，再纠正</strong>：孩子哭泣时，下层大脑在主导。"没什么大不了"是上层大脑的话，但此刻孩子的上层大脑不在线，这句话进不去。正确的顺序是：先用情绪回应情绪（"你很难过，因为朋友不跟你玩"），帮孩子的上层大脑重新上线，然后再引导解决问题。'},
+  {s:0,book:'全脑教养法',bc:'b1',
+   case:'上层大脑要到25岁左右才发育成熟。',
+   q:'这对父母理解孩子的行为有什么核心启示？',
+   c:['25岁之前不需要教育','孩子的"不理智"行为往往是发育阶段的正常表现，不是品格问题','应该等孩子长大再讲道理','孩子的情绪不需要被认真对待'],
+   a:1,e:'<strong>发育视角</strong>：前额叶皮层（自控、计划、同理心）直到25岁才完全成熟。这意味着孩子在冲动控制、情绪调节方面的"失败"，很多时候是神经发育的限制，不是道德或品格问题。用发育视角看行为，会减少父母的愤怒，增加理解和耐心。'},
+  {s:0,book:'全脑教养法',bc:'b1',
+   case:'蒂娜·佩恩·布莱森描述：当孩子处于"洪水状态"（情绪淹没）时，父母的第一步是什么？',
+   q:'"连接"在这里指什么？',
+   c:['给孩子讲规则','让孩子感受到被看见和被理解，而非评判','转移孩子的注意力','给孩子一个玩具'],
+   a:1,e:'<strong>连接的含义</strong>：连接不是同意孩子的行为，而是承认孩子的感受。"你非常生气，因为我们要离开了"——这句话没有评判，没有解决，只是准确地反映了孩子的内在状态。孩子感到被看见之后，情绪强度会下降，上层大脑才有机会重新上线。'},
+  {s:0,book:'全脑教养法',bc:'b1',
+   case:'西格尔提出"整合"是健康大脑的核心：让不同的部分既保持独特性，又协同工作。',
+   q:'"混乱"和"僵化"是整合失败的两种表现，分别对应什么？',
+   c:['混乱=太吵，僵化=太安静','混乱=情绪失控，僵化=情绪封闭或过度控制','混乱=不听话，僵化=太听话','混乱=外向，僵化=内向'],
+   a:1,e:'<strong>整合的两个极端</strong>：当大脑整合失败，会走向两个极端。混乱（情绪爆发、冲动、无法控制）或僵化（情绪封闭、死板、拒绝灵活性）。健康的整合是两者之间的河流——有足够的灵活性，也有足够的稳定性。父母的目标是帮助孩子在这条河里航行，而不是待在两岸。'},
+  {s:0,book:'全脑教养法',bc:'b1',
+   case:'一个8岁女孩放学后非常疲惫，但还有作业要写。从高刺激的学校环境切换到低刺激的学习任务。',
+   q:'这种切换困难的神经机制是？',
+   c:['孩子懒惰，不想学习','多巴胺水平快速下降导致的神经系统调节困难，不是态度问题','孩子需要更严格的时间管理','孩子没有养成好习惯'],
+   a:1,e:'<strong>多巴胺断崖</strong>：高刺激活动（玩耍、游戏、社交）维持着高多巴胺水平。突然切换到低刺激任务，大脑经历多巴胺快速下降——这是真实的神经化学变化，不是意志力问题。理解这个机制，父母会减少对"态度"的归因，转而帮助孩子平稳过渡。'},
+  {s:0,book:'全脑教养法',bc:'b1',
+   case:'西格尔和布莱森提出"讲故事"是帮助孩子整合创伤或困难经历的重要工具。',
+   q:'讲故事为什么有助于整合？',
+   c:['故事能分散孩子的注意力','把经历转化为叙事，能整合左脑（逻辑）和右脑（情感），帮助孩子理解和消化经历','故事比讲道理更有趣','孩子喜欢听故事'],
+   a:1,e:'<strong>叙事整合</strong>：右脑处理情绪和图像，左脑处理逻辑和语言。当孩子经历困难时，往往停留在右脑的情绪层面。帮助孩子把经历讲成一个有开头、经过、结尾的故事，能激活左脑的理解功能，将情绪性的体验转化为可理解的记忆，从而帮助整合。'},
+
+  // 关卡2：整合与连接（8题）
+  {s:1,book:'全脑教养法',bc:'b1',
+   case:'西格尔描述左脑和右脑的特点：左脑喜欢逻辑、文字、线性；右脑感受情绪、图像、非语言信号。',
+   q:'当孩子情绪激动时，父母应该先用哪个脑来回应？',
+   c:['左脑——用逻辑解释发生了什么','右脑——用情感和身体语言先连接','同时用两个脑','等孩子平静后再回应'],
+   a:1,e:'<strong>右脑先行</strong>：情绪激动时，孩子的右脑在主导。用左脑（逻辑解释）回应右脑（情绪），两个频道对不上。先用右脑回应——蹲下来、轻柔的声音、拥抱、"我知道你很难过"——帮孩子的情绪找到着陆点，然后再引入左脑的理解和解释。'},
+  {s:1,book:'全脑教养法',bc:'b1',
+   case:'"命名它来驯服它"（Name it to tame it）是书中的核心技巧之一。',
+   q:'这个技巧的神经科学基础是什么？',
+   c:['说出情绪能让孩子记住词汇','用语言标注情绪会激活前额叶，降低杏仁核的激活程度','说出来能让别人理解你','命名情绪是礼貌的表现'],
+   a:1,e:'<strong>命名驯服</strong>：研究表明，用语言准确标注情绪（"我很愤怒""你感到害怕"）会激活前额叶皮层，同时降低杏仁核（恐惧和情绪反应中心）的活跃程度。这是上层大脑开始调节下层大脑的过程。命名不只是描述，是神经层面的调节工具。'},
+  {s:1,book:'全脑教养法',bc:'b1',
+   case:'马可斯因为输了游戏大发脾气，把东西摔在地上。他的父亲蹲下来说："你输了，你很生气。输掉感觉很糟糕。"',
+   q:'父亲这个回应做对了什么？',
+   c:['告诉孩子摔东西是不对的','先用情感连接，让孩子感到被理解，而不是立刻评判行为','给孩子提供了解决方案','转移了孩子的注意力'],
+   a:1,e:'<strong>连接在前</strong>：父亲没有立刻评判行为（摔东西），而是先连接情绪（你很生气，输掉感觉很糟糕）。这让马可斯感到被看见，情绪强度会下降。连接之后，父亲才有机会谈论行为（摔东西不可以）——此时马可斯的上层大脑已经开始重新上线，能够接收信息了。'},
+  {s:1,book:'全脑教养法',bc:'b1',
+   case:'西格尔描述"整合记忆"：隐性记忆（身体感受、情绪印象）和显性记忆（可以叙述的事件）。',
+   q:'为什么有些孩子（或大人）会对某些情境产生强烈反应，却说不清楚为什么？',
+   c:['他们在撒谎','隐性记忆被激活，但没有与显性记忆整合，感受真实但无法用语言解释','他们记性不好','他们不想说'],
+   a:1,e:'<strong>记忆整合</strong>：隐性记忆在有意识之前就形成了（早期经历、情绪印象），储存为身体感受和情绪反应。当类似情境出现时，隐性记忆被激活，产生强烈反应，但当事人无法解释原因——因为没有对应的显性记忆。帮助孩子把这些感受转化为语言和故事，是整合这两类记忆的过程。'},
+  {s:1,book:'全脑教养法',bc:'b1',
+   case:'书中提到"感受轮"（Feelings Wheel）作为工具，帮助孩子扩展情绪词汇。',
+   q:'为什么扩展情绪词汇对孩子的发展重要？',
+   c:['词汇量多考试能得高分','能够精确命名情绪，有助于更有效地调节情绪，减少行为爆发','情绪词汇是语文课的内容','让孩子显得更成熟'],
+   a:1,e:'<strong>情绪词汇与调节</strong>：研究显示，情绪词汇量与情绪调节能力正相关。只会说"我很生气"的孩子，和能区分"我感到被忽视""我感到不公平""我感到无力"的孩子，在处理情绪时有本质差异。精确命名帮助上层大脑更有效地处理下层大脑的信号。'},
+  {s:1,book:'全脑教养法',bc:'b1',
+   case:'西格尔提出"SIFT"：感受（Sensations）、图像（Images）、感情（Feelings）、思想（Thoughts）。',
+   q:'"SIFT你的思维"这个工具的目的是？',
+   c:['帮助孩子做作业','提高元认知能力，觉察自己内在的状态，而不是被它淹没','学习冥想','改善记忆力'],
+   a:1,e:'<strong>SIFT元认知工具</strong>：SIFT是一个内观工具——问自己：我的身体现在有什么感受？我脑子里出现了什么图像？我有什么情感？我在想什么？这个过程激活了前额叶的观察功能，让人从"被情绪淹没"转变为"观察自己的情绪"。这是元认知的核心：想自己在想什么。'},
+  {s:1,book:'全脑教养法',bc:'b1',
+   case:'蒂娜在书中描述：父母自己的依恋历史，会影响他们与孩子的互动方式。',
+   q:'西格尔说，父母最重要的不是拥有完美的童年，而是什么？',
+   c:['拥有丰富的育儿知识','对自己的童年经历有连贯的叙事和理解——"理解自己的故事"','从不犯错','保持情绪稳定'],
+   a:1,e:'<strong>理解自己的故事</strong>：西格尔的研究发现，预测孩子安全依恋的最强指标，不是父母童年的经历本身，而是父母能否对自己的童年有连贯、有理解的叙事。那些经历过困难但能理解和整合这些经历的父母，往往能给孩子安全的依恋环境。'},
+  {s:1,book:'全脑教养法',bc:'b1',
+   case:'书中提到"时光机"技巧：帮助孩子回忆过去的困难经历，讨论他们是如何度过的。',
+   q:'这个技巧的核心目的是？',
+   c:['让孩子重温痛苦','建立孩子对自己韧性的认知，形成"我曾经度过了困难"的内在叙事','转移孩子对当前问题的注意力','训练记忆力'],
+   a:1,e:'<strong>韧性叙事</strong>："时光机"帮助孩子看到自己过去的应对能力——"你记得上次你也很难过，但后来你是怎么做的？"这建立了一个内在叙事："我有能力度过困难。"这种叙事是韧性的基础，也是是的大脑（Yes Brain）的核心组成部分。'},
+
+  // 关卡3：连接先于纠正（8题）
+  {s:2,book:'无戏剧性管教',bc:'b2',
+   case:'西格尔和布莱森在《无戏剧性管教》中提出：大多数父母在孩子行为不当时，会立刻进入"纠正模式"。',
+   q:'"连接先于纠正"的核心逻辑是什么？',
+   c:['纠正之前要先表扬','孩子感到被连接和理解时，上层大脑更容易上线，纠正才能真正被接收','先连接能让孩子更听话','连接是为了避免冲突'],
+   a:1,e:'<strong>连接先于纠正</strong>：纠正需要孩子的上层大脑在线——能够理解、反思、接受反馈。但行为不当往往发生在孩子处于情绪状态时，此时上层大脑部分下线。先连接（让孩子感到被看见），帮助上层大脑重新上线，然后纠正才有接收的土壤。'},
+  {s:2,book:'无戏剧性管教',bc:'b2',
+   case:'艾玛因为弟弟拿了她的玩具而打了他。妈妈立刻说："你怎么能打弟弟！去你房间！"',
+   q:'根据《无戏剧性管教》，这个回应的主要问题是？',
+   c:['惩罚太轻了','跳过了连接，直接进入纠正，艾玛感到被指责而非被理解，无法真正学习','应该让弟弟道歉','应该没收玩具'],
+   a:1,e:'<strong>跳过连接的代价</strong>：艾玛的大脑在愤怒状态下——打人是她下层大脑的反应。直接说"你怎么能打"，会触发她的防御反应，她只会感到被攻击，无法真正思考"我为什么这样做，我可以怎么做"。先连接（"你很生气，因为弟弟拿了你的东西"），才能为纠正创造空间。'},
+  {s:2,book:'无戏剧性管教',bc:'b2',
+   case:'书中提出管教的三个目标：短期（停止不良行为）、长期（教授技能）、关系（维持连接）。',
+   q:'大多数父母只关注了哪个目标，忽略了哪个？',
+   c:['只关注长期，忽略短期','只关注短期（停止行为），忽略了长期（教技能）和关系（维持连接）','三个目标同等重要，父母都关注了','只关注关系，忽略规则'],
+   a:1,e:'<strong>三目标失衡</strong>：大多数惩罚和管教手段能有效实现短期目标（停止行为），但往往损害关系，也没有教会孩子任何技能。孩子学到的是"被抓到会有惩罚"，而不是"为什么这样做不对"和"我可以如何处理这种情况"。有效的管教需要三个目标同时在视野中。'},
+  {s:2,book:'无戏剧性管教',bc:'b2',
+   case:'书中区分"反应性管教"（reactive discipline）和"回应性管教"（responsive discipline）。',
+   q:'两者的核心区别是？',
+   c:['速度快慢的区别','反应性是被情绪驱动的自动反应；回应性是有意识地选择如何介入','严格程度的区别','是否使用惩罚的区别'],
+   a:1,e:'<strong>反应vs回应</strong>：反应性管教是自动的——孩子的行为触发了父母的情绪，父母立刻以情绪应对情绪。回应性管教是有意识的——父母觉察到自己的状态，有意识地选择介入方式。这需要一个短暂的停顿："我现在的状态适合管教吗？我想要达到什么目标？"'},
+  {s:2,book:'无戏剧性管教',bc:'b2',
+   case:'西格尔描述"重新连接修复"（re-do）：当父母爆发之后，如何修复关系。',
+   q:'"重做"（re-do）技巧的核心是？',
+   c:['假装之前没发生过','承认发生了什么，表达歉意，并示范更好的处理方式——这本身就是在教孩子修复关系的能力','给孩子补偿礼物','更严格地执行规则'],
+   a:1,e:'<strong>重做的价值</strong>：父母修复与孩子的关系，不只是在"弥补错误"，更是在示范修复关系的能力。孩子看到父母说"我刚才那样不对，我应该这样"，学到的是：关系破裂之后可以修复，承认错误不是羞耻而是力量。这是最有价值的隐性教育之一。'},
+  {s:2,book:'无戏剧性管教',bc:'b2',
+   case:'书中提到，惩罚和后果的区别。"你打了弟弟，所以今晚不能看电视"是惩罚还是后果？',
+   q:'两者的本质区别是什么？',
+   c:['没有区别，都是让孩子承担责任','惩罚是与行为无关的痛苦附加；后果是与行为直接相关的自然结果。不看电视与打人无关，是惩罚','后果比惩罚严重','惩罚由父母决定，后果由孩子决定'],
+   a:1,e:'<strong>惩罚vs后果</strong>：有效的后果需要与行为直接相关（打了弟弟→需要帮助弟弟平复，讨论发生了什么），让孩子理解行为的影响。不相关的惩罚（不看电视）只会让孩子感到愤怒和不公平，不会产生真正的理解和改变。痛苦不等于学习。'},
+  {s:2,book:'无戏剧性管教',bc:'b2',
+   case:'书中提出管教的"为什么"在于教导，而不是痛苦。',
+   q:'当孩子表现出某个不良行为时，最有用的第一个问题是？',
+   c:['我应该用什么惩罚？','这个行为背后的需求或触发因素是什么？','孩子是不是故意的？','其他孩子也这样吗？'],
+   a:1,e:'<strong>行为背后的需求</strong>：行为是冰山一角，冰山下面是需求、情绪、触发因素。问"背后是什么"，比问"用什么惩罚"更能找到真正的解决方案。孩子打人，背后可能是被忽视、疲惫、不知道如何表达愤怒——针对背后的原因介入，才能真正减少行为。'},
+  {s:2,book:'无戏剧性管教',bc:'b2',
+   case:'书中描述"鲨鱼音乐"：大人在童年时听到的某些"音乐"（触发因素），会在与孩子互动时再次响起。',
+   q:'"鲨鱼音乐"对父母与孩子互动的影响是什么？',
+   c:['让父母更有音乐鉴赏力','父母童年的情绪记忆被孩子的行为触发，导致反应过度，把当下的孩子与过去的自己或父母混淆','让父母记住过去的美好','帮助父母理解孩子'],
+   a:1,e:'<strong>鲨鱼音乐效应</strong>：当孩子的行为触发了父母童年的情绪记忆（被批评、被忽视、被惩罚），父母会在无意中对当下的情境反应过度。意识到"我的鲨鱼音乐响了"，是父母将过去与现在分离的第一步——这需要元认知，而元认知需要练习。'},
+
+  // 关卡4：是的大脑（8题）
+  {s:3,book:'是的大脑',bc:'b3',
+   case:'西格尔在《是的大脑》中对比"是的大脑"（Yes Brain）和"不的大脑"（No Brain）。',
+   q:'"是的大脑"状态的核心特征是？',
+   c:['孩子对所有要求都说"是"','开放、好奇、有韧性、能够连接——处于探索和学习的最佳状态','孩子变得更听话','孩子不再有负面情绪'],
+   a:1,e:'<strong>是的大脑</strong>：不是"同意一切"，而是大脑处于开放、接纳、好奇的状态——与外界连接，而非防御和关闭。在这种状态下，孩子能够学习、探索、建立关系、从错误中恢复。"不的大脑"则是防御、恐惧、关闭、反应性的状态。'},
+  {s:3,book:'是的大脑',bc:'b3',
+   case:'书中提出是的大脑的四个核心特质：平衡（Balance）、韧性（Resilience）、洞察力（Insight）、同理心（Empathy）——BRIE。',
+   q:'为什么"平衡"是其他三个特质的基础？',
+   c:['平衡在字母顺序上排第一','情绪平衡是前提——无法调节自己情绪的孩子，无法真正有韧性、洞察力或同理心','平衡最容易培养','平衡与学习成绩最相关'],
+   a:1,e:'<strong>平衡是基础</strong>：情绪调节（平衡）是其他能力的前提。一个在情绪洪流中的孩子，无法反思自己的行为（洞察力），无法感受他人的痛苦（同理心），也无法从困难中反弹（韧性）。帮助孩子发展情绪调节能力，是发展其他所有能力的基础投资。'},
+  {s:3,book:'是的大脑',bc:'b3',
+   case:'索菲亚因为体育比赛输了而拒绝再参加任何比赛。她的父母如何帮助她建立韧性？',
+   q:'根据书中的韧性框架，有效的方式是？',
+   c:['强迫她继续参加比赛','先承认她的失望，然后帮助她看到失败中的信息，而不是直接给出解决方案','告诉她"输赢不重要"','给她买礼物作为安慰'],
+   a:1,e:'<strong>韧性的建立</strong>：韧性不是"不感受痛苦"，而是"能够经历痛苦并从中恢复"。先承认感受（"输了确实很难受"），再帮助孩子从经历中提取信息（"你注意到什么？下次有什么可以不同的？"），比直接提供解决方案更能建立真正的韧性。'},
+  {s:3,book:'是的大脑',bc:'b3',
+   case:'书中描述"调节窗口"（Window of Tolerance）：在这个窗口内，孩子能够有效处理情绪和学习。',
+   q:'窗口太窄意味着什么？',
+   c:['孩子的注意力不集中','孩子很容易被轻微的压力推出窗口，进入过度激活（爆发）或低激活（关闭）状态','孩子过于敏感','孩子需要更多挑战'],
+   a:1,e:'<strong>调节窗口</strong>：每个人都有一个能有效处理情绪和信息的"窗口"。窗口内，人能思考、学习、连接。窗口外（过度激活=崩溃爆发；低激活=关闭退缩）则无法有效运作。父母的目标是帮助孩子扩大这个窗口——通过安全的体验、情绪的命名、和逐渐增加的挑战。'},
+  {s:3,book:'是的大脑',bc:'b3',
+   case:'书中提出，父母可以帮助孩子发展"洞察力"（Insight）——理解自己的内在状态如何影响行为。',
+   q:'培养洞察力的核心工具是？',
+   c:['让孩子独自思考','提问而非告知：帮助孩子观察自己的感受、想法和行为之间的联系','给孩子读心理学书籍','分析孩子的行为'],
+   a:1,e:'<strong>洞察力的培养</strong>：洞察力不是被教导的，是被引导发现的。父母提问（"你当时感觉怎么样？""你注意到你在想什么？""你的身体有什么感受？"）比告诉孩子"你生气了"更能帮助孩子发展自我观察的能力。提问是洞察力的助产士。'},
+  {s:3,book:'是的大脑',bc:'b3',
+   case:'书中描述同理心的两个维度：感受他人的感受（情感同理心）和理解他人的视角（认知同理心）。',
+   q:'父母如何在日常中帮助孩子发展同理心？',
+   c:['告诉孩子"你要有同理心"','在日常情境中指出他人的感受，讨论为什么别人会有这种感受，以及孩子可以如何回应','让孩子多看励志电影','让孩子有更多社交机会'],
+   a:1,e:'<strong>同理心的培养</strong>：同理心是在真实情境中发展的，不是通过说教。"你看见弟弟哭了，你觉得他现在感觉怎么样？为什么？你可以做什么？"——这三个问题涵盖了感受识别、原因理解和行动选择，是日常中培养同理心的实践路径。'},
+  {s:3,book:'是的大脑',bc:'b3',
+   case:'西格尔提出，是的大脑需要孩子感到"安全、被看见、被安慰、安心"（Safe, Seen, Soothed, Secure）——4S。',
+   q:'这四个S的顺序为什么重要？',
+   c:['顺序不重要，四个同等重要','安全是前提——不感到安全的孩子无法真正感到被看见；被看见之后才能被安慰；三者积累形成安心感','安心感是最重要的','被看见比安全更重要'],
+   a:1,e:'<strong>4S的层次</strong>：安全（不受威胁的身体和心理环境）是基础，没有安全感的孩子处于防御状态，无法真正接收其他三个。被看见（感受被承认）让孩子感到存在有意义。被安慰（有人帮助调节）提供情绪支持。三者积累，孩子形成对关系和世界的基本安心感——这是安全依恋的核心。'},
+  {s:3,book:'是的大脑',bc:'b3',
+   case:'书中提到，父母自己也需要是的大脑状态，才能有效帮助孩子。',
+   q:'当父母自己处于"不的大脑"状态时（疲惫、愤怒、焦虑），最明智的做法是？',
+   c:['强迫自己进入是的大脑状态','先识别自己的状态，给自己一个短暂的调节空间，再介入孩子的情况','假装状态很好','推迟所有管教'],
+   a:1,e:'<strong>父母的调节优先</strong>：你无法从一个空杯子里给孩子倒水。父母处于"不的大脑"状态时，对孩子的回应会是反应性的而非回应性的，往往加剧问题。识别自己的状态（"我现在需要一秒钟"），是给孩子最好的礼物——一个处于调节状态的父母。'},
+
+  // 关卡5：综合应用（8题）
+  {s:4,book:'三书综合',bc:'b1',
+   case:'你的孩子因为不想结束玩耍而哭泣，对着你大喊"我恨你"。',
+   q:'综合三本书，最符合原则的回应顺序是？',
+   c:['立刻告诉孩子"说恨是不对的"','先保持冷静，连接情绪（"我知道你很难过，不想停下来"），等她平静后再谈"恨"这个词','忽略这句话，等她自己平静','给她继续玩的时间作为妥协'],
+   a:1,e:'<strong>三书统一</strong>：全脑教养法说先右脑后左脑；无戏剧性管教说连接先于纠正；是的大脑说先帮孩子回到调节窗口。"我知道你很难过"连接感受；等她平静后再谈"恨"这个词，是上层大脑可以接收信息时的纠正。两个步骤，缺一不可。'},
+  {s:4,book:'三书综合',bc:'b1',
+   case:'你刚才因为孩子写作业磨蹭而凶了她，然后意识到自己反应过度。',
+   q:'接下来最重要的三步是什么？',
+   c:['继续推进作业，假装没发生','立刻道歉，解释原因，然后继续作业','先处理自己的情绪，然后承认发生了什么（"妈妈刚才那样，你一定很难受"），最后问她的感受','等孩子先道歉'],
+   a:2,e:'<strong>修复的顺序</strong>：先处理自己（否则道歉是在情绪状态下的道歉，可能变成自我辩护）；然后承认她的感受（不是你的感受）；最后给她表达的空间。注意：道歉说一句就够，解释原因往往变成照顾自己的内疚，而不是照顾她的感受。'},
+  {s:4,book:'三书综合',bc:'b1',
+   case:'孩子对学习完全没有内驱力，只想玩。你感到焦虑。',
+   q:'根据三本书，内驱力的基础是什么？',
+   c:['严格的规则和奖惩制度','感到安全、被看见、有选择权——是的大脑状态是内驱力的土壤','更多的练习和重复','告诉孩子学习的重要性'],
+   a:1,e:'<strong>内驱力的来源</strong>：外部压力（威胁、奖惩）可以产生行为，但无法产生真正的内驱力。是的大脑说，当孩子感到安全、被理解、有一定选择权时，探索和学习的天然欲望才会显现。全脑教养法说，上层大脑在安全状态下才能支持目标导向行为。内驱力是安全感和连接的副产品。'},
+  {s:4,book:'三书综合',bc:'b1',
+   case:'你注意到，每次孩子表达负面情绪，你的第一反应是想"解决"她的情绪。',
+   q:'三本书对"解决情绪"这件事的共同立场是？',
+   c:['情绪应该尽快解决，因为负面情绪对孩子有害','情绪不需要被解决，需要被承认和陪伴——试图解决情绪往往中断了情绪的自然处理过程','负面情绪是坏习惯，需要纠正','情绪管理就是压制情绪'],
+   a:1,e:'<strong>情绪不需要被解决</strong>：全脑教养法说命名情绪帮助驯服它，不是消除它；无戏剧性管教说连接情绪先于任何纠正；是的大脑说被安慰（soothed）是有人陪伴调节，不是替你解决。三本书都指向同一个真相：情绪需要流动，不需要被堵住。'},
+  {s:4,book:'三书综合',bc:'b1',
+   case:'你发现自己对孩子总是用命令式语言："去写作业""快点""不行"。',
+   q:'这种沟通方式对孩子的影响是？',
+   c:['帮助孩子建立纪律感','持续的命令激活孩子的防御模式，减少合作意愿，损害连接感','让孩子更独立','没有影响，孩子习惯了'],
+   a:1,e:'<strong>命令与合作</strong>：持续的命令语言向孩子传达的信号是"你需要被控制"，而不是"我相信你有能力"。是的大脑说选择权是内驱力的来源；无戏剧性管教说连接感是合作的基础。把命令换成问句（"你准备好写作业了吗？"）或邀请（"我们来一起看看今天的作业"），维持连接感的同时也能推进任务。'},
+  {s:4,book:'三书综合',bc:'b1',
+   case:'孩子说"我不知道为什么要做作业，反正也没用"。',
+   q:'这句话背后最可能的需求是？',
+   c:['孩子想偷懒','孩子在表达失去意义感和控制感——需要被看见，而不是被说服','孩子需要更多信息','孩子在测试父母的底线'],
+   a:1,e:'<strong>话语背后的需求</strong>："反正也没用"是失控感和意义感缺失的表达。无戏剧性管教说行为背后有需求；是的大脑说感到有选择权和意义是内驱力的基础。此时急于解释"作业为什么有用"，是在错误的层面回应——孩子需要的是感受被承认，而不是道理。'},
+  {s:4,book:'三书综合',bc:'b1',
+   case:'你意识到，你和孩子的互动经常是：你管理她的任务，她管理你的情绪。',
+   q:'根据三本书，这种模式的长期风险是什么？',
+   c:['这是正常的亲子关系','孩子学会压抑自己的感受来维持关系的安全，同时父母的情绪容量持续透支','孩子会变得更独立','没有长期风险'],
+   a:1,e:'<strong>角色反转的代价</strong>：当孩子持续照顾父母的情绪（用"没事"和拥抱来安抚父母的内疚），她在学习：我的感受不重要，我的工作是让大人感觉好。全脑教养法说4S中"安全"是基础；无戏剧性管教说关系连接是管教的基础；是的大脑说被看见是健康发展的核心。三本书都指向：孩子需要被照顾，不是来照顾你。'},
+  {s:4,book:'三书综合',bc:'b1',
+   case:'你今天做到了：当孩子对抗时，没有爆发，蹲下来问她感受，等她说完，然后才谈作业。',
+   q:'根据三本书，这一个改变最重要的意义是什么？',
+   c:['你今天很成功，但明天可能又会失败','你示范了：关系可以承受压力，感受可以被表达，困难可以被度过——这是孩子内化的最深的课','你避免了一次冲突','你完成了育儿任务'],
+   a:1,e:'<strong>示范的力量</strong>：孩子从父母身上学到的最深的东西，不是说教，是示范。你蹲下来等她——她学到：当人在情绪中，重要的人会靠近而不是攻击。你问她感受——她学到：感受值得被说出来。你等她说完再谈作业——她学到：关系比任务更重要。这些课，她会带一辈子。'},
+];
+
+let st={stage:0,qIdx:0,score:0,streak:0,xp:0,stageScore:0,stageQs:[],answered:false};
+
+function shuffled(arr){return [...arr].sort(()=>Math.random()-.5)}
+function initStage(){st.stageQs=shuffled(allQ.filter(q=>q.s===st.stage));st.qIdx=0;st.stageScore=0;}
+
+function renderMap(){
+  const el=document.getElementById('stageMap');el.innerHTML='';
+  stages.forEach((s,i)=>{
+    if(i>0){const c=document.createElement('div');c.className='conn';el.appendChild(c);}
+    const d=document.createElement('div');
+    d.className='stage'+(i<st.stage?' done':i===st.stage?' current':'');
+    d.innerHTML=`<div class="stage-dot">${i<st.stage?'✓':i+1}</div><div class="stage-label">${s.name}<br><span style="font-size:10px;opacity:.7">${s.sub}</span></div>`;
+    el.appendChild(d);
+  });
+}
+
+function renderStats(){
+  document.getElementById('sStage').textContent=`${st.stage+1}/5`;
+  document.getElementById('sScore').textContent=`${st.stageScore}/${st.stageQs.length||0}`;
+  document.getElementById('sStreak').textContent=st.streak;
+  document.getElementById('sXP').textContent=st.xp;
+  document.getElementById('xpFill').style.width=Math.min(100,st.xp%100)+'%';
+}
+
+function renderQ(){
+  const area=document.getElementById('gameArea');
+  if(st.qIdx>=st.stageQs.length){renderResult();return;}
+  const q=st.stageQs[st.qIdx];st.answered=false;
+  area.innerHTML=`
+    <div class="qcard">
+      <div class="card-meta">
+        <span class="book-badge ${q.bc}">${q.book}</span>
+        <span class="qmeta">第${st.qIdx+1}题 / 共${st.stageQs.length}题</span>
+      </div>
+      ${q.case?`<div class="case-box">${q.case}</div>`:''}
+      <div class="qtext">${q.q}</div>
+      <div class="choices" id="choices">
+        ${q.c.map((c,i)=>`<button class="choice" onclick="answer(${i})">${c}</button>`).join('')}
+      </div>
+      <div class="fb fb-ok" id="fb-ok">✓ 正确！+${st.streak>=2?20:10} XP${st.streak>=2?' 连击加成':''}</div>
+      <div class="fb fb-no" id="fb-no">✗ 错误，连击中断</div>
+      <div class="explain" id="explain">${q.e}</div>
+      <button class="next-btn" id="nextBtn" onclick="nextQ()">${st.qIdx+1<st.stageQs.length?'下一题 →':'查看本关结果 →'}</button>
+    </div>`;
+}
+
+window.answer=function(idx){
+  if(st.answered)return;st.answered=true;
+  const q=st.stageQs[st.qIdx];
+  const btns=document.querySelectorAll('.choice');
+  btns.forEach(b=>b.disabled=true);
+  btns[q.a].classList.add('reveal');
+  if(idx===q.a){
+    btns[idx].classList.add('correct');
+    st.streak++;const xp=st.streak>=2?20:10;st.xp+=xp;st.stageScore++;
+    document.getElementById('fb-ok').style.display='block';
+  }else{
+    btns[idx].classList.add('wrong');st.streak=0;
+    document.getElementById('fb-no').style.display='block';
+  }
+  document.getElementById('explain').classList.add('show');
+  document.getElementById('nextBtn').style.display='inline-block';
+  renderStats();
+};
+
+window.nextQ=function(){st.qIdx++;renderQ();};
+
+const stageMsgs=[
+  {pass:'上下层大脑的模型已经清晰了。下次看见孩子失控，你会想到：楼梯被锁上了，我需要帮她重新打开，不是命令她从楼上走下来。',fail:'重新挑战。理解这个模型，是理解孩子所有"不理性"行为的基础。'},
+  {pass:'整合与连接的工具进了工具箱。命名它来驯服它，右脑先行，讲故事整合经历——这些都是你现在可以用的。',fail:'重新挑战。这一关的工具是日常最实用的一批。'},
+  {pass:'连接先于纠正的逻辑内化了。你现在知道：纠正本身没有错，时机和顺序才是关键。',fail:'重新挑战。这是三本书最核心的操作原则，值得反复理解。'},
+  {pass:'是的大脑的四个特质清晰了。平衡、韧性、洞察力、同理心——不是性格，是可以培养的能力。',fail:'重新挑战。是的大脑是三本书给出的最终目标，理解它才能理解所有具体方法的方向。'},
+  {pass:'三书融合完成。知识不是目的，是工具。你今天多理解一点，某一天和她的互动就会多一点不同。',fail:'重新挑战。综合关是真正的检验，也是最接近真实场景的练习。'},
+];
+
+function renderResult(){
+  const area=document.getElementById('gameArea');
+  const total=st.stageQs.length;
+  const pct=Math.round(st.stageScore/total*100);
+  const passed=pct>=60;const isLast=st.stage>=4;
+  const msg=stageMsgs[st.stage];
+  area.innerHTML=`
+    <div class="result">
+      <div style="font-size:13px;color:#6B6560">${stages[st.stage].name} · 关卡结束</div>
+      <div class="result-score">${st.stageScore} / ${total}</div>
+      <div class="result-pct" style="color:${passed?'#1D9E75':'#A32D2D'}">${pct}%</div>
+      <div class="result-msg">${passed?msg.pass:msg.fail}</div>
+      <div class="btn-row">
+        ${!isLast&&passed?`<button class="btn btn-primary" onclick="nextStage()">进入下一关 →</button>`:''}
+        <button class="btn" onclick="retryStage()">重挑本关</button>
+      </div>
+    </div>`;
+}
+
+window.nextStage=function(){st.stage++;initStage();renderMap();renderStats();renderQ();};
+window.retryStage=function(){initStage();renderMap();renderStats();renderQ();};
+
+initStage();renderMap();renderStats();renderQ();
+</script>
+</body>
+</html>

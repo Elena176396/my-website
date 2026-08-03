@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="canonical" href="https://songchaoyang.com/tools/parent-child-mirror/" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>亲子照镜子 · 识别你的模式</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#F7F6F3;font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;color:#1A1816;min-height:100vh;padding:24px 16px}
+.container{max-width:680px;margin:0 auto}
+.header{margin-bottom:24px;text-align:center}
+.header h1{font-size:20px;font-weight:500;color:#1A1816}
+.header p{font-size:13px;color:#6B6560;margin-top:6px;line-height:1.6}
+.progress-row{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.prog-wrap{flex:1;height:4px;background:#E8E5DF;border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:#7B6FA0;border-radius:2px;transition:width .5s ease}
+.prog-label{font-size:12px;color:#A09A93;white-space:nowrap}
+.scene-card{background:#fff;border:0.5px solid #E8E5DF;border-radius:14px;overflow:hidden;margin-bottom:12px}
+.scene-top{padding:1.5rem 1.5rem 1rem}
+.scene-tag{font-size:11px;padding:3px 10px;border-radius:20px;background:#F1EFE8;color:#5C5649;display:inline-block;margin-bottom:12px}
+.scene-text{font-size:15px;color:#1A1816;line-height:1.8;margin-bottom:6px}
+.scene-feel{font-size:13px;color:#7B6FA0;line-height:1.6;padding:10px 12px;background:#F5F3FB;border-radius:8px;border-left:2px solid #C4BDE8}
+.choices-wrap{padding:0 1.5rem 1.5rem}
+.choice-label{font-size:11px;color:#A09A93;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;margin-top:14px}
+.choice{width:100%;padding:12px 16px;border:0.5px solid #D0CBC0;border-radius:10px;background:#fff;cursor:pointer;font-size:13px;color:#1A1816;line-height:1.5;text-align:left;margin-bottom:8px;transition:all .15s}
+.choice:hover:not(:disabled){border-color:#7B6FA0;background:#F5F3FB}
+.choice.selected-a{background:#F5F3FB;border-color:#7B6FA0}
+.choice.selected-b{background:#FEF3E2;border-color:#D4922A}
+.choice.selected-c{background:#E8F5F0;border-color:#1D9E75}
+.choice.selected-d{background:#FCEBEB;border-color:#A32D2D}
+.mirror{margin-top:4px;padding:14px 16px;border-radius:10px;background:#F5F3FB;border:0.5px solid #C4BDE8;display:none}
+.mirror.show{display:block}
+.mirror-pattern{font-size:11px;font-weight:500;color:#534AB7;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.mirror-text{font-size:13px;color:#1A1816;line-height:1.8}
+.mirror-book{font-size:12px;color:#7B6FA0;margin-top:8px;padding-top:8px;border-top:0.5px solid #D8D4ED;line-height:1.6}
+.mirror-book strong{color:#534AB7}
+.what-instead{margin-top:10px;padding:10px 12px;background:#E8F5F0;border-radius:8px;border-left:2px solid #1D9E75}
+.what-instead-label{font-size:11px;font-weight:500;color:#0F6E56;margin-bottom:4px}
+.what-instead-text{font-size:13px;color:#1A1816;line-height:1.7}
+.next-btn{width:100%;padding:12px;border:none;border-radius:10px;background:#1A1816;color:#fff;font-size:14px;cursor:pointer;margin-top:12px;display:none}
+.next-btn:hover{background:#2C2C2A}
+.result-card{background:#fff;border:0.5px solid #E8E5DF;border-radius:14px;padding:1.5rem}
+.result-title{font-size:18px;font-weight:500;margin-bottom:6px}
+.result-sub{font-size:13px;color:#6B6560;margin-bottom:20px;line-height:1.6}
+.pattern-summary{margin-bottom:16px}
+.pattern-item{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:0.5px solid #E8E5DF;border-radius:8px;margin-bottom:8px}
+.pattern-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.pattern-name{font-size:13px;font-weight:500;color:#1A1816;margin-bottom:2px}
+.pattern-desc{font-size:12px;color:#6B6560;line-height:1.5}
+.one-thing{padding:14px 16px;background:#F5F3FB;border-radius:10px;margin-top:16px}
+.one-thing-label{font-size:11px;font-weight:500;color:#534AB7;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.one-thing-text{font-size:13px;color:#1A1816;line-height:1.8}
+.restart-btn{width:100%;padding:12px;border:0.5px solid #D0CBC0;border-radius:10px;background:#fff;font-size:14px;cursor:pointer;margin-top:12px}
+.restart-btn:hover{background:#F7F6F3}
+.site-back{position:fixed;z-index:9999;left:14px;top:14px;padding:8px 12px;border-radius:999px;background:rgba(20,20,20,.82);color:#fff;text-decoration:none;font-size:13px;backdrop-filter:blur(8px)}
+</style>
+</head>
+<body>
+<a class="site-back" href="/tools/">← 工具中心</a>
+<div class="container">
+  <div class="header">
+    <h1>亲子照镜子</h1>
+    <p>没有对错，只有模式。<br>选择你在那一刻真实的第一反应。</p>
+  </div>
+  <div class="progress-row">
+    <div class="prog-wrap"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+    <div class="prog-label" id="progLabel">0 / 7</div>
+  </div>
+  <div id="gameArea"></div>
+</div>
+
+<script>
+const scenes = [
+  {
+    id:1,
+    tag:'切换困难',
+    scene:'你说"该学习了"，她还在玩，完全没有反应。你说了三遍，她还在玩。',
+    feel:'你感到一股熟悉的焦灼开始升起。',
+    q:'你的第一反应是？',
+    choices:[
+      {label:'A', text:'提高音量，语气变强硬："我叫你了，你听见了吗？"'},
+      {label:'B', text:'走过去，蹲下来，等她把手头的事情放下，再说'},
+      {label:'C', text:'开始分析：她是不是作业太多了？今天玩的时间够吗？'},
+      {label:'D', text:'心里想"算了"，假装没事，但内心在积累'},
+    ],
+    mirrors:[
+      {pattern:'控制模式启动',text:'提高音量是让神经系统服从的指令。它能短期奏效，但激活的是她的防御反应，不是合作意愿。她的大脑在那一刻进入的是"威胁状态"，不是"准备学习状态"。',book:'《全脑教养法》：上层大脑（理性）在压力下会关机，下层大脑（生存反应）接管。你的音量升级，正在关掉她的学习大脑。',instead:'等她眼神接触到你，说："我知道你还在玩，再给你两分钟，然后我们一起来。"'},
+      {pattern:'连接优先',text:'蹲下来等待，是在用身体语言说"我在这里，我不是来命令你的"。这一个动作，把指令变成了邀请。',book:'《无戏剧性管教》：连接先于纠正。在孩子感到被看见之前，任何纠正都会触发对抗。',instead:'这已经是对的方向。蹲下来之后，可以加一句："你在玩什么？"让她先说完，再过渡。'},
+      {pattern:'解决模式替代连接',text:'分析是你的情绪出口。问题消失，焦虑消失。但此刻她需要的不是被分析，是被看见。你在把她当成一个需要被优化的系统，而不是一个正在经历多巴胺断崖的人。',book:'《是的大脑》：孩子从高刺激切换到低刺激，是神经系统的真实困难，不是态度问题。连接她的感受，比调整任务结构更优先。',instead:'在分析之前，先问一句："你现在感觉怎么样？"'},
+      {pattern:'情绪压抑积累',text:'假装没事，情绪没有消失，只是压下去了。它会在某个临界点以更大的力度爆发，而那个临界点往往不是"最严重的事"，只是"最后一根稻草"。',book:'《全脑教养法》：未处理的情绪会寻找出口。压抑不是管理，是延迟爆发。',instead:'发现自己在压抑时，先处理自己："我现在需要一秒钟。"然后再面对她。'},
+    ]
+  },
+  {
+    id:2,
+    tag:'对抗',
+    scene:'你让她去写作业，她说"等一下"，但一直没动。你再说，她开始撅嘴，身体僵住，用眼神看你。',
+    feel:'你感到一股无力感，同时有点被挑衅的感觉。',
+    q:'你的第一反应是？',
+    choices:[
+      {label:'A', text:'直接说"你这个态度是什么意思"，盯着她'},
+      {label:'B', text:'走开，告诉自己"随她去"，但心里很不是滋味'},
+      {label:'C', text:'蹲下来，轻声问："你现在是什么感觉？"'},
+      {label:'D', text:'开始讲道理：解释为什么要写作业，为什么要听话'},
+    ],
+    mirrors:[
+      {pattern:'权力对抗升级',text:'"你这个态度是什么意思"——这句话把焦点从"作业"变成了"服从"。她的撅嘴和僵住，是神经系统在说"我不知道怎么处理现在的状态"，不是在挑衅你。你盯着她，她的系统会进一步锁死。',book:'《无戏剧性管教》：当孩子的行为看起来像挑战时，通常是调节失败，不是故意对抗。',instead:'"我看见你现在很难动。发生什么了？"'},
+      {pattern:'退出但情绪留下',text:'身体走开，情绪没走。她会感受到那个"不是滋味"，即使你什么都没说。孩子对情绪的感知极为敏锐，你的沉默比语言更响。',book:'《全脑教养法》：情绪是会传染的。你压着的情绪，会成为她无法言名的焦虑。',instead:'走开之前，说一句："我需要一点时间，我们一会儿再说。"让她知道你在，但不是消失。'},
+      {pattern:'连接优先，正确方向',text:'蹲下来，轻声问——这是把权力对抗变成情绪接触的动作。她撅嘴僵住，是她的下层大脑在运作。你的轻声，是在帮她的上层大脑重新上线。',book:'《是的大脑》：当孩子处于反应状态时，你的平静是她重新调节的资源。',instead:'等她说了之后，不要立刻解决问题，先说"我听到了"。'},
+      {pattern:'讲道理时机错误',text:'她的上层大脑此刻已经下线了——撅嘴、僵住，都是信号。对一个调节失败的大脑讲道理，道理进不去，只会增加她的压力负荷。',book:'《全脑教养法》：先连接，再纠正。上层大脑重新上线之前，任何道理都是噪音。',instead:'道理可以讲，但不是现在。现在先帮她回到窗口状态，道理留到她平静之后。'},
+    ]
+  },
+  {
+    id:3,
+    tag:'你爆发之后',
+    scene:'你凶了她。她哭了，或者眼眶红了，但说"没事"。你感到内疚，开始道歉，解释，说清楚是自己的问题。',
+    feel:'你希望事情快点过去，关系快点修复。',
+    q:'道歉之后，你做了什么？',
+    choices:[
+      {label:'A', text:'继续说下去，把来龙去脉解释清楚，让她理解你不是故意的'},
+      {label:'B', text:'她说"没事"你就信了，心里松了口气，继续推进任务'},
+      {label:'C', text:'说完道歉，停下来，问她："你现在感觉怎么样？"'},
+      {label:'D', text:'给她一个拥抱，然后继续下一件事'},
+    ],
+    mirrors:[
+      {pattern:'道歉变成了自我辩护',text:'解释来龙去脉，是在照顾你的内疚，不是在照顾她的感受。每多一句解释，她就要多分配一些认知资源来处理你的情绪，而不是她自己的。你在用语言填满本来应该留给她的空间。',book:'《无戏剧性管教》：修复关系的核心不是解释，是让对方感到被看见。',instead:'道歉说一句就够："妈妈刚才那样，你一定很难受。"然后停下来，等她。'},
+      {pattern:'接受了表面修复',text:'"没事"是她在照顾你。8岁的孩子已经学会了用温暖来吸收你的内疚。你松了口气，内疚循环完成——但她那部分没有人问过。',book:'《全脑教养法》：孩子说"没事"，通常是因为她感到你需要她说没事。这不是原谅，是照顾。',instead:'听到"没事"之后，不要就此结束。说："我知道你说没事，但我想知道你真实的感受。"'},
+      {pattern:'真正的修复动作',text:'道歉之后停下来，问她感受——这是把修复的主角还给她。你在说：这不只是我的事，你的感受也很重要。',book:'《是的大脑》：真正的修复是双向的。让孩子有机会表达，而不只是接受你的表达。',instead:'她说了之后，不要评价，不要解释，只说："谢谢你告诉我。"'},
+      {pattern:'身体连接但情绪没着陆',text:'拥抱是好的，但如果紧接着就继续任务，她会感到：拥抱是用来关闭这件事的，不是用来真正连接的。身体连接需要时间，不是过场。',book:'《无戏剧性管教》：修复需要时间和空间，不能作为过渡到下一个任务的工具。',instead:'拥抱之后，安静地待一会儿。不要马上切换到下一件事。'},
+    ]
+  },
+  {
+    id:4,
+    tag:'她说"不介意"然后亲你',
+    scene:'你道歉之后，她红着眼眶说"不介意"，然后主动来亲你。你感到温暖，感到被原谅了。',
+    feel:'你觉得关系修复了，可以继续了。',
+    q:'你在那一刻真实的内心是？',
+    choices:[
+      {label:'A', text:'松了口气——她没有生我的气，这件事过去了'},
+      {label:'B', text:'感到温暖的同时，有一丝不安——她为什么总是这么快原谅我'},
+      {label:'C', text:'被她的温暖感动，更加内疚，决心以后不再爆发'},
+      {label:'D', text:'意识到：她在照顾我，但没有人问过她的感受'},
+    ],
+    mirrors:[
+      {pattern:'接受了情绪上的照顾',text:'她的"不介意"和主动来亲，是她在用她的温暖帮你关闭内疚。你松了口气，内疚循环完成——但她的部分没有人碰过。下一次，同样的循环会再来一遍。',book:'《全脑教养法》：当孩子持续照顾父母的情绪时，她自己的情绪调节能力会被挤压。',instead:'在接受她的亲之后，说："谢谢你。你有没有什么想告诉我的？"'},
+      {pattern:'元认知开始工作',text:'感到不安，是你的元认知在发出信号。"她为什么总是这么快原谅我"——这个问题比任何答案都更重要。它说明你已经开始看见这个模式了。',book:'《是的大脑》：元认知是改变的入口。看见模式，是打破模式的第一步。',instead:'跟着这个不安走，不要压下去。那个不安告诉你的，比她说的"不介意"更真实。'},
+      {pattern:'内疚驱动的决心',text:'"以后不再爆发"——这个决心是真实的，但它是情绪驱动的，不是认知驱动的。等下一次触发点来了，决心会消失，循环会重复。内疚不是改变的燃料，是循环的一部分。',book:'《无戏剧性管教》：改变来自理解模式，不来自情绪惩罚自己。',instead:'不要立刻许诺"以后不这样"。先问自己：这次我的触发点是什么？下次出现时，我能更早识别吗？'},
+      {pattern:'真正看见发生了什么',text:'你看见了：她在照顾你，没有人照顾她。这是整个互动模式里最核心的东西。你们两个都在努力，但方向是反的——她在情绪上照顾你，你在任务上照顾她。',book:'《全脑教养法》：孩子不应该成为父母的情绪调节者。当这个角色反转时，孩子会学会压抑自己的感受来维持关系的安全。',instead:'说一句："你刚才那个拥抱让我很感动。妈妈想知道——你现在心里是什么感觉？"'},
+    ]
+  },
+  {
+    id:5,
+    tag:'她学习时困倦',
+    scene:'她在写作业，你看见她开始发呆，趴在桌上，眼神涣散。你刚刚提醒过她要认真，她答应了，但现在又这样。',
+    feel:'你感到一阵熟悉的焦虑，加上一点被消耗的疲惫。',
+    q:'你的第一反应是？',
+    choices:[
+      {label:'A', text:'再次提醒："你刚才答应我了，现在又在发呆？"'},
+      {label:'B', text:'忍住不说，但开始在心里计时，看她能撑多久'},
+      {label:'C', text:'走过去，轻触她的肩，说："你看起来很累，要不要休息五分钟？"'},
+      {label:'D', text:'拿走手机或玩具，减少干扰，让她专注'},
+    ],
+    mirrors:[
+      {pattern:'把承诺当成筹码',text:'"你刚才答应了"——你在用她的承诺来证明她的态度有问题。但她答应时是真心的，她现在发呆也是真实的。孩子的自控力是有限的生理资源，不是意志力的问题，不是承诺能覆盖的。',book:'《全脑教养法》：上层大脑（自控）会随疲劳耗尽。这不是态度，是神经系统的真实状态。',instead:'"我看见你很难专注，你现在感觉怎么样？"'},
+      {pattern:'压抑观察，等待爆发',text:'心里计时，是在积累判决。你在等她"足够糟糕"才开口。这段时间里，你的情绪在积累，她的状态没有改善，等你开口时已经是带着积累的情绪说话了。',book:'《无戏剧性管教》：早介入，情绪成本低。等到临界点，对话质量会大幅下降。',instead:'发现她开始发呆的那一刻就走过去，不是等到"够了"再开口。'},
+      {pattern:'看见身体，给出选择',text:'轻触肩膀+提供休息选择——你在告诉她：我看见你了，我不是来评判你的，我在帮你。这是把任务执行者变成照顾者的动作。',book:'《是的大脑》：当孩子感到被看见而非被评判，上层大脑会更容易重新上线。',instead:'如果她选择休息，让她真正休息，不要用五分钟谈论作业。'},
+      {pattern:'管理环境，忽略状态',text:'拿走干扰物是管理环境，但她的困倦状态没有被处理。她的身体在说"我需要休息"，你给她的回应是"我来减少外部干扰"。两件事没有对上。',book:'《全脑教养法》：环境管理有用，但无法替代对内在状态的回应。',instead:'先问状态，再管环境："你现在感觉怎么样？"听完之后，再决定是否需要调整环境。'},
+    ]
+  },
+  {
+    id:6,
+    tag:'你自己的容量',
+    scene:'带娃三小时之后，你终于送她去睡了。你坐下来，想做自己的事，却发现自己什么都不想做，只想发呆。',
+    feel:'你感到某种空洞，不是放松，是被掏空之后的空洞。',
+    q:'你对自己说的是？',
+    choices:[
+      {label:'A', text:'"我今天又没学习，浪费了时间"'},
+      {label:'B', text:'"我就是容易累，性格问题"'},
+      {label:'C', text:'什么都没说，刷手机，让大脑空着'},
+      {label:'D', text:'"我今天一直在输出，现在需要输入。这是正常的。"'},
+    ],
+    mirrors:[
+      {pattern:'用任务评价休息',text:'"又没学习"——你在用生产力标准来评价一个需要恢复的状态。被掏空之后需要的不是继续输出，是允许自己停下来。这个"又"字里面，藏着对自己的苛责。',book:'《无戏剧性管教》：父母自己的调节状态，直接影响亲子互动的质量。照顾自己不是自私，是前提。',instead:'今晚的空洞是真实的需求信号。它不需要被解决，它需要被允许。'},
+      {pattern:'把耗竭归因于性格',text:'"性格问题"是一个关闭探索的结论。它让你不需要再往深处看。但你今天承担的精神份额，是两个人的——她的情绪调节，和你自己的情绪管理，都在你一个人身上。这不是性格，是容量透支。',book:'《是的大脑》：照顾者的情绪调节资源是有限的。耗尽不是弱点，是信号。',instead:'"今天我承担了很多。我需要什么来恢复？"'},
+      {pattern:'被动恢复',text:'刷手机让大脑空着——这是你找到的恢复方式。它有用，但效率不高。你在用低刺激填充空洞，而不是真正的恢复。',book:'《全脑教养法》：恢复需要输入，不只是停止输出。什么让你真正感到补充，不只是麻木。',instead:'问自己：除了刷手机，还有什么能真正让我觉得被填满？'},
+      {pattern:'准确识别自己的状态',text:'你看见了：输出之后需要输入，这是正常的。这个句子里没有苛责，没有解释，只有准确的自我识别。这是照顾自己的起点。',book:'《无戏剧性管教》：父母对自己状态的准确识别，是稳定亲子关系的基础。你调节好了，她才有调节的资源。',instead:'识别之后，给自己一个具体的恢复动作，不是泛泛的"好好休息"。'},
+    ]
+  },
+  {
+    id:7,
+    tag:'她不知道为什么要学习',
+    scene:'她说"我不想写作业"。你问"为什么"，她说"不知道，就是不想"。你感到一种无从下手的感觉。',
+    feel:'你不知道该分析什么，感到某种卡住。',
+    q:'你的第一反应是？',
+    choices:[
+      {label:'A', text:'开始解释：学习的意义，长大以后的事，现在做的事情的价值'},
+      {label:'B', text:'说"不想写也得写，这是必须做的事"'},
+      {label:'C', text:'坐下来，说"我听到了。你不知道为什么要写，这个感觉我能理解。"'},
+      {label:'D', text:'问她："那你现在最想做什么？"'},
+    ],
+    mirrors:[
+      {pattern:'用意义填充空洞',text:'她说"不知道，就是不想"——这是真实的。她不需要更多信息，她需要她的感受被接住。用意义感来回应一个情绪表达，是两个频道在说话，信号对不上。',book:'《全脑教养法》：意义感是上层大脑的功能。下层大脑说"不想"时，上层大脑还没有上线，意义进不去。',instead:'先接住"不知道，就是不想"，再——很久之后——谈意义。'},
+      {pattern:'用规则关闭探索',text:'"必须做"是真的，但这个回应关闭了她"不知道为什么"这个真实的困惑。她的身体在投票：我不理解这件事的意义。规则可以让她动，但动不出内驱力。',book:'《是的大脑》：外部压力可以产生行为，但内驱力来自感到被理解和有选择。',instead:'"我知道这是必须做的。同时，我也想知道你现在的感受。"'},
+      {pattern:'接住感受，不急着解决',text:'坐下来，说"我听到了"——你在用身体和语言同时告诉她：你不需要立刻变成另一个状态。这是她的身体投票被看见的第一次。',book:'《无戏剧性管教》：被看见是改变的前提，不是奖励。孩子感到被理解之后，才有空间去理解你。',instead:'等她有所回应之后，不要马上切换到任务。让这个被接住的感觉多停留一会儿。'},
+      {pattern:'把主动权还给她',text:'问她最想做什么——你在用问题而不是指令来和她建立连接。她会感到：我有被问到，我的感受在这里是重要的。这个问题本身就是连接。',book:'《是的大脑》：当孩子感到有选择权时，合作意愿会上升。选择不一定是"写不写"，而是"怎么开始"。',instead:'听完她的答案之后，说"好，那我们先做X分钟，然后你可以做那个"。把她的答案纳入计划里。'},
+    ]
+  },
+];
+
+let currentIdx = 0;
+let selectedChoice = null;
+let patternCounts = {};
+
+function renderProgress(){
+  const pct = Math.round((currentIdx / scenes.length) * 100);
+  document.getElementById('progFill').style.width = pct + '%';
+  document.getElementById('progLabel').textContent = `${currentIdx} / ${scenes.length}`;
+}
+
+function renderScene(){
+  if(currentIdx >= scenes.length){ renderResult(); return; }
+  const s = scenes[currentIdx];
+  selectedChoice = null;
+  const area = document.getElementById('gameArea');
+  area.innerHTML = `
+    <div class="scene-card">
+      <div class="scene-top">
+        <span class="scene-tag">${s.tag}</span>
+        <div class="scene-text">${s.scene}</div>
+        <div class="scene-feel">${s.feel}</div>
+        <div class="choice-label">${s.q}</div>
+      </div>
+      <div class="choices-wrap">
+        ${s.choices.map((c,i) => `
+          <button class="choice" id="choice-${i}" onclick="selectChoice(${i})">
+            <strong>${c.label}</strong> &nbsp;${c.text}
+          </button>
+        `).join('')}
+        <div class="mirror" id="mirror"></div>
+        <button class="next-btn" id="nextBtn" onclick="nextScene()">
+          ${currentIdx + 1 < scenes.length ? '下一个情境 →' : '查看我的模式报告 →'}
+        </button>
+      </div>
+    </div>`;
+  renderProgress();
+}
+
+window.selectChoice = function(idx){
+  if(selectedChoice !== null) return;
+  selectedChoice = idx;
+  const s = scenes[currentIdx];
+  const m = s.mirrors[idx];
+  const colorClasses = ['selected-a','selected-b','selected-c','selected-d'];
+
+  document.querySelectorAll('.choice').forEach((btn,i) => {
+    btn.disabled = true;
+    if(i === idx) btn.classList.add(colorClasses[idx]);
+  });
+
+  // 记录模式
+  const pattern = m.pattern;
+  patternCounts[pattern] = (patternCounts[pattern] || 0) + 1;
+
+  const mirror = document.getElementById('mirror');
+  mirror.innerHTML = `
+    <div class="mirror-pattern">你的模式：${m.pattern}</div>
+    <div class="mirror-text">${m.text}</div>
+    <div class="mirror-book">${m.book}</div>
+    <div class="what-instead">
+      <div class="what-instead-label">可以试试</div>
+      <div class="what-instead-text">${m.instead}</div>
+    </div>`;
+  mirror.classList.add('show');
+  document.getElementById('nextBtn').style.display = 'block';
+};
+
+window.nextScene = function(){
+  currentIdx++;
+  renderScene();
+};
+
+const patternColors = {
+  '控制模式启动': '#A32D2D',
+  '解决模式替代连接': '#D4922A',
+  '情绪压抑积累': '#854F0B',
+  '权力对抗升级': '#A32D2D',
+  '退出但情绪留下': '#6B6560',
+  '连接优先，正确方向': '#1D9E75',
+  '连接优先': '#1D9E75',
+  '道歉变成了自我辩护': '#D4922A',
+  '接受了表面修复': '#854F0B',
+  '真正的修复动作': '#1D9E75',
+  '身体连接但情绪没着陆': '#6B6560',
+  '接受了情绪上的照顾': '#854F0B',
+  '元认知开始工作': '#1D9E75',
+  '内疚驱动的决心': '#D4922A',
+  '真正看见发生了什么': '#1D9E75',
+  '把承诺当成筹码': '#A32D2D',
+  '压抑观察，等待爆发': '#854F0B',
+  '看见身体，给出选择': '#1D9E75',
+  '管理环境，忽略状态': '#D4922A',
+  '用任务评价休息': '#D4922A',
+  '把耗竭归因于性格': '#6B6560',
+  '被动恢复': '#6B6560',
+  '准确识别自己的状态': '#1D9E75',
+  '用意义填充空洞': '#D4922A',
+  '用规则关闭探索': '#A32D2D',
+  '接住感受，不急着解决': '#1D9E75',
+  '把主动权还给她': '#1D9E75',
+};
+
+function renderResult(){
+  renderProgress();
+  const sorted = Object.entries(patternCounts).sort((a,b) => b[1]-a[1]);
+  const positive = sorted.filter(([p]) => ['连接优先，正确方向','连接优先','真正的修复动作','元认知开始工作','真正看见发生了什么','看见身体，给出选择','准确识别自己的状态','接住感受，不急着解决','把主动权还给她'].includes(p));
+  const growth = sorted.filter(([p]) => !positive.map(x=>x[0]).includes(p));
+  const topPattern = growth.length > 0 ? growth[0][0] : null;
+
+  const oneThingMap = {
+    '控制模式启动': '下次感到焦灼时，在开口之前先停一秒，把指令换成问句："你现在怎么了？"',
+    '解决模式替代连接': '发现自己在分析时，先停下来问她一个感受问题，而不是任务问题。',
+    '情绪压抑积累': '发现自己在憋的时候，先说出来："妈妈现在需要一秒钟。"',
+    '接受了表面修复': '下次听到"没事"，在松口气之前，多问一句："你真实的感受呢？"',
+    '内疚驱动的决心': '不要在情绪高峰时许诺改变。等平静后，问自己：这次触发点是什么？',
+    '用任务评价休息': '今晚感到空洞时，允许它存在，不要立刻用"没学习"来评价它。',
+    '用规则关闭探索': '在说"必须"之前，先说"我听到你了"。',
+  };
+
+  const oneThing = topPattern && oneThingMap[topPattern] ? oneThingMap[topPattern] : '下次和她互动之前，先问自己：我现在的状态适合连接吗？';
+
+  document.getElementById('gameArea').innerHTML = `
+    <div class="result-card">
+      <div class="result-title">你的模式报告</div>
+      <div class="result-sub">这不是评分，是一面镜子。看见模式，是改变的第一步。</div>
+      ${growth.length > 0 ? `
+        <div class="pattern-summary">
+          <div style="font-size:12px;color:#A09A93;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em">出现较多的模式</div>
+          ${growth.slice(0,3).map(([p,c]) => `
+            <div class="pattern-item">
+              <div class="pattern-dot" style="background:${patternColors[p]||'#A09A93'}"></div>
+              <div>
+                <div class="pattern-name">${p}</div>
+                <div class="pattern-desc">出现 ${c} 次</div>
+              </div>
+            </div>`).join('')}
+        </div>` : ''}
+      ${positive.length > 0 ? `
+        <div class="pattern-summary">
+          <div style="font-size:12px;color:#A09A93;margin-bottom:8px;text-transform:uppercase;letter-spacing:.04em">你已经在做的</div>
+          ${positive.slice(0,2).map(([p,c]) => `
+            <div class="pattern-item">
+              <div class="pattern-dot" style="background:#1D9E75"></div>
+              <div>
+                <div class="pattern-name">${p}</div>
+                <div class="pattern-desc">${c} 次选择了连接优先</div>
+              </div>
+            </div>`).join('')}
+        </div>` : ''}
+      <div class="one-thing">
+        <div class="one-thing-label">下一步，只做一件事</div>
+        <div class="one-thing-text">${oneThing}</div>
+      </div>
+      <button class="restart-btn" onclick="restart()">重新来一遍</button>
+    </div>`;
+}
+
+window.restart = function(){
+  currentIdx = 0;
+  patternCounts = {};
+  renderScene();
+};
+
+renderScene();
+</script>
+</body>
+</html>

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<link rel="canonical" href="https://songchaoyang.com/tools/mba-translation-trainer/" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MBA 英语二 · 回译练习器</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#F7F6F3;font-family:-apple-system,'PingFang SC','Microsoft YaHei',sans-serif;color:#1A1816;min-height:100vh;padding:24px 16px}
+.container{max-width:720px;margin:0 auto}
+.header{margin-bottom:20px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.header h1{font-size:20px;font-weight:500}
+.header p{font-size:12px;color:#6B6560;margin-top:3px}
+.key-row{display:flex;gap:8px;align-items:center}
+.key-input{font-size:12px;padding:6px 10px;border:0.5px solid #D0CBC0;border-radius:6px;background:#fff;color:#1A1816;width:200px}
+.key-btn{font-size:12px;padding:6px 12px;border:0.5px solid #D0CBC0;border-radius:6px;background:#fff;cursor:pointer}
+.key-btn:hover{background:#F7F6F3}
+.key-status{font-size:11px;color:#A09A93;margin-top:4px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.stat{background:#fff;border:0.5px solid #E8E5DF;border-radius:8px;padding:10px 12px}
+.stat-l{font-size:11px;color:#A09A93;margin-bottom:2px;text-transform:uppercase;letter-spacing:.04em}
+.stat-v{font-size:20px;font-weight:500;color:#1A1816}
+.filters{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.filter-btn{font-size:12px;padding:5px 12px;border:0.5px solid #D0CBC0;border-radius:20px;background:#fff;cursor:pointer;color:#6B6560}
+.filter-btn.active{background:#1A1816;color:#fff;border-color:#1A1816}
+.sentence-card{background:#fff;border:0.5px solid #E8E5DF;border-radius:12px;padding:1.25rem;margin-bottom:12px}
+.card-meta{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.year-badge{font-size:11px;padding:3px 9px;border-radius:20px;background:#F1EFE8;color:#444441}
+.diff-badge{font-size:11px;padding:3px 9px;border-radius:20px}
+.diff-1{background:#E1F5EE;color:#0F6E56}
+.diff-2{background:#FAEEDA;color:#854F0B}
+.diff-3{background:#FCEBEB;color:#791F1F}
+.source-label{font-size:11px;color:#A09A93}
+.en-sentence{font-size:15px;color:#1A1816;line-height:1.8;margin-bottom:16px;font-family:Georgia,serif;padding:12px 14px;background:#F7F6F3;border-radius:8px;border-left:2px solid #D0CBC0}
+.en-sentence .hint{font-size:12px;color:#A09A93;margin-top:8px;font-family:-apple-system,'PingFang SC',sans-serif}
+textarea{width:100%;font-size:14px;padding:10px 12px;border:0.5px solid #D0CBC0;border-radius:8px;background:#fff;color:#1A1816;resize:vertical;min-height:80px;font-family:-apple-system,'PingFang SC',sans-serif;line-height:1.6}
+textarea:focus{outline:none;border-color:#2B5CE6}
+.btn-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.submit-btn{font-size:13px;padding:8px 20px;border:0.5px solid #D0CBC0;border-radius:8px;background:#1A1816;color:#fff;cursor:pointer}
+.submit-btn:hover{background:#2C2C2A}
+.submit-btn:disabled{opacity:.4;cursor:not-allowed}
+.skip-btn{font-size:13px;padding:8px 16px;border:0.5px solid #D0CBC0;border-radius:8px;background:#fff;cursor:pointer;color:#6B6560}
+.skip-btn:hover{background:#F7F6F3}
+.next-btn{font-size:13px;padding:8px 20px;border:0.5px solid #D0CBC0;border-radius:8px;background:#fff;cursor:pointer;display:none}
+.next-btn:hover{background:#F7F6F3}
+.analysis{margin-top:14px;display:none}
+.analysis.show{display:block}
+.ref-section{margin-bottom:12px}
+.ref-label{font-size:11px;font-weight:500;color:#A09A93;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.ref-text{font-size:13px;color:#1A1816;line-height:1.8;padding:10px 12px;background:#F7F6F3;border-radius:8px}
+.ai-section{background:#EEF2FD;border-radius:8px;padding:12px 14px;margin-bottom:12px}
+.ai-label{font-size:11px;font-weight:500;color:#185FA5;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.ai-content{font-size:13px;color:#1A1816;line-height:1.8}
+.ai-loading{color:#6B6560;font-style:italic;font-size:13px}
+.score-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.score-num{font-size:28px;font-weight:500}
+.score-label{font-size:12px;color:#6B6560}
+.progress-wrap{flex:1;height:6px;background:#E8E5DF;border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;transition:width .4s}
+.history-section{margin-top:20px}
+.history-title{font-size:13px;font-weight:500;color:#1A1816;margin-bottom:10px}
+.history-item{background:#fff;border:0.5px solid #E8E5DF;border-radius:8px;padding:10px 12px;margin-bottom:6px;font-size:12px;color:#6B6560;line-height:1.6;cursor:pointer}
+.history-item:hover{border-color:#D0CBC0}
+.history-date{color:#A09A93;margin-right:6px}
+.empty-state{text-align:center;padding:40px 20px;color:#A09A93;font-size:13px}
+.site-back{position:fixed;z-index:9999;left:14px;top:14px;padding:8px 12px;border-radius:999px;background:rgba(20,20,20,.82);color:#fff;text-decoration:none;font-size:13px;backdrop-filter:blur(8px)}
+</style>
+</head>
+<body>
+<a class="site-back" href="/tools/">← 工具中心</a>
+<div class="container">
+  <div class="header">
+    <div>
+      <h1>MBA 英语二 · 回译练习器</h1>
+      <p>近10年真题翻译句 · 三级难度 · AI卡点分析</p>
+    </div>
+    <div>
+      <div class="key-row">
+        <input class="key-input" type="password" id="apiKeyInput" placeholder="粘贴 API Key">
+        <button class="key-btn" onclick="saveKey()">保存</button>
+      </div>
+      <div class="key-status" id="keyStatus">未设置 Key（AI分析不可用）</div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-l">今日练习</div><div class="stat-v" id="sTodayCount">0</div></div>
+    <div class="stat"><div class="stat-l">累计练习</div><div class="stat-v" id="sTotalCount">0</div></div>
+    <div class="stat"><div class="stat-l">平均得分</div><div class="stat-v" id="sAvgScore">—</div></div>
+    <div class="stat"><div class="stat-l">已练难度</div><div class="stat-v" id="sLevels">—</div></div>
+  </div>
+
+  <div class="filters">
+    <span style="font-size:12px;color:#6B6560;align-self:center">难度：</span>
+    <button class="filter-btn active" onclick="setFilter('all',this)">全部</button>
+    <button class="filter-btn" onclick="setFilter(1,this)">简单</button>
+    <button class="filter-btn" onclick="setFilter(2,this)">中等</button>
+    <button class="filter-btn" onclick="setFilter(3,this)">困难</button>
+    <button class="filter-btn" style="margin-left:auto" onclick="loadNext()">换一题 →</button>
+  </div>
+
+  <div id="mainArea"></div>
+
+  <div class="history-section">
+    <div class="history-title">练习记录</div>
+    <div id="historyList"></div>
+  </div>
+</div>
+
+<script>
+const sentences = [
+  {id:1,year:2015,diff:1,type:'翻译',
+   en:'The pressure of modern society places on individuals to succeed has become a serious concern for many psychologists.',
+   ref:'现代社会给个人施加的成功压力已成为许多心理学家严重关注的问题。',
+   notes:'主干：pressure has become a concern · places on是定语从句修饰pressure'},
+  {id:2,year:2015,diff:2,type:'翻译',
+   en:'The trend toward living alone is emerging across society, and it is altering the way people think about family, sex, and the institutions that have long organized social life.',
+   ref:'独居的趋势正在整个社会中蔓延，它正在改变人们对家庭、性以及长期以来组织社会生活的各种机构的看法。',
+   notes:'主干：trend is emerging · it is altering · that从句修饰institutions'},
+  {id:3,year:2016,diff:2,type:'翻译',
+   en:'For the sake of all of us who find ourselves in a world where speed has become an important value in itself, with little time for reflection or contemplation, it is worth considering what we are losing.',
+   ref:'为了我们所有身处这样一个世界的人——在这个世界里，速度本身已成为一种重要的价值，留给反思或沉思的时间极少——值得思考一下我们正在失去什么。',
+   notes:'主干：it is worth considering · for the sake of引导目的状语 · who从句修饰us'},
+  {id:4,year:2016,diff:3,type:'翻译',
+   en:'The Supreme Court\'s decisions on civil rights, voting rights, and immigration, along with its upcoming decision on same-sex marriage, are a vivid reminder that the court\'s composition matters enormously, not just for the resolution of the immediate case but for setting the terms of political and social debate for generations.',
+   ref:'最高法院在公民权利、投票权和移民问题上的裁决，加上即将作出的关于同性婚姻的裁决，清楚地提醒我们，法院的组成极为重要，这不仅关乎眼前案件的解决，也关乎为数代人确立政治和社会辩论的框架。',
+   notes:'主干：decisions are a reminder · not just...but...并列结构 · along with插入语'},
+  {id:5,year:2017,diff:1,type:'翻译',
+   en:'There is a great deal of uncertainty about how climate change will affect the economy.',
+   ref:'关于气候变化将如何影响经济，存在很大的不确定性。',
+   notes:'主干：There is uncertainty · how引导宾语从句'},
+  {id:6,year:2017,diff:2,type:'翻译',
+   en:'The trend appears to be driven in part by the fact that younger physicians, unlike older ones, are less willing to make the sacrifices required to be self-employed.',
+   ref:'这一趋势似乎部分是由以下事实驱动的：与年长医生不同，年轻医生不太愿意为自主创业做出所需的牺牲。',
+   notes:'主干：trend appears to be driven · by the fact that引导原因 · unlike对比结构'},
+  {id:7,year:2017,diff:3,type:'翻译',
+   en:'Since the days of Aristotle, a comprehensive and consistent theory of how the mind works has seemed tantalizingly close, and yet has remained frustratingly out of reach, partly because the instruments needed to test such a theory did not exist.',
+   ref:'自亚里士多德时代以来，一个关于心智如何运作的全面而一致的理论似乎近在眼前，令人诱惑，然而却始终令人沮丧地遥不可及，部分原因是检验这种理论所需的工具尚不存在。',
+   notes:'主干：theory has seemed close and has remained out of reach · partly because引导原因状语从句 · tantalizingly/frustratingly副词修饰'},
+  {id:8,year:2018,diff:1,type:'翻译',
+   en:'These approaches have much to recommend them in terms of the picture they paint of what it is like to be a scientist.',
+   ref:'这些方法在描绘科学家工作状态这方面有很多值得推荐之处。',
+   notes:'主干：approaches have much · in terms of引导方式状语 · what it is like to be不定式从句'},
+  {id:9,year:2018,diff:2,type:'翻译',
+   en:'One reason why the weather is such a universal topic of conversation is that it is one of the few things that affects us all equally, regardless of age, sex, class, or nationality.',
+   ref:'天气成为如此普遍的话题的原因之一，是它是少数几件无论年龄、性别、阶层或国籍如何都平等影响我们所有人的事情之一。',
+   notes:'主干：reason is that it is one · regardless of引导让步状语 · why从句修饰reason'},
+  {id:10,year:2018,diff:3,type:'翻译',
+   en:'Perhaps the most important legacy of the ancient Olympic Games was the ideal they represented: that of a civilized, humane competition, in which people from different city-states and backgrounds could meet together in peace and friendship, united by their common humanity and love of excellence.',
+   ref:'也许古代奥运会最重要的遗产是它们所代表的理想：一种文明的、人道的竞争，在这种竞争中，来自不同城邦和背景的人们能够在和平与友谊中相聚，因共同的人性和对卓越的热爱而团结在一起。',
+   notes:'主干：legacy was the ideal · that of a competition同位语 · united by过去分词作状语'},
+  {id:11,year:2019,diff:2,type:'翻译',
+   en:'There is mounting evidence that the desire for "work-life balance" is not just a passing trend, but that many workers, especially younger ones, are choosing careers and workplaces based on their perceived ability to provide this balance.',
+   ref:'越来越多的证据表明，对"工作与生活平衡"的渴望不仅仅是一种短暂的趋势，而且许多工人，尤其是年轻人，正在根据他们认为能够提供这种平衡的能力来选择职业和工作场所。',
+   notes:'主干：There is evidence · not just...but...并列 · based on过去分词作状语'},
+  {id:12,year:2019,diff:3,type:'翻译',
+   en:'The dominance of a few giant firms raises an important question: does it matter that in most of the economy, including retailing, telecoms, healthcare, and financial services, competition is being replaced by oligopoly?',
+   ref:'少数几家巨型公司的主导地位引发了一个重要问题：在经济的大部分领域，包括零售、电信、医疗保健和金融服务，竞争正在被寡头垄断所取代，这是否重要？',
+   notes:'主干：dominance raises a question · does it matter引导宾语从句 · including插入语'},
+  {id:13,year:2020,diff:1,type:'翻译',
+   en:'Whatever the outcome, the long-term trend toward greater global integration appears likely to continue.',
+   ref:'无论结果如何，走向更大程度全球一体化的长期趋势似乎很可能会继续。',
+   notes:'主干：trend appears likely to continue · Whatever引导让步状语从句'},
+  {id:14,year:2020,diff:2,type:'翻译',
+   en:'Countries that have been most successful in taking advantage of globalization are those that have invested heavily in education and have developed flexible labor markets.',
+   ref:'在利用全球化方面最成功的国家，是那些在教育上大量投资并发展了灵活劳动力市场的国家。',
+   notes:'主干：countries are those · that从句双重修饰 · have invested和have developed并列'},
+  {id:15,year:2020,diff:3,type:'翻译',
+   en:'While most people say they would prefer to live in a world where everyone was equal, in practice we tend to create and maintain hierarchies that serve our interests and flatter our sense of self-worth, often at the expense of others.',
+   ref:'虽然大多数人说他们更愿意生活在一个人人平等的世界里，但在实践中，我们倾向于创造和维持服务于我们利益、迎合我们自尊心的等级制度，往往以牺牲他人为代价。',
+   notes:'主干：we tend to create and maintain hierarchies · While引导让步状语 · that从句修饰hierarchies · at the expense of固定搭配'},
+  {id:16,year:2021,diff:2,type:'翻译',
+   en:'The concept of the sharing economy — in which strangers rent out their homes, cars, tools, and time to one another — has expanded rapidly in recent years, partly because it allows people to make money from underused assets.',
+   ref:'"共享经济"的概念——陌生人相互租用彼此的住所、汽车、工具和时间——近年来迅速扩张，部分原因是它允许人们从未充分利用的资产中赚钱。',
+   notes:'主干：concept has expanded · in which引导定语从句 · partly because引导原因'},
+  {id:17,year:2021,diff:3,type:'翻译',
+   en:'It is difficult to avoid the conclusion that the real reason for the proposal is not what its supporters claim it to be, but is instead a desire to impose a particular set of values on a diverse and pluralistic society.',
+   ref:'难以回避这样一个结论：该提案的真正原因并非其支持者所声称的那样，而是试图将一套特定的价值观强加于一个多元化的多元社会。',
+   notes:'主干：It is difficult to avoid the conclusion · that引导同位语从句 · not...but...对比结构'},
+  {id:18,year:2022,diff:1,type:'翻译',
+   en:'Technology is changing the way we work, and the pace of change is accelerating.',
+   ref:'技术正在改变我们的工作方式，而且变化的步伐正在加速。',
+   notes:'主干：Technology is changing · pace is accelerating · the way we work宾语从句'},
+  {id:19,year:2022,diff:2,type:'翻译',
+   en:'The evidence suggests that prolonged exposure to screens, particularly before bedtime, is associated with disrupted sleep patterns and reduced cognitive performance in children.',
+   ref:'证据表明，长时间接触屏幕，尤其是在睡前，与儿童睡眠模式紊乱和认知能力下降有关。',
+   notes:'主干：evidence suggests that exposure is associated · particularly before bedtime插入语 · be associated with固定搭配'},
+  {id:20,year:2022,diff:3,type:'翻译',
+   en:'The notion that a single test score can adequately capture the complex array of abilities, knowledge, and personal qualities that contribute to long-term success is not only simplistic but potentially harmful, as it encourages educational systems to focus on narrow academic metrics at the expense of broader human development.',
+   ref:'认为单一考试成绩能够充分反映促成长期成功的复杂能力、知识和个人品质的观念，不仅过于简单化，而且可能有害，因为它鼓励教育系统将注意力集中在狭隘的学业指标上，而以牺牲更广泛的人类发展为代价。',
+   notes:'主干：notion is not only simplistic but harmful · that引导同位语从句 · as引导原因状语 · at the expense of固定搭配'},
+  {id:21,year:2023,diff:2,type:'翻译',
+   en:'The rise of artificial intelligence is transforming industries from healthcare to finance, raising fundamental questions about the future of work and the distribution of economic rewards.',
+   ref:'人工智能的崛起正在改变从医疗保健到金融的各个行业，引发了关于工作未来和经济利益分配的根本性问题。',
+   notes:'主干：rise is transforming · raising现在分词作结果状语 · from...to...范围表达'},
+  {id:22,year:2023,diff:3,type:'翻译',
+   en:'While the scientific community has reached a consensus that human activity is the primary driver of climate change, the translation of this scientific consensus into effective policy responses has been hampered by a combination of economic interests, political ideologies, and the inherent difficulty of making long-term commitments in democratic systems.',
+   ref:'虽然科学界已就人类活动是气候变化的主要驱动因素达成共识，但将这一科学共识转化为有效政策响应的过程受到了经济利益、政治意识形态以及民主制度中做出长期承诺的内在困难等多重因素的阻碍。',
+   notes:'主干：translation has been hampered · While引导让步状语 · by a combination of介词短语 · the inherent difficulty of doing固定结构'},
+];
+
+const KEY_DATA = 'mba_trans_v1';
+const API_KEY_STORE = 'mba_api_key';
+let currentFilter = 'all';
+let currentSentence = null;
+let answered = false;
+
+function loadData(){try{return JSON.parse(localStorage.getItem(KEY_DATA)||'{records:[]}');}catch(e){return {records:[]};}}
+function saveDataStore(d){try{localStorage.setItem(KEY_DATA,JSON.stringify(d));}catch(e){}}
+function getKey(){return localStorage.getItem(API_KEY_STORE)||'';}
+function saveKey(){
+  const v=document.getElementById('apiKeyInput').value.trim();
+  if(!v)return;
+  localStorage.setItem(API_KEY_STORE,v);
+  document.getElementById('apiKeyInput').value='';
+  document.getElementById('keyStatus').textContent='API Key 已保存 ✓';
+  document.getElementById('keyStatus').style.color='#1D9E75';
+}
+
+function dateStr(d){return d.toISOString().split('T')[0];}
+
+function updateStats(){
+  const data=loadData();
+  const records=data.records||[];
+  const today=dateStr(new Date());
+  const todayRecords=records.filter(r=>r.date===today);
+  const scores=records.filter(r=>r.score).map(r=>r.score);
+  const avgScore=scores.length>0?Math.round(scores.reduce((a,b)=>a+b,0)/scores.length):null;
+  const levels=[...new Set(records.map(r=>r.diff))].sort();
+  const levelNames={1:'简单',2:'中等',3:'困难'};
+  document.getElementById('sTodayCount').textContent=todayRecords.length;
+  document.getElementById('sTotalCount').textContent=records.length;
+  document.getElementById('sAvgScore').textContent=avgScore?avgScore+'分':'—';
+  document.getElementById('sLevels').textContent=levels.length>0?levels.map(l=>levelNames[l]).join('/'):'—';
+}
+
+function setFilter(val,btn){
+  currentFilter=val;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  loadNext();
+}
+
+function getFilteredSentences(){
+  if(currentFilter==='all')return sentences;
+  return sentences.filter(s=>s.diff===currentFilter);
+}
+
+function loadNext(){
+  const pool=getFilteredSentences();
+  if(pool.length===0){
+    document.getElementById('mainArea').innerHTML='<div class="empty-state">没有符合条件的句子</div>';
+    return;
+  }
+  const idx=Math.floor(Math.random()*pool.length);
+  currentSentence=pool[idx];
+  answered=false;
+  renderSentence();
+}
+
+function renderSentence(){
+  const s=currentSentence;
+  const diffNames={1:'简单',2:'中等',3:'困难'};
+  const diffClass={1:'diff-1',2:'diff-2',3:'diff-3'};
+  document.getElementById('mainArea').innerHTML=`
+    <div class="sentence-card">
+      <div class="card-meta">
+        <span class="year-badge">${s.year}年</span>
+        <span class="diff-badge ${diffClass[s.diff]}">${diffNames[s.diff]}</span>
+        <span class="source-label">英语二 · ${s.type}</span>
+      </div>
+      <div class="en-sentence">
+        ${s.en}
+        <div class="hint">请将上面这句英文翻译成中文，写完后提交对比</div>
+      </div>
+      <textarea id="userTrans" placeholder="在这里写你的中文翻译..." rows="3"></textarea>
+      <div class="btn-row">
+        <button class="submit-btn" id="submitBtn" onclick="submitTrans()">提交翻译</button>
+        <button class="skip-btn" onclick="loadNext()">跳过</button>
+        <button class="next-btn" id="nextBtn" onclick="loadNext()">下一题 →</button>
+      </div>
+      <div class="analysis" id="analysis"></div>
+    </div>`;
+}
+
+async function submitTrans(){
+  const userText=document.getElementById('userTrans').value.trim();
+  if(!userText){alert('请先写下你的翻译');return;}
+  if(answered)return;
+  answered=true;
+  document.getElementById('submitBtn').disabled=true;
+  document.getElementById('nextBtn').style.display='inline-block';
+
+  const s=currentSentence;
+  const analysis=document.getElementById('analysis');
+  analysis.classList.add('show');
+  analysis.innerHTML=`
+    <div class="ref-section">
+      <div class="ref-label">参考译文</div>
+      <div class="ref-text">${s.ref}</div>
+    </div>
+    <div class="ref-section">
+      <div class="ref-label">句子结构</div>
+      <div class="ref-text">${s.notes}</div>
+    </div>
+    <div class="ai-section">
+      <div class="ai-label">AI 卡点分析</div>
+      <div class="ai-content" id="aiContent"><span class="ai-loading">${getKey()?'分析中...':'未设置 API Key，无法使用 AI 分析'}</span></div>
+    </div>`;
+
+  if(!getKey()){saveRecord(null);updateStats();renderHistory();return;}
+
+  const prompt=`你是MBA英语翻译教练。
+
+英文原句：${s.en}
+参考译文：${s.ref}
+学生译文：${userText}
+
+请做以下分析（简洁，不超过150字）：
+1. 给一个0-100的分数，并说明理由（一句话）
+2. 找出1-2个最关键的卡点（词汇误译、结构未理清、信息遗漏）
+3. 给出一个最重要的改进建议
+
+格式：
+得分：X分 · [一句评语]
+卡点：[具体说明]
+建议：[具体建议]`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':getKey(),'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,messages:[{role:'user',content:prompt}]})
+    });
+    const json=await res.json();
+    if(json.content&&json.content[0]){
+      const text=json.content[0].text;
+      document.getElementById('aiContent').innerHTML=text.replace(/\n/g,'<br>');
+      const scoreMatch=text.match(/得分[：:]\s*(\d+)/);
+      const score=scoreMatch?parseInt(scoreMatch[1]):null;
+      saveRecord(score);
+    }else{
+      document.getElementById('aiContent').innerHTML='<span style="color:#A32D2D">分析失败，请检查 API Key</span>';
+      saveRecord(null);
+    }
+  }catch(e){
+    document.getElementById('aiContent').innerHTML='<span style="color:#A32D2D">网络错误</span>';
+    saveRecord(null);
+  }
+  updateStats();renderHistory();
+}
+
+function saveRecord(score){
+  const data=loadData();
+  if(!data.records)data.records=[];
+  data.records.unshift({
+    date:dateStr(new Date()),
+    sentenceId:currentSentence.id,
+    year:currentSentence.year,
+    diff:currentSentence.diff,
+    en:currentSentence.en.slice(0,60)+'...',
+    score:score,
+    userTrans:document.getElementById('userTrans')?.value||'',
+  });
+  if(data.records.length>100)data.records=data.records.slice(0,100);
+  saveDataStore(data);
+}
+
+function renderHistory(){
+  const data=loadData();
+  const records=(data.records||[]).slice(0,8);
+  const el=document.getElementById('historyList');
+  if(records.length===0){el.innerHTML='<div class="empty-state">暂无练习记录</div>';return;}
+  const diffNames={1:'简单',2:'中等',3:'困难'};
+  const diffColors={1:'#0F6E56',2:'#854F0B',3:'#791F1F'};
+  el.innerHTML=records.map(r=>`
+    <div class="history-item">
+      <span class="history-date">${r.date}</span>
+      <span style="color:${diffColors[r.diff]}">${diffNames[r.diff]}</span>
+      · ${r.year}年
+      ${r.score?`· <strong style="color:#1A1816">${r.score}分</strong>`:'· 未评分'}
+      <span style="color:#A09A93;margin-left:4px">${r.en}</span>
+    </div>`).join('');
+}
+
+if(getKey()){
+  document.getElementById('keyStatus').textContent='API Key 已设置 ✓';
+  document.getElementById('keyStatus').style.color='#1D9E75';
+}
+updateStats();
+renderHistory();
+loadNext();
+</script>
+</body>
+</html>
