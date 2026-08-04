@@ -1,0 +1,48 @@
+---
+import TarotFull from '../../components/TarotFull.jsx';
+
+const canonical = 'https://songchaoyang.com/tools/tarot-reading/';
+const title = '塔罗占卜 · 八大牌阵与大阿尔卡纳';
+const description = '选择事业、感情、财富、学业、人际、身心、抉择或年度牌阵，抽取大阿尔卡纳塔罗牌并查看正逆位解读。';
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: '塔罗占卜 · 八大牌阵',
+  applicationCategory: 'EntertainmentApplication',
+  operatingSystem: 'Web',
+  url: canonical,
+  description,
+  inLanguage: 'zh-CN',
+  isAccessibleForFree: true,
+  author: {
+    '@type': 'Person',
+    name: 'Song Chaoyang',
+    url: 'https://songchaoyang.com/',
+  },
+};
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#080520" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  </head>
+  <body>
+    <TarotFull client:load />
+  </body>
+</html>
+
+<style is:global>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background: #080520; }
+</style>
