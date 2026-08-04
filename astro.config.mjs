@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import vercel from '@astrojs/vercel';
+import react from '@astrojs/react';
 import { readdirSync } from 'node:fs';
 
 const site = 'https://songchaoyang.com';
@@ -22,6 +23,7 @@ export default defineConfig({
     },
   },
   integrations: [
+    react(),
     sitemap({
       customPages: [`${site}/tools/`, ...toolPages],
       i18n: {

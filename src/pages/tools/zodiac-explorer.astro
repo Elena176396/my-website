@@ -1,0 +1,48 @@
+---
+import ZodiacExplorer from '../../components/ZodiacExplorer.jsx';
+
+const canonical = 'https://songchaoyang.com/tools/zodiac-explorer/';
+const title = '星座星图探索器 · 太阳与上升星座';
+const description = '交互探索十二星座星图、主要恒星与天文数据，并根据出生日期、时间和城市计算太阳星座与上升星座。';
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: '星座星图探索器',
+  applicationCategory: 'EducationalApplication',
+  operatingSystem: 'Web',
+  url: canonical,
+  description,
+  inLanguage: 'zh-CN',
+  isAccessibleForFree: true,
+  author: {
+    '@type': 'Person',
+    name: 'Song Chaoyang',
+    url: 'https://songchaoyang.com/',
+  },
+};
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#06081a" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  </head>
+  <body>
+    <ZodiacExplorer client:load />
+  </body>
+</html>
+
+<style is:global>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; background: #06081a; }
+</style>
