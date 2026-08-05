@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f5f5f5">
+<title>英语二写作模板全集 · 大小作文练习</title>
+<meta name="description" content="考研英语二写作模板练习工具：收录大作文 5 套、小作文 5 套，支持逐句朗读、整篇朗读、语速切换与默写练习。">
+<link rel="canonical" href="https://songchaoyang.com/tools/english-writing-templates/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; padding: 16px; max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 20px; text-align: center; color: #333; margin-bottom: 4px; }
+  .sub { text-align: center; font-size: 13px; color: #999; margin-bottom: 16px; }
+  .legend { text-align: center; font-size: 13px; color: #888; margin-bottom: 16px; line-height: 1.8; }
+  .legend .v { color: #E8630A; font-weight: 600; }
+  .legend .fill { color: #7C3AED; border-bottom: 1px dashed #7C3AED; }
+
+  .tabs { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tab { padding: 8px 14px; border-radius: 8px; border: 1px solid #ddd; background: white; font-size: 13px; cursor: pointer; white-space: nowrap; color: #555; flex-shrink: 0; }
+  .tab.active { background: #4A90D9; color: white; border-color: #4A90D9; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .card { background: white; border-radius: 12px; padding: 16px; margin-bottom: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+  .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .num { font-size: 11px; color: white; background: #4A90D9; border-radius: 4px; padding: 2px 8px; }
+  .num.orange { background: #E8630A; }
+  .title { font-size: 15px; font-weight: 600; color: #333; margin-bottom: 10px; }
+  .en { font-size: 14px; line-height: 1.8; color: #222; margin-bottom: 6px; padding: 10px; background: #fafafa; border-radius: 8px; }
+  .en .v { color: #E8630A; font-weight: 600; }
+  .en .fill { color: #7C3AED; border-bottom: 1px dashed #7C3AED; font-style: italic; }
+  .cn { font-size: 12px; color: #aaa; line-height: 1.5; margin-bottom: 10px; padding: 0 10px; }
+  .tip { font-size: 12px; color: #4A90D9; background: #EFF6FF; padding: 8px 10px; border-radius: 6px; margin-bottom: 10px; }
+
+  .controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+  .btn { display: inline-flex; align-items: center; gap: 4px; padding: 6px 14px; border: none; border-radius: 8px; background: #4A90D9; color: white; font-size: 13px; cursor: pointer; }
+  .btn:active { background: #3A7BC8; }
+  .btn.outline { background: white; color: #4A90D9; border: 1px solid #4A90D9; }
+  .speed { display: inline-flex; gap: 4px; }
+  .speed button { padding: 3px 8px; border: 1px solid #ddd; border-radius: 6px; background: white; font-size: 11px; cursor: pointer; color: #555; }
+  .speed button.active { background: #4A90D9; color: white; border-color: #4A90D9; }
+
+  .divider { height: 1px; background: #eee; margin: 16px 0; }
+  .full-text { display: none; margin-top: 10px; }
+  .full-text.show { display: block; }
+  .full-en { font-size: 14px; line-height: 2; color: #222; padding: 12px; background: #fafafa; border-radius: 8px; }
+  .full-en .v { color: #E8630A; font-weight: 600; }
+  .full-en .fill { color: #7C3AED; border-bottom: 1px dashed #7C3AED; font-style: italic; }
+  .tool-back { display: inline-flex; margin: 0 0 14px; color: #777; font-size: 13px; font-weight: 600; text-decoration: none; }
+  .tool-back:hover { color: #333; }
+</style>
+
+<a class="tool-back" href="/tools/#boost">← 返回工具集</a>
+<h1>📖 英语二写作模板全集</h1>
+<div class="sub">大作文5套 + 小作文5套 = 写作25分全覆盖</div>
+<div class="legend"><span class="v">橙色</span> = 谓语动词 · <span class="fill">紫色</span> = 示例填充（考场替换）</div>
+
+<div class="tabs" id="tabs"></div>
+<div id="sections"></div>
+
+<script>
+const templates = [
+  {
+    tab: "① 上升趋势",
+    tag: "大作文", tagColor: "",
+    title: "上升趋势型（增长、扩大、提高）",
+    tip: "适用：柱状图/折线图呈上升走势。最常考，优先背这套。",
+    sentences: [
+      {
+        en: 'As is clearly <span class="v">illustrated</span> in the chart, the number of <span class="fill">online shoppers</span> <span class="v">has increased</span> significantly during the period from <span class="fill">2015</span> to <span class="fill">2025</span>.',
+        plain: "As is clearly illustrated in the chart, the number of online shoppers has increased significantly during the period from 2015 to 2025.",
+        cn: "如图所示，网购人数在2015年到2025年期间显著增长。"
+      },
+      {
+        en: 'Specifically, the figure <span class="v">rose</span> steadily from <span class="fill">20 million</span> to <span class="fill">50 million</span>, and then <span class="v">climbed</span> sharply to <span class="fill">120 million</span> by the end of the period.',
+        plain: "Specifically, the figure rose steadily from 20 million to 50 million, and then climbed sharply to 120 million by the end of the period.",
+        cn: "具体来说，数据从2000万稳步上升到5000万，随后在期末急剧攀升至1.2亿。"
+      },
+      {
+        en: 'Several factors <span class="v">can account for</span> this phenomenon, and the following <span class="v">are</span> the most typical ones.',
+        plain: "Several factors can account for this phenomenon, and the following are the most typical ones.",
+        cn: "有几个因素可以解释这一现象，以下是最典型的。"
+      },
+      {
+        en: 'To begin with, with the rapid development of <span class="fill">mobile internet technology</span>, people\'s attitude towards <span class="fill">online shopping</span> <span class="v">has changed</span> dramatically.',
+        plain: "To begin with, with the rapid development of mobile internet technology, people's attitude towards online shopping has changed dramatically.",
+        cn: "首先，随着移动互联网技术的快速发展，人们对网购的态度发生了巨大变化。"
+      },
+      {
+        en: 'In addition, the government <span class="v">has issued</span> a series of policies to encourage <span class="fill">digital consumption</span>, which <span class="v">has played</span> a significant role in this trend.',
+        plain: "In addition, the government has issued a series of policies to encourage digital consumption, which has played a significant role in this trend.",
+        cn: "此外，政府出台了一系列政策鼓励数字消费，对该趋势起了重要作用。"
+      },
+      {
+        en: 'Based on the analysis above, we <span class="v">can predict</span> that this upward trend <span class="v">will continue</span> in the foreseeable future.',
+        plain: "Based on the analysis above, we can predict that this upward trend will continue in the foreseeable future.",
+        cn: "综上分析，我们可以预测这一上升趋势将在可预见的未来持续。"
+      }
+    ]
+  },
+  {
+    tab: "② 下降趋势",
+    tag: "大作文", tagColor: "",
+    title: "下降趋势型（减少、缩小、降低）",
+    tip: "适用：数据呈下降走势。把上升模板的动词反过来即可。",
+    sentences: [
+      {
+        en: 'As the chart clearly <span class="v">shows</span>, there <span class="v">has been</span> a noticeable decline in <span class="fill">newspaper readership</span> over the past <span class="fill">ten</span> years.',
+        plain: "As the chart clearly shows, there has been a noticeable decline in newspaper readership over the past ten years.",
+        cn: "如图所示，过去十年中报纸读者数量出现了明显下降。"
+      },
+      {
+        en: 'More specifically, the proportion <span class="v">dropped</span> from <span class="fill">65%</span> to <span class="fill">20%</span>, <span class="v">representing</span> a decrease of <span class="fill">45</span> percentage points.',
+        plain: "More specifically, the proportion dropped from 65 percent to 20 percent, representing a decrease of 45 percentage points.",
+        cn: "具体而言，比例从65%降至20%，下降了45个百分点。"
+      },
+      {
+        en: 'There <span class="v">are</span> several reasons behind this trend, and the following <span class="v">deserve</span> special attention.',
+        plain: "There are several reasons behind this trend, and the following deserve special attention.",
+        cn: "这一趋势背后有几个原因，以下几点值得特别关注。"
+      },
+      {
+        en: 'First of all, the rising popularity of <span class="fill">smartphones and social media</span> <span class="v">has discouraged</span> many people from <span class="fill">reading printed newspapers</span>.',
+        plain: "First of all, the rising popularity of smartphones and social media has discouraged many people from reading printed newspapers.",
+        cn: "首先，智能手机和社交媒体的普及使许多人不再阅读纸质报纸。"
+      },
+      {
+        en: 'Moreover, with growing awareness of <span class="fill">environmental protection</span>, an increasing number of people <span class="v">have chosen</span> to <span class="fill">get news from digital platforms</span>.',
+        plain: "Moreover, with growing awareness of environmental protection, an increasing number of people have chosen to get news from digital platforms.",
+        cn: "此外，随着环保意识的增强，越来越多的人选择从数字平台获取新闻。"
+      },
+      {
+        en: 'In conclusion, this declining trend <span class="v">reflects</span> a significant shift in <span class="fill">media consumption habits</span>, and <span class="v">is likely to</span> continue.',
+        plain: "In conclusion, this declining trend reflects a significant shift in media consumption habits, and is likely to continue.",
+        cn: "总之，这一下降趋势反映了媒体消费习惯的重大转变，并可能继续。"
+      }
+    ]
+  },
+  {
+    tab: "③ 对比型",
+    tag: "大作文", tagColor: "",
+    title: "对比型（A与B比较、城乡/男女/中外）",
+    tip: "适用：两组或多组数据对比。关键词：while, whereas, in contrast。",
+    sentences: [
+      {
+        en: 'The chart <span class="v">provides</span> a comparison between <span class="fill">urban residents</span> and <span class="fill">rural residents</span> in terms of <span class="fill">internet usage</span>.',
+        plain: "The chart provides a comparison between urban residents and rural residents in terms of internet usage.",
+        cn: "该图对城镇居民和农村居民在互联网使用方面进行了比较。"
+      },
+      {
+        en: 'It <span class="v">is clear</span> that <span class="fill">urban residents</span> <span class="v">account for</span> a much higher proportion at <span class="fill">78%</span>, whereas <span class="fill">rural residents</span> only <span class="v">stand</span> at <span class="fill">35%</span>.',
+        plain: "It is clear that urban residents account for a much higher proportion at 78 percent, whereas rural residents only stand at 35 percent.",
+        cn: "显然城镇居民占比更高达78%，而农村居民仅为35%。"
+      },
+      {
+        en: 'The gap between the two <span class="v">can be explained</span> by the following reasons.',
+        plain: "The gap between the two can be explained by the following reasons.",
+        cn: "两者之间的差距可以用以下原因来解释。"
+      },
+      {
+        en: 'On the one hand, <span class="fill">urban residents</span> <span class="v">tend to</span> <span class="fill">have better access to high-speed networks</span> because of <span class="fill">more advanced infrastructure</span>.',
+        plain: "On the one hand, urban residents tend to have better access to high-speed networks because of more advanced infrastructure.",
+        cn: "一方面，城镇居民由于基础设施更完善，更容易接入高速网络。"
+      },
+      {
+        en: 'On the other hand, <span class="fill">rural areas</span> <span class="v">are limited</span> by <span class="fill">insufficient investment in digital facilities</span>, which <span class="v">makes</span> it difficult to <span class="fill">narrow the digital divide</span>.',
+        plain: "On the other hand, rural areas are limited by insufficient investment in digital facilities, which makes it difficult to narrow the digital divide.",
+        cn: "另一方面，农村地区受到数字设施投资不足的限制，使其难以缩小数字鸿沟。"
+      },
+      {
+        en: 'To sum up, the difference between <span class="fill">urban</span> and <span class="fill">rural internet usage</span> <span class="v">deserves</span> our attention, and effective measures <span class="v">should be taken</span> to <span class="fill">bridge this gap</span>.',
+        plain: "To sum up, the difference between urban and rural internet usage deserves our attention, and effective measures should be taken to bridge this gap.",
+        cn: "总之，城乡互联网使用的差异值得关注，应采取有效措施弥合差距。"
+      }
+    ]
+  },
+  {
+    tab: "④ 占比型",
+    tag: "大作文", tagColor: "",
+    title: "占比分布型（饼图、百分比构成）",
+    tip: "适用：饼图或数据展示各部分占比。核心是描述「谁最大、谁最小」。",
+    sentences: [
+      {
+        en: 'The pie chart clearly <span class="v">illustrates</span> the distribution of <span class="fill">household spending</span> among different categories.',
+        plain: "The pie chart clearly illustrates the distribution of household spending among different categories.",
+        cn: "该饼图清晰展示了家庭支出在不同类别中的分布情况。"
+      },
+      {
+        en: 'As we can see, <span class="fill">housing</span> <span class="v">takes up</span> the largest share at <span class="fill">40%</span>, followed by <span class="fill">food</span> at <span class="fill">25%</span>, while <span class="fill">entertainment</span> only <span class="v">occupies</span> <span class="fill">8%</span>.',
+        plain: "As we can see, housing takes up the largest share at 40 percent, followed by food at 25 percent, while entertainment only occupies 8 percent.",
+        cn: "我们可以看到，住房占最大份额达40%，其次是食品占25%，而娱乐仅占8%。"
+      },
+      {
+        en: 'This distribution pattern <span class="v">can be attributed</span> to the following factors.',
+        plain: "This distribution pattern can be attributed to the following factors.",
+        cn: "这种分布格局可归因于以下因素。"
+      },
+      {
+        en: 'The primary reason <span class="v">is</span> that <span class="fill">housing</span> <span class="v">has become</span> an essential part of people\'s daily life.',
+        plain: "The primary reason is that housing has become an essential part of people's daily life.",
+        cn: "主要原因是住房已成为人们日常生活的重要组成部分。"
+      },
+      {
+        en: 'Meanwhile, the relatively small share of <span class="fill">entertainment</span> <span class="v">suggests</span> that people still <span class="v">lack</span> sufficient awareness of <span class="fill">work-life balance</span>.',
+        plain: "Meanwhile, the relatively small share of entertainment suggests that people still lack sufficient awareness of work-life balance.",
+        cn: "同时，娱乐占比较小表明人们对工作生活平衡的意识仍然不足。"
+      },
+      {
+        en: 'In short, this chart <span class="v">reminds</span> us that we <span class="v">should pay</span> more attention to <span class="fill">quality of life</span> while <span class="v">maintaining</span> a balanced approach.',
+        plain: "In short, this chart reminds us that we should pay more attention to quality of life while maintaining a balanced approach.",
+        cn: "简而言之，该图提醒我们应更加关注生活质量，同时保持均衡。"
+      }
+    ]
+  },
+  {
+    tab: "⑤ 波动型",
+    tag: "大作文", tagColor: "",
+    title: "波动/先升后降型（不稳定趋势）",
+    tip: "适用：数据有起有落、不是单方向走势。核心词：fluctuate, peak, recover。",
+    sentences: [
+      {
+        en: 'According to the chart, the data on <span class="fill">domestic tourism</span> <span class="v">has experienced</span> noticeable fluctuations from <span class="fill">2015</span> to <span class="fill">2025</span>.',
+        plain: "According to the chart, the data on domestic tourism has experienced noticeable fluctuations from 2015 to 2025.",
+        cn: "根据图表，国内旅游数据在2015年到2025年期间经历了明显波动。"
+      },
+      {
+        en: 'Specifically, the figure first <span class="v">rose</span> to a peak of <span class="fill">600 million trips</span> in <span class="fill">2019</span>, then <span class="v">dropped</span> sharply to <span class="fill">280 million</span>, before <span class="v">recovering</span> slightly to <span class="fill">450 million</span> by <span class="fill">2025</span>.',
+        plain: "Specifically, the figure first rose to a peak of 600 million trips in 2019, then dropped sharply to 280 million, before recovering slightly to 450 million by 2025.",
+        cn: "具体来说，数据先升至2019年的峰值6亿人次，随后急剧下降至2.8亿，后又小幅回升至4.5亿。"
+      },
+      {
+        en: 'The reasons for such instability <span class="v">are</span> complex, but two factors <span class="v">stand out</span>.',
+        plain: "The reasons for such instability are complex, but two factors stand out.",
+        cn: "这种不稳定的原因较为复杂，但有两个因素尤为突出。"
+      },
+      {
+        en: 'Firstly, changes in <span class="fill">public health conditions</span> <span class="v">have directly influenced</span> people\'s <span class="fill">willingness to travel</span>.',
+        plain: "Firstly, changes in public health conditions have directly influenced people's willingness to travel.",
+        cn: "首先，公共卫生状况的变化直接影响了人们的出行意愿。"
+      },
+      {
+        en: 'Secondly, unexpected events such as <span class="fill">the global pandemic</span> <span class="v">have disrupted</span> the original trend significantly.',
+        plain: "Secondly, unexpected events such as the global pandemic have disrupted the original trend significantly.",
+        cn: "其次，全球疫情等突发事件大幅打断了原有趋势。"
+      },
+      {
+        en: 'Therefore, it <span class="v">remains</span> uncertain whether this trend <span class="v">will stabilize</span>, and continuous attention <span class="v">is needed</span>.',
+        plain: "Therefore, it remains uncertain whether this trend will stabilize, and continuous attention is needed.",
+        cn: "因此，该趋势能否稳定仍不确定，需要持续关注。"
+      }
+    ]
+  },
+  {
+    tab: "⑥ 建议信",
+    tag: "小作文", tagColor: "orange",
+    title: "建议信（Suggestion Letter）",
+    tip: "适用：给学校/公司/机构提建议。小作文最高频题型之一。",
+    sentences: [
+      {
+        en: 'Dear Sir or Madam, I <span class="v">am writing</span> to offer some suggestions regarding <span class="fill">the service of the university library</span>.',
+        plain: "Dear Sir or Madam, I am writing to offer some suggestions regarding the service of the university library.",
+        cn: "尊敬的先生/女士，我写信就大学图书馆的服务提出一些建议。"
+      },
+      {
+        en: 'First of all, it <span class="v">would be beneficial</span> if <span class="fill">the opening hours</span> could <span class="v">be extended</span>, as many students <span class="v">have expressed</span> concern about this issue.',
+        plain: "First of all, it would be beneficial if the opening hours could be extended, as many students have expressed concern about this issue.",
+        cn: "首先，如果能延长开放时间将很有益，因为很多学生对此表示了关切。"
+      },
+      {
+        en: 'In addition, I <span class="v">would like to suggest</span> that <span class="fill">more electronic resources be made available online</span>, which <span class="v">would greatly enhance</span> <span class="fill">the learning experience</span>.',
+        plain: "In addition, I would like to suggest that more electronic resources be made available online, which would greatly enhance the learning experience.",
+        cn: "此外，我建议提供更多在线电子资源，这将极大地提升学习体验。"
+      },
+      {
+        en: 'I <span class="v">sincerely hope</span> that you <span class="v">will take</span> my suggestions into consideration. Thank you for your time.',
+        plain: "I sincerely hope that you will take my suggestions into consideration. Thank you for your time.",
+        cn: "我真诚地希望您能考虑我的建议。感谢您的时间。"
+      }
+    ]
+  },
+  {
+    tab: "⑦ 推荐信",
+    tag: "小作文", tagColor: "orange",
+    title: "推荐信（Recommendation Letter）",
+    tip: "适用：推荐一本书/一部电影/一个地方/一个人。",
+    sentences: [
+      {
+        en: 'Dear <span class="fill">Li Ming</span>, I <span class="v">am writing</span> to recommend <span class="fill">a book called"Erta"</span> to you, which I <span class="v">believe</span> you will find very <span class="fill">inspiring</span>.',
+        plain: "Dear Li Ming, I am writing to recommend a book callederta to you, which I believe you will find very inspiring.",
+        cn: "亲爱的李明，我写信向你推荐一本叫《额尔塔》的书，我相信你会觉得非常有启发。"
+      },
+      {
+        en: 'The reason why I <span class="v">recommend</span> it <span class="v">is</span> that <span class="fill">it offers practical career guidance for young professionals</span>. Moreover, it <span class="v">covers</span> <span class="fill">many real-world business cases</span>, which <span class="v">is</span> closely related to your interest in <span class="fill">management</span>.',
+        plain: "The reason why I recommend it is that it offers practical career guidance for young professionals. Moreover, it covers many real-world business cases, which is closely related to your interest in management.",
+        cn: "我推荐它的原因是它为年轻专业人士提供了实用的职业指导。此外，它涵盖了许多真实商业案例，与你对管理的兴趣密切相关。"
+      },
+      {
+        en: 'I <span class="v">am confident</span> that you <span class="v">will benefit</span> a lot from it. Please <span class="v">feel free to contact</span> me if you <span class="v">need</span> more information.',
+        plain: "I am confident that you will benefit a lot from it. Please feel free to contact me if you need more information.",
+        cn: "我相信你会从中受益匪浅。如需更多信息请随时联系我。"
+      }
+    ]
+  },
+  {
+    tab: "⑧ 邀请信",
+    tag: "小作文", tagColor: "orange",
+    title: "邀请信（Invitation Letter）",
+    tip: "适用：邀请参加活动/会议/聚会。",
+    sentences: [
+      {
+        en: 'Dear <span class="fill">Professor Wang</span>, I <span class="v">am writing</span> to invite you to <span class="fill">an academic conference on artificial intelligence</span>, which <span class="v">will be held</span> on <span class="fill">October 15th</span> at <span class="fill">the Grand Lecture Hall</span>.',
+        plain: "Dear Professor Wang, I am writing to invite you to an academic conference on artificial intelligence, which will be held on October 15th at the Grand Lecture Hall.",
+        cn: "亲爱的王教授，我写信邀请您参加一场关于人工智能的学术会议，将于10月15日在大报告厅举行。"
+      },
+      {
+        en: 'During the event, there <span class="v">will be</span> <span class="fill">keynote speeches and panel discussions</span>, and your participation <span class="v">would add</span> great value to <span class="fill">our research exchange</span>.',
+        plain: "During the event, there will be keynote speeches and panel discussions, and your participation would add great value to our research exchange.",
+        cn: "活动期间将有主题演讲和小组讨论，您的参与将为我们的研究交流增添极大价值。"
+      },
+      {
+        en: 'I <span class="v">would be</span> honored if you <span class="v">could accept</span> this invitation. Please <span class="v">let</span> me <span class="v">know</span> your decision at your earliest convenience.',
+        plain: "I would be honored if you could accept this invitation. Please let me know your decision at your earliest convenience.",
+        cn: "如果您能接受邀请，我将深感荣幸。请尽早告知您的决定。"
+      }
+    ]
+  },
+  {
+    tab: "⑨ 感谢信",
+    tag: "小作文", tagColor: "orange",
+    title: "感谢信（Thank-you Letter）",
+    tip: "适用：感谢帮助/招待/指导。情感真诚即可。",
+    sentences: [
+      {
+        en: 'Dear <span class="fill">Professor Li</span>, I <span class="v">am writing</span> to express my sincere gratitude for <span class="fill">your generous help during my graduation thesis</span>.',
+        plain: "Dear Professor Li, I am writing to express my sincere gratitude for your generous help during my graduation thesis.",
+        cn: "亲爱的李教授，我写信对您在我毕业论文期间的慷慨帮助表达真诚的感谢。"
+      },
+      {
+        en: 'Without your help, I <span class="v">would not have been able</span> to <span class="fill">complete my research on time</span>. Your guidance <span class="v">has made</span> a real difference in <span class="fill">my academic development</span>.',
+        plain: "Without your help, I would not have been able to complete my research on time. Your guidance has made a real difference in my academic development.",
+        cn: "没有您的帮助，我不可能按时完成研究。您的指导对我的学术发展产生了真正的影响。"
+      },
+      {
+        en: 'I <span class="v">truly appreciate</span> everything you <span class="v">have done</span> for me, and I <span class="v">hope</span> to have the chance to repay your kindness in the future.',
+        plain: "I truly appreciate everything you have done for me, and I hope to have the chance to repay your kindness in the future.",
+        cn: "我真心感谢您为我所做的一切，希望将来有机会回报您的善意。"
+      }
+    ]
+  },
+  {
+    tab: "⑩ 通知",
+    tag: "小作文", tagColor: "orange",
+    title: "通知/告示（Notice）",
+    tip: "适用：发布活动通知、招募志愿者、征集意见。格式与信不同，注意开头。",
+    sentences: [
+      {
+        en: '<span class="v">NOTICE</span><br>In order to <span class="fill">promote cultural exchange among students</span>, a <span class="fill">speech contest on Chinese traditions</span> <span class="v">will be held</span> on <span class="fill">December 15th</span> at <span class="fill">the Student Activity Center</span>. All <span class="fill">undergraduate students</span> <span class="v">are welcome</span> to participate.',
+        plain: "NOTICE. In order to promote cultural exchange among students, a speech contest on Chinese traditions will be held on December 15th at the Student Activity Center. All undergraduate students are welcome to participate.",
+        cn: "通知：为了促进学生间的文化交流，将于12月15日在学生活动中心举办一场关于中国传统文化的演讲比赛。欢迎所有本科生参加。"
+      },
+      {
+        en: 'The event <span class="v">will include</span> <span class="fill">individual speeches and a group debate session</span>. Those who <span class="v">are interested</span> <span class="v">should sign up</span> at <span class="fill">the Student Union office, Room 302</span> before <span class="fill">December 10th</span>.',
+        plain: "The event will include individual speeches and a group debate session. Those who are interested should sign up at the Student Union office, Room 302, before December 10th.",
+        cn: "活动将包括个人演讲和小组辩论环节。有兴趣者请于12月10日前到学生会办公室302室报名。"
+      },
+      {
+        en: 'For further information, please <span class="v">contact</span> <span class="fill">the Student Union at 010-12345678</span>. Your active participation <span class="v">is</span> highly expected.',
+        plain: "For further information, please contact the Student Union at 010-12345678. Your active participation is highly expected.",
+        cn: "如需更多信息，请联系学生会，电话010-12345678。期待您的积极参与。"
+      }
+    ]
+  }
+];
+
+let currentRate = 0.8;
+let activeTab = 0;
+
+function speak(text) {
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US';
+  u.rate = currentRate;
+  const voices = window.speechSynthesis.getVoices();
+  const enVoice = voices.find(v => v.lang === 'en-US' && v.name.includes('Google'))
+    || voices.find(v => v.lang === 'en-US')
+    || voices.find(v => v.lang.startsWith('en'));
+  if (enVoice) u.voice = enVoice;
+  window.speechSynthesis.speak(u);
+}
+
+function speakAll(index) {
+  window.speechSynthesis.cancel();
+  const t = templates[index];
+  const full = t.sentences.map(s => s.plain).join('. ');
+  const u = new SpeechSynthesisUtterance(full);
+  u.lang = 'en-US';
+  u.rate = currentRate;
+  const voices = window.speechSynthesis.getVoices();
+  const enVoice = voices.find(v => v.lang === 'en-US' && v.name.includes('Google'))
+    || voices.find(v => v.lang === 'en-US')
+    || voices.find(v => v.lang.startsWith('en'));
+  if (enVoice) u.voice = enVoice;
+  window.speechSynthesis.speak(u);
+}
+
+function toggleFull(index) {
+  const el = document.getElementById('full-' + index);
+  el.classList.toggle('show');
+}
+
+function setSpeed(rate) {
+  currentRate = rate;
+  document.querySelectorAll('.speed button').forEach(b => {
+    const r = parseFloat(b.dataset.rate);
+    b.classList.toggle('active', r === rate);
+  });
+}
+
+function switchTab(index) {
+  activeTab = index;
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === index));
+  document.querySelectorAll('.section').forEach((s, i) => s.classList.toggle('active', i === index));
+}
+
+function render() {
+  const tabsEl = document.getElementById('tabs');
+  const sectionsEl = document.getElementById('sections');
+
+  tabsEl.innerHTML = templates.map((t, i) =>
+    '<div class="tab ' + (i===0?'active':'') + '" onclick="switchTab(' + i + ')">' + t.tab + '</div>'
+  ).join('');
+
+  sectionsEl.innerHTML = templates.map((t, i) => {
+    let sentenceHTML = t.sentences.map((s, j) =>
+      '<div class="en">' + s.en + '</div>' +
+      '<div class="cn">' + s.cn + '</div>' +
+      '<div style="margin-bottom:8px">' +
+        '<button class="btn" onclick="speak(templates[' + i + '].sentences[' + j + '].plain)" style="font-size:12px;padding:4px 10px;">▶ 第' + (j+1) + '句</button>' +
+      '</div>'
+    ).join('<div class="divider"></div>');
+
+    let fullHTML = t.sentences.map(s => s.en).join('<br><br>');
+
+    return '<div class="section ' + (i===0?'active':'') + '">' +
+      '<div class="card">' +
+        '<div class="card-head">' +
+          '<span class="num ' + t.tagColor + '">' + t.tag + '</span>' +
+          '<div class="speed">' +
+            '<button data-rate="0.6" onclick="setSpeed(0.6)" ' + (currentRate===0.6?'class="active"':'') + '>慢速</button>' +
+            '<button data-rate="0.8" onclick="setSpeed(0.8)" ' + (currentRate===0.8?'class="active"':'') + '>正常</button>' +
+            '<button data-rate="1.0" onclick="setSpeed(1.0)" ' + (currentRate===1.0?'class="active"':'') + '>原速</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="title">' + t.title + '</div>' +
+        '<div class="tip">💡 ' + t.tip + '</div>' +
+        sentenceHTML +
+        '<div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">' +
+          '<button class="btn" onclick="speakAll(' + i + ')">▶ 整篇朗读</button>' +
+          '<button class="btn outline" onclick="toggleFull(' + i + ')">📝 默写区</button>' +
+        '</div>' +
+        '<div class="full-text" id="full-' + i + '">' +
+          '<div class="divider"></div>' +
+          '<div class="full-en">' + fullHTML + '</div>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+window.speechSynthesis.onvoiceschanged = () => {};
+render();
+</script>
+</body>
+</html>
