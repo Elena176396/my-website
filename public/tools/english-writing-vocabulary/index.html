@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f5f5f5">
+<title>英语二模板生词表 · 发音与易错拼写</title>
+<meta name="description" content="考研英语二写作模板生词表，按 10 类大小作文整理重点词汇，支持英文发音、语速切换与易错拼写提醒。">
+<link rel="canonical" href="https://songchaoyang.com/tools/english-writing-vocabulary/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; padding: 16px; max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 20px; text-align: center; color: #333; margin-bottom: 4px; }
+  .sub { text-align: center; font-size: 13px; color: #999; margin-bottom: 16px; }
+
+  .tabs { display: flex; gap: 6px; margin-bottom: 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .tab { padding: 7px 12px; border-radius: 8px; border: 1px solid #ddd; background: white; font-size: 12px; cursor: pointer; white-space: nowrap; color: #555; flex-shrink: 0; }
+  .tab.active { background: #4A90D9; color: white; border-color: #4A90D9; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .word-card { background: white; border-radius: 10px; padding: 12px; margin-bottom: 8px; box-shadow: 0 1px 2px rgba(0,0,0,0.08); display: flex; align-items: flex-start; gap: 10px; }
+  .play-btn { width: 36px; height: 36px; border-radius: 50%; border: none; background: #4A90D9; color: white; font-size: 14px; cursor: pointer; flex-shrink: 0; margin-top: 2px; }
+  .play-btn:active { background: #3A7BC8; }
+  .word-info { flex: 1; min-width: 0; }
+  .word-en { font-size: 15px; font-weight: 600; color: #222; margin-bottom: 2px; }
+  .word-cn { font-size: 13px; color: #888; margin-bottom: 3px; }
+  .word-tip { font-size: 12px; color: #E8630A; }
+  .warn { color: #DC2626; font-weight: 600; }
+
+  .speed-bar { display: flex; gap: 4px; margin-bottom: 14px; align-items: center; }
+  .speed-bar span { font-size: 12px; color: #999; margin-right: 4px; }
+  .speed-bar button { padding: 4px 10px; border: 1px solid #ddd; border-radius: 6px; background: white; font-size: 12px; cursor: pointer; color: #555; }
+  .speed-bar button.active { background: #4A90D9; color: white; border-color: #4A90D9; }
+  .count { font-size: 12px; color: #aaa; margin-bottom: 10px; }
+  .tool-back { display: inline-flex; margin: 0 0 14px; color: #777; font-size: 13px; font-weight: 600; text-decoration: none; }
+  .tool-back:hover { color: #333; }
+</style>
+
+<a class="tool-back" href="/tools/#boost">← 返回工具集</a>
+<h1>📝 模板生词表 · 带发音</h1>
+<div class="sub">点击 ▶ 听发音 · ⚠️ = 易拼错</div>
+
+<div class="speed-bar">
+  <span>语速：</span>
+  <button data-rate="0.6" onclick="setSpeed(0.6)">慢速</button>
+  <button data-rate="0.8" onclick="setSpeed(0.8)" class="active">正常</button>
+  <button data-rate="1.0" onclick="setSpeed(1.0)">原速</button>
+</div>
+
+<div class="tabs" id="tabs"></div>
+<div id="sections"></div>
+
+<script>
+let currentRate = 0.8;
+
+const data = [
+  { tab: "①", title: "上升趋势", words: [
+    { en: "illustrated", cn: "被说明的", tip: "illustr-ated，双l ⚠️" },
+    { en: "significant", cn: "显著的", tip: "sig-nif-i-cant，注意中间 nif" },
+    { en: "increased", cn: "增长了", tip: "in-creas-ed" },
+    { en: "specifically", cn: "具体地", tip: "specific + ally" },
+    { en: "steadily", cn: "稳步地", tip: "steadi-ly，y变i再加ly ⚠️" },
+    { en: "climbed", cn: "攀升", tip: "climb-ed，b不发音但要写 ⚠️" },
+    { en: "sharply", cn: "急剧地", tip: "sharp-ly" },
+    { en: "several", cn: "几个", tip: "sever-al，不是sever-el ⚠️" },
+    { en: "factors", cn: "因素", tip: "fact-ors" },
+    { en: "account for", cn: "解释", tip: "a-cc-ount，双c ⚠️" },
+    { en: "phenomenon", cn: "现象", tip: "phe-nom-e-non ⚠️⚠️ 最难拼" },
+    { en: "typical", cn: "典型的", tip: "typ-i-cal" },
+    { en: "development", cn: "发展", tip: "develop-ment" },
+    { en: "attitude", cn: "态度", tip: "att-i-tude，双t ⚠️" },
+    { en: "dramatically", cn: "巨大地", tip: "dramat-ical-ly" },
+    { en: "issued", cn: "颁布了", tip: "issu-ed，双s" },
+    { en: "policies", cn: "政策（复数）", tip: "polic-ies，y变ies ⚠️" },
+    { en: "encourage", cn: "鼓励", tip: "en-cour-age" },
+    { en: "predict", cn: "预测", tip: "pre-dict" },
+    { en: "foreseeable", cn: "可预见的", tip: "fore-see-able" }
+  ]},
+  { tab: "②", title: "下降趋势", words: [
+    { en: "noticeable", cn: "明显的", tip: "notice-able，e保留 ⚠️" },
+    { en: "decline", cn: "下降", tip: "de-cline" },
+    { en: "proportion", cn: "比例", tip: "pro-por-tion ⚠️" },
+    { en: "dropped", cn: "下降了", tip: "drop-ped，双p ⚠️" },
+    { en: "representing", cn: "代表着", tip: "re-present-ing" },
+    { en: "decrease", cn: "减少", tip: "de-crease" },
+    { en: "percentage", cn: "百分比", tip: "percent-age" },
+    { en: "deserve", cn: "值得", tip: "de-serve" },
+    { en: "popularity", cn: "流行度", tip: "popular-ity" },
+    { en: "discouraged", cn: "使不愿意", tip: "dis-courag-ed" },
+    { en: "moreover", cn: "此外", tip: "more-over" },
+    { en: "awareness", cn: "意识", tip: "aware-ness" },
+    { en: "environmental", cn: "环保的", tip: "environ-ment-al ⚠️" },
+    { en: "conclusion", cn: "总之", tip: "con-clus-ion" },
+    { en: "reflects", cn: "反映", tip: "re-flects" },
+    { en: "consumption", cn: "消费", tip: "con-sump-tion ⚠️" }
+  ]},
+  { tab: "③", title: "对比型", words: [
+    { en: "comparison", cn: "比较", tip: "com-par-i-son ⚠️" },
+    { en: "residents", cn: "居民", tip: "resid-ents" },
+    { en: "whereas", cn: "然而", tip: "where-as，一个词" },
+    { en: "tend to", cn: "倾向于", tip: "tend 不是 tent ⚠️" },
+    { en: "advanced", cn: "先进的", tip: "ad-vanc-ed" },
+    { en: "infrastructure", cn: "基础设施", tip: "infra-struc-ture ⚠️" },
+    { en: "insufficient", cn: "不足的", tip: "in-suf-fi-cient，双f ⚠️" },
+    { en: "investment", cn: "投资", tip: "invest-ment" },
+    { en: "facilities", cn: "设施", tip: "facil-ities ⚠️" },
+    { en: "effective", cn: "有效的", tip: "ef-fect-ive，双f" },
+    { en: "measures", cn: "措施", tip: "meas-ures" },
+    { en: "bridge", cn: "弥合", tip: "不要写成 brige ⚠️" }
+  ]},
+  { tab: "④", title: "占比型", words: [
+    { en: "distribution", cn: "分布", tip: "distribu-tion" },
+    { en: "categories", cn: "类别", tip: "categor-ies ⚠️⚠️" },
+    { en: "entertainment", cn: "娱乐", tip: "enter-tain-ment" },
+    { en: "occupies", cn: "占据", tip: "occup-ies，双c ⚠️" },
+    { en: "attributed", cn: "归因于", tip: "at-tribut-ed" },
+    { en: "primary", cn: "主要的", tip: "prim-ary" },
+    { en: "essential", cn: "必要的", tip: "es-sent-ial，双s ⚠️" },
+    { en: "relatively", cn: "相对地", tip: "relat-ive-ly" },
+    { en: "sufficient", cn: "足够的", tip: "suf-fi-cient，双f ⚠️" },
+    { en: "maintaining", cn: "保持", tip: "main-tain-ing" },
+    { en: "balanced", cn: "均衡的", tip: "balanc-ed" }
+  ]},
+  { tab: "⑤", title: "波动型", words: [
+    { en: "experienced", cn: "经历了", tip: "experi-enc-ed ⚠️" },
+    { en: "fluctuations", cn: "波动", tip: "fluctu-ations ⚠️⚠️" },
+    { en: "peak", cn: "峰值", tip: "不是 peek" },
+    { en: "recovering", cn: "恢复", tip: "re-cover-ing" },
+    { en: "slightly", cn: "轻微地", tip: "slight-ly" },
+    { en: "instability", cn: "不稳定性", tip: "in-stabil-ity" },
+    { en: "complex", cn: "复杂的", tip: "com-plex" },
+    { en: "influenced", cn: "影响了", tip: "influ-enc-ed" },
+    { en: "willingness", cn: "意愿", tip: "willing-ness，双l" },
+    { en: "unexpected", cn: "出乎意料的", tip: "un-expect-ed" },
+    { en: "disrupted", cn: "打断了", tip: "dis-rupt-ed" },
+    { en: "significantly", cn: "显著地", tip: "significant-ly" },
+    { en: "uncertain", cn: "不确定的", tip: "un-certain" },
+    { en: "stabilize", cn: "稳定下来", tip: "stabil-ize，不是-ise ⚠️" },
+    { en: "continuous", cn: "持续的", tip: "continu-ous，不是-ious ⚠️" }
+  ]},
+  { tab: "⑥", title: "建议信", words: [
+    { en: "suggestions", cn: "建议", tip: "suggest-ions，双g ⚠️" },
+    { en: "regarding", cn: "关于", tip: "re-gard-ing" },
+    { en: "beneficial", cn: "有益的", tip: "bene-fi-cial ⚠️" },
+    { en: "extended", cn: "延长的", tip: "ex-tend-ed" },
+    { en: "expressed", cn: "表达了", tip: "ex-press-ed，双s" },
+    { en: "concern", cn: "关切", tip: "con-cern" },
+    { en: "electronic", cn: "电子的", tip: "electr-on-ic" },
+    { en: "resources", cn: "资源", tip: "re-sourc-es" },
+    { en: "available", cn: "可用的", tip: "avail-able ⚠️" },
+    { en: "enhance", cn: "提升", tip: "en-hance" },
+    { en: "sincerely", cn: "真诚地", tip: "sincer-ely ⚠️" },
+    { en: "consideration", cn: "考虑", tip: "consider-ation" }
+  ]},
+  { tab: "⑦", title: "推荐信", words: [
+    { en: "recommend", cn: "推荐", tip: "re-com-mend，双m ⚠️" },
+    { en: "inspiring", cn: "有启发的", tip: "inspir-ing" },
+    { en: "practical", cn: "实用的", tip: "pract-i-cal" },
+    { en: "guidance", cn: "指导", tip: "guid-ance，不是-ence ⚠️" },
+    { en: "professionals", cn: "专业人士", tip: "profess-ion-als，双s" },
+    { en: "confident", cn: "有信心的", tip: "con-fi-dent" },
+    { en: "benefit", cn: "受益", tip: "bene-fit" }
+  ]},
+  { tab: "⑧", title: "邀请信", words: [
+    { en: "invitation", cn: "邀请", tip: "invit-ation" },
+    { en: "academic", cn: "学术的", tip: "acad-em-ic" },
+    { en: "conference", cn: "会议", tip: "con-fer-ence ⚠️" },
+    { en: "participation", cn: "参与", tip: "particip-ation" },
+    { en: "honored", cn: "荣幸的", tip: "honor-ed，美式不加u" },
+    { en: "convenience", cn: "方便", tip: "con-veni-ence ⚠️" }
+  ]},
+  { tab: "⑨", title: "感谢信", words: [
+    { en: "express", cn: "表达", tip: "ex-press，双s" },
+    { en: "sincere", cn: "真诚的", tip: "sin-cere" },
+    { en: "gratitude", cn: "感激", tip: "grat-i-tude ⚠️" },
+    { en: "generous", cn: "慷慨的", tip: "gener-ous" },
+    { en: "graduation", cn: "毕业", tip: "gradu-ation" },
+    { en: "thesis", cn: "论文", tip: "the-sis ⚠️" },
+    { en: "appreciate", cn: "感谢", tip: "ap-preci-ate，双p ⚠️" }
+  ]},
+  { tab: "⑩", title: "通知", words: [
+    { en: "promote", cn: "促进", tip: "pro-mote" },
+    { en: "cultural", cn: "文化的", tip: "cultur-al" },
+    { en: "exchange", cn: "交流", tip: "ex-change" },
+    { en: "contest", cn: "比赛", tip: "con-test" },
+    { en: "traditions", cn: "传统", tip: "tradit-ions" },
+    { en: "undergraduate", cn: "本科生", tip: "under-gradu-ate" },
+    { en: "individual", cn: "个人的", tip: "in-dividu-al ⚠️" },
+    { en: "debate", cn: "辩论", tip: "de-bate" },
+    { en: "session", cn: "环节", tip: "sess-ion，双s ⚠️" },
+    { en: "participate", cn: "参加", tip: "particip-ate" }
+  ]}
+];
+
+function speak(text) {
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US';
+  u.rate = currentRate;
+  const voices = window.speechSynthesis.getVoices();
+  const v = voices.find(v => v.lang === 'en-US' && v.name.includes('Google'))
+    || voices.find(v => v.lang === 'en-US')
+    || voices.find(v => v.lang.startsWith('en'));
+  if (v) u.voice = v;
+  window.speechSynthesis.speak(u);
+}
+
+function setSpeed(rate) {
+  currentRate = rate;
+  document.querySelectorAll('.speed-bar button').forEach(b => {
+    b.classList.toggle('active', parseFloat(b.dataset.rate) === rate);
+  });
+}
+
+function switchTab(i) {
+  document.querySelectorAll('.tab').forEach((t, j) => t.classList.toggle('active', j === i));
+  document.querySelectorAll('.section').forEach((s, j) => s.classList.toggle('active', j === i));
+}
+
+function render() {
+  document.getElementById('tabs').innerHTML = data.map((d, i) =>
+    '<div class="tab ' + (i===0?'active':'') + '" onclick="switchTab(' + i + ')">' + d.tab + '</div>'
+  ).join('');
+
+  document.getElementById('sections').innerHTML = data.map((d, i) => {
+    const cards = d.words.map(w => {
+      const hasDanger = w.tip.includes('⚠️⚠️');
+      const hasWarn = !hasDanger && w.tip.includes('⚠️');
+      const tipClass = hasDanger ? ' warn' : '';
+      return '<div class="word-card">' +
+        '<button class="play-btn" onclick="speak(\'' + w.en.replace(/'/g, "\\'") + '\')">▶</button>' +
+        '<div class="word-info">' +
+          '<div class="word-en">' + w.en + '</div>' +
+          '<div class="word-cn">' + w.cn + '</div>' +
+          '<div class="word-tip' + tipClass + '">' + w.tip + '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    return '<div class="section ' + (i===0?'active':'') + '">' +
+      '<div class="count">' + d.title + ' · 共' + d.words.length + '词</div>' +
+      cards +
+    '</div>';
+  }).join('');
+}
+
+window.speechSynthesis.onvoiceschanged = () => {};
+render();
+</script>
+</body>
+</html>
