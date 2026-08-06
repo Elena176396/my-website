@@ -1,0 +1,31 @@
+---
+import QuoteWheel from '../../components/QuoteWheel.jsx';
+
+const canonical = 'https://songchaoyang.com/tools/quote-wheel/';
+const title = '名言转盘 · 盲猜来源与真心话大冒险';
+const description = '转动名言转盘，盲猜情话、电影、动漫与哲学语录的来源，或按分类随机抽取句子，也可玩真心话大冒险。';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#fff8f5" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={canonical} />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:url" content={canonical} />
+</head>
+<body>
+  <QuoteWheel client:load />
+</body>
+</html>
+
+<style is:global>
+  html, body { margin: 0; min-height: 100%; }
+</style>
