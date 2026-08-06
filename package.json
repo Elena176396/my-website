@@ -2,7 +2,6 @@
   "name": "china-user-detector",
   "type": "module",
   "version": "0.1.0",
-  "packageManager": "pnpm@9.15.9",
   "private": true,
   "description": "Check which parts of your browser environment could get you flagged as a China user by Claude Code.",
   "license": "MIT",
