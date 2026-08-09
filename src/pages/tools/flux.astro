@@ -1,0 +1,40 @@
+---
+import AudioPlayer from '../../components/media-preview/audio/AudioPlayer.jsx';
+
+const canonical = 'https://songchaoyang.com/tools/flux/';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#e7e9ed" />
+    <title>Flux · 沉浸式音频播放器</title>
+    <meta name="description" content="Flux 是一个轻盈、专注的在线音频播放器，按学习、音乐和播客分类管理与播放内容。" />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content="Flux · 沉浸式音频播放器" />
+    <meta property="og:description" content="一个轻盈、专注的在线音频播放器。" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <style is:global>
+      * { box-sizing: border-box; }
+      html, body { margin: 0; min-height: 100%; }
+      body { background: #e7e9ed; color: #202126; }
+      .player-head { max-width: 640px; margin: 0 auto; padding: 24px 20px 20px; }
+      .player-back { display: inline-block; margin-bottom: 18px; color: #747887; text-decoration: none; font: 600 13px/1.4 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
+      .player-back:hover { color: #202126; }
+      .player-head h1 { margin: 0; font: 700 28px/1.2 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
+      .player-head p { margin: 8px 0 0; color: #747887; font: 14px/1.6 -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; }
+    </style>
+  </head>
+  <body>
+    <header class="player-head">
+      <a class="player-back" href="/tools/#spark">← 返回灵感弹珠</a>
+      <h1>Flux</h1>
+      <p>让声音自然流动。</p>
+    </header>
+    <AudioPlayer client:load />
+  </body>
+</html>
