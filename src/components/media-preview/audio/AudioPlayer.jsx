@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { R2_BASE, audios } from './audios';
 
-const CATEGORIES = ['全部', '学习', '音乐', '播客'];
+const CATEGORIES = ['全部', '网易云精选', '学习', '音乐', '播客'];
 
 function formatTime(sec) {
   if (!sec || !isFinite(sec)) return '0:00';

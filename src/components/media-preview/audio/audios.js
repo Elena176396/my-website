@@ -816,5 +816,35 @@ export const audios = [
     "title": "龙拳-周杰伦",
     "src": "/audio/music/163.mp3",
     "category": "音乐"
+  },
+  {
+    "title": "BITE! 咬合力 — 雷雨心 / 三Z-STUDIO / HOYO-MiX",
+    "src": "/audio/playlists/netease-picks/01.mp3",
+    "lyrics": "/audio/playlists/netease-picks/01.lrc",
+    "category": "网易云精选"
+  },
+  {
+    "title": "記憶の旅 中岛美嘉 Passing Memories — 梁玖希",
+    "src": "/audio/playlists/netease-picks/02.mp3",
+    "lyrics": "/audio/playlists/netease-picks/02.lrc",
+    "category": "网易云精选"
+  },
+  {
+    "title": "若我不曾见过太阳 — 知更鸟 / HOYO-MiX / Chevy",
+    "src": "/audio/playlists/netease-picks/03.mp3",
+    "lyrics": "/audio/playlists/netease-picks/03.lrc",
+    "category": "网易云精选"
+  },
+  {
+    "title": "pinKing — ChiliChill乐团 / 三Z-STUDIO / HOYO-MiX",
+    "src": "/audio/playlists/netease-picks/04.mp3",
+    "lyrics": "/audio/playlists/netease-picks/04.lrc",
+    "category": "网易云精选"
+  },
+  {
+    "title": "海滨小城 Seaside Town — HOYO-MiX",
+    "src": "/audio/playlists/netease-picks/05.mp3",
+    "lyrics": "/audio/playlists/netease-picks/05.lrc",
+    "category": "网易云精选"
   }
 ];
