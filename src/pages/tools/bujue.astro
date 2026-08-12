@@ -1,0 +1,32 @@
+---
+import BreakupRecovery from '../../components/BreakupRecovery.jsx';
+
+const canonical = 'https://songchaoyang.com/tools/bujue/';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#12121f" />
+    <title>不决 · 情绪冲动暂停器</title>
+    <meta name="description" content="不决是一款情绪冲动暂停器，用五分钟呼吸、事实记录与不发送的信，帮你在想联系 TA 时先停下来。" />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content="不决 · 情绪冲动暂停器" />
+    <meta property="og:description" content="冲动来临时，先给自己五分钟。" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <style is:global>
+      * { box-sizing: border-box; }
+      html, body { margin: 0; min-height: 100%; background: #12121f; }
+      .site-back { position: fixed; top: 14px; left: 16px; z-index: 20; color: #8a87a8; text-decoration: none; font: 600 12px/1.4 -apple-system, "PingFang SC", sans-serif; }
+      .site-back:hover { color: #e8e6f0; }
+    </style>
+  </head>
+  <body>
+    <a class="site-back" href="/tools/#mystic">← 返回玄学引擎</a>
+    <BreakupRecovery client:load />
+  </body>
+</html>
