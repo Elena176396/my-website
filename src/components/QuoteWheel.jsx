@@ -208,7 +208,7 @@ function GuessMode() {
     setHist(function(h){return[{t:cur.t,c:cur.c,s:cur.s,guess:cat,ok:ok}].concat(h).slice(0,50);});
   };
 
-  useEffect(function(){return function(){if(tr.current)clearTimeout(tr.current);};});
+  useEffect(function(){return function(){if(tr.current)clearTimeout(tr.current);};}, []);
   var ok=guess===(cur&&cur.c);
   var acc=sc.t>0?Math.round(sc.c/sc.t*100):0;
 
