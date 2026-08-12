@@ -1,0 +1,32 @@
+---
+import CMSPTest from '../../components/CMSPTest.jsx';
+
+const canonical = 'https://songchaoyang.com/tools/cmsp-test/';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f8f7f4" />
+    <title>CMSP-希波克拉底性格测试</title>
+    <meta name="description" content="完成 40 道性格选择题，了解你在力量型、活泼型、完美型与和平型四种希波克拉底气质中的组合。" />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content="CMSP-希波克拉底性格测试" />
+    <meta property="og:description" content="40 道题，探索你的四型性格组合。" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <style is:global>
+      * { box-sizing: border-box; }
+      html, body { margin: 0; min-height: 100%; background: #f8f7f4; }
+      .site-back { position: fixed; top: 14px; left: 16px; z-index: 20; color: #77736d; text-decoration: none; font: 600 12px/1.4 -apple-system, "PingFang SC", sans-serif; }
+      .site-back:hover { color: #222; }
+    </style>
+  </head>
+  <body>
+    <a class="site-back" href="/tools/#decode">← 返回人格解码</a>
+    <CMSPTest client:load />
+  </body>
+</html>
