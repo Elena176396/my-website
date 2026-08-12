@@ -1,0 +1,32 @@
+---
+import BelbinTeamTest from '../../components/BelbinTeamTest.jsx';
+
+const canonical = 'https://songchaoyang.com/tools/belbin-team-test/';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0c0c1d" />
+    <title>团队测试-贝尔宾</title>
+    <meta name="description" content="通过七部分自评，了解你在贝尔宾九种团队角色中的分布、优势、可容忍弱点与团队作用。" />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content="团队测试-贝尔宾" />
+    <meta property="og:description" content="探索你的贝尔宾九角色分布与团队协作风格。" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <style is:global>
+      * { box-sizing: border-box; }
+      html, body { margin: 0; min-height: 100%; background: #0c0c1d; }
+      .site-back { position: fixed; top: 14px; left: 16px; z-index: 20; color: rgba(255,255,255,.5); text-decoration: none; font: 600 12px/1.4 -apple-system, "PingFang SC", sans-serif; }
+      .site-back:hover { color: #fff; }
+    </style>
+  </head>
+  <body>
+    <a class="site-back" href="/tools/#decode">← 返回人格解码</a>
+    <BelbinTeamTest client:load />
+  </body>
+</html>
