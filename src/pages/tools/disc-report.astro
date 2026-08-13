@@ -1,0 +1,32 @@
+---
+import DISCReport from '../../components/DISCReport.jsx';
+
+const canonical = 'https://songchaoyang.com/tools/disc-report/';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#f6f7fb" />
+    <title>DISC 人格测评</title>
+    <meta name="description" content="通过 DISC 人格测评，了解你的支配、影响、稳定与服从四种行为倾向。" />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content="DISC 人格测评" />
+    <meta property="og:description" content="探索你的 DISC 四维行为风格与组合。" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <style is:global>
+      * { box-sizing: border-box; }
+      html, body { margin: 0; min-height: 100%; background: #f6f7fb; }
+      .site-back { position: fixed; top: 14px; left: 16px; z-index: 20; color: #70758a; text-decoration: none; font: 600 12px/1.4 -apple-system, "PingFang SC", sans-serif; }
+      .site-back:hover { color: #25283a; }
+    </style>
+  </head>
+  <body>
+    <a class="site-back" href="/tools/#decode">← 返回人格解码</a>
+    <DISCReport client:load />
+  </body>
+</html>
