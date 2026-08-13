@@ -258,7 +258,7 @@ function Report({scores,sorted,ans,onReset}){
           <button onClick={()=>{
             const t=sorted.map((r,i)=>`${i+1}. ${R[r].name}(${r}): ${scores[r]}分`).join("\n");
             const c=CATS.map(cat=>`${cat.name}${cat.roles.reduce((s,r)=>s+(scores[r]||0),0)}分`).join("，");
-            navigator.clipboard?.writeText(`我的团队测试-贝尔宾结果（9角色版）：\n${t}\n\n导向分布：${c}\n\n请帮我深度解读，包括角色组合分析、团队适配建议、个人发展方向`);
+            navigator.clipboard?.writeText(`我的团队测评-贝尔宾结果（9角色版）：\n${t}\n\n导向分布：${c}\n\n请帮我深度解读，包括角色组合分析、团队适配建议、个人发展方向`);
           }} style={{padding:"6px 14px",borderRadius:6,border:"none",background:"#059669",fontSize:12,fontWeight:600,color:"#fff",cursor:"pointer"}}>复制结果用于解读</button>
         </div>
       </div>
@@ -485,7 +485,7 @@ export default function App(){
     <div style={{fontFamily:"-apple-system,'Noto Sans SC',sans-serif",maxWidth:560,margin:"0 auto",padding:"36px 24px",color:"#1e1b4b",background:"#fff",minHeight:"100vh"}}>
       <div style={{textAlign:"center",marginBottom:36}}>
         <div style={{fontSize:11,fontWeight:700,color:"#6366f1",letterSpacing:2,marginBottom:8}}>BELBIN TEAM ROLE</div>
-        <h1 style={{fontSize:24,fontWeight:800,margin:"0 0 6px",letterSpacing:"-0.02em"}}>团队测试-贝尔宾</h1>
+        <h1 style={{fontSize:24,fontWeight:800,margin:"0 0 6px",letterSpacing:"-0.02em"}}>团队测评-贝尔宾</h1>
         <p style={{fontSize:13,color:"#94a3b8",margin:0}}>9 角色完整版 · 自评问卷</p>
       </div>
       <div style={{background:"#f8fafc",borderRadius:12,border:"1px solid #e2e8f0",padding:20,marginBottom:20}}>

@@ -229,7 +229,7 @@ function Start({go}){
         background:"linear-gradient(135deg,#6e7488,#706888)",
         display:"flex",alignItems:"center",justifyContent:"center",
         fontSize:32,boxShadow:"0 6px 24px rgba(110,116,136,.2)"}}>🏛️</div>
-      <h1 style={{fontSize:28,fontWeight:800,color:"#2D2B33",letterSpacing:"-0.5px"}}>CMSP-希波克拉底性格测试</h1>
+      <h1 style={{fontSize:28,fontWeight:800,color:"#2D2B33",letterSpacing:"-0.5px"}}>CMSP-希波克拉底性格测评</h1>
       <p style={{fontSize:12,color:"#9C96A8",letterSpacing:"3px",margin:"4px 0 24px",fontWeight:600}}>古希腊体液学说 · 性格测试</p>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:8,maxWidth:300,margin:"0 auto 28px"}}>
         {["C","S","M","P"].map(k=>{const m=TM[k];return(

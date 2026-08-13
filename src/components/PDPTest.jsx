@@ -447,7 +447,7 @@ export default function PDPTest() {
       <div style={{ ...base, background: "linear-gradient(180deg,#EEF2FF 0%,#FFFFFF 50%)", justifyContent: "center", color: "#1E293B" }}>
         <div style={{ textAlign: "center", maxWidth: 480, animation: "fadeUp .6s ease" }}>
           <div style={{ fontSize: 56, marginBottom: 12 }}>🐯🦚🐨🦉🦎</div>
-          <h1 style={{ fontSize: 34, fontWeight: 800, letterSpacing: "-0.02em", marginBottom: 6 }}>PDP-行为风格测试</h1>
+          <h1 style={{ fontSize: 34, fontWeight: 800, letterSpacing: "-0.02em", marginBottom: 6 }}>PDP-行为风格测评</h1>
           <p style={{ fontSize: 14, color: "#94A3B8", marginBottom: 36, lineHeight: 1.7 }}>
             Professional Dynamometric Programs<br />30 道题 · 约 3 分钟 · 生成企业用人参考报告
           </p>

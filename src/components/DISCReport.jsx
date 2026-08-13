@@ -241,7 +241,7 @@ export default function DISCApp() {
         {phase === "welcome" && (
           <div className={fade} style={{ paddingTop: 50, textAlign: "center" }}>
             <div style={{ width: 72, height: 72, margin: "0 auto 20px", borderRadius: 20, background: "linear-gradient(135deg,#e8e0ff,#d4e8ff,#d4f0e8,#ffe8d4)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 32 }}>🎯</div>
-            <h1 style={{ fontSize: 26, fontWeight: 800, color: "#2a2a3a", margin: "0 0 6px" }}>DISC 人格测评</h1>
+            <h1 style={{ fontSize: 26, fontWeight: 800, color: "#2a2a3a", margin: "0 0 6px" }}>DISC-行为模式测评</h1>
             <p style={{ fontSize: 13, color: "#999", margin: "0 0 28px" }}>企业人才评估参考工具</p>
 
             <div style={{ background: "#fff", borderRadius: 18, padding: 22, textAlign: "left", boxShadow: "0 2px 10px rgba(0,0,0,.04)", marginBottom: 24 }}>
