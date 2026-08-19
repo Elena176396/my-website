@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#faf9f5" />
+  <title>人生回溯 · Song Chaoyang</title>
+  <style>
+    html,body,#root{min-height:100%;margin:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;background:#faf9f5}
+    .site-back{position:fixed;z-index:9999;left:14px;top:14px;padding:8px 12px;border-radius:999px;background:rgba(20,20,20,.82);color:#fff;text-decoration:none;font-size:13px;backdrop-filter:blur(8px)}
+  </style>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <a class="site-back" href="/tools/">← 工具中心</a>
+  <div id="root"></div>
+  <script>
+    window.storage = {
+      async get(key){ const value=localStorage.getItem(key); return value==null?null:{value}; },
+      async set(key,value){ localStorage.setItem(key,value); return true; },
+      async delete(key){ localStorage.removeItem(key); return true; }
+    };
+  </script>
+  <script type="text/plain" id="app-source">
+const { useState, useRef, useEffect } = React;
+
+const C = { bg: "#0C0C10", card: "rgba(255,255,255,0.03)", border: "rgba(255,255,255,0.07)", text: "#D4D4DB", dim: "#666", white: "#fff" };
+const CHARS = [
+  { id: "remiel", name: `蕾米埃尔`, sub: `绝区零`, icon: `🪽`, color: "#c4b5fd", desc: `初代虚狩。沉睡百年后醒来，世界已面目全非。`, start: "r1" },
+  { id: "miyabi", name: `星舰雅`, sub: `绝区零`, icon: `❄️`, color: "#7dd3fc", desc: `对空六课课长。武家继承人。秩序，不可破。`, start: "m1" },
+  { id: "sakura", name: `木之本樱`, sub: `魔卡少女樱`, icon: `🌸`, color: "#f9a8d4", desc: `打开了那本书。从此，普通的日子结束了。`, start: "s1" },
+  { id: "anya", name: `阿尼亚`, sub: `间谍过家家`, icon: `🌟`, color: "#86efac", desc: [`能读心的孩子。只想要一个不会消失的家。`, `能读心的孩子。听到了所有人的声音，但没人听到她的。`], start: "a1" },
+  { id: "asuka", name: `明日香`, sub: `EVA`, icon: `🔥`, color: "#fca5a5", desc: `二号机驾驶员。骄傲是她的铠甲，也是她的伤口。`, start: "k1" },
+];
+const initStats = { courage: 0, heart: 0, will: 0, bond: 0 };
+
+// ═══════════════════════════════════════
+// STANDARD SCENES
+// ═══════════════════════════════════════
+const STD = {
+  r1:{char:"remiel",age:`苏醒`,title:`百年之后`,text:`意识回来的第一个感觉是冷。不是空气的冷。是"世界不认识你了"的冷。\n\n你从空洞中醒来。身体完好，记忆完好。但窗外的城市你一栋楼都不认识。有个孩子指着你的翅膀笑了一声。\n\n你站在那里。手上只有旧世界的武器和旧世界的名字。`,choices:[{text:`先搞清楚这个世界的规则`,next:"r2a",stats:{will:2,courage:1}},{text:`去找艾尔妲。一百年不算什么。`,next:"r2b",stats:{courage:2,bond:1}},{text:`用假名活着。蕾米埃尔已经死了。`,next:"r2c",stats:{heart:2}}],reveal:{icon:`🕐`,text:`你沉睡了一百多年。在你闭眼那一刻，新艾利都还是你和艾尔妲一起守护的城市。现在它属于不认识你的人了。`}},
+  r2a:{char:"remiel",age:`新世界`,text:`你花了三个月了解这个时代。新术语、新权力结构、新空洞类型。学习速度和一百年前一样快。\n\n但你学得越多越发现：有权力的人碾压没权力的人。只是方式更优雅了。\n\n凌晨三点，天台，风穿过翅膀。你突然想飞——不是去哪里，只是想感觉速度。`,choices:[{text:`重建达识结社——这个世界需要制衡`,next:"r3",stats:{will:2,courage:1}},{text:`找到法厄同——先保护眼前的人`,next:"r3",stats:{bond:2,heart:1}}]},
+  r2b:{char:"remiel",age:`重逢`,title:`她不记得了`,text:`你找到了她。艾尔妲·挽昼。活着。和记忆中一模一样。\n\n你拔出匕首——只有你们才懂的问候。她的手抬起来了。你的心跳停了。\n\n然后你看到了她的眼睛。空的。不认识你。\n\n你收起匕首。转身。走了。罗斯凯利法定性为刺杀未遂。你成了S级通缉犯。你没有解释。`,choices:[{text:`无所谓通缉。世界欠我的比我欠世界的多。`,next:"r3",stats:{courage:3}},{text:`被通缉也好。至少有人知道我的名字。`,next:"r3",stats:{will:2,heart:1}}],reveal:{icon:`⚔️`,text:`你去见她不是为了刺杀。你只是想确认：你用一百年守护的那个人，还在不在。答案是不在了。`}},
+  r2c:{char:"remiel",age:`拉米尔`,text:`你给自己取名拉米尔。藏好翅膀，报名了空洞英雄大奖赛。\n\n赛场上没人认识你。匿名让你自由。但每天晚上记忆不肯配合。\n\n你开始怀疑：一个没人认识的英雄，还算英雄吗？`,choices:[{text:`英雄不需要观众。我为自己而战。`,next:"r3",stats:{will:2,heart:1}},{text:`是时候用回真名了。蕾米埃尔没有死。`,next:"r3",stats:{courage:2,bond:1}}]},
+  r3:{char:"remiel",age:`遭遇`,title:`法厄同`,text:`一个年轻人。笨拙，热血，身上有你想起一百年前自己的东西。\n\n他不知道你是谁。他问了一个问题：「你为什么一个人？」\n\n你沉默了很久。最终说了实话：「因为我还没决定要不要留在这个世界。」\n\n他笑了。「那你先留一天试试？」`,choices:[{text:`……一天。好。先试一天。`,next:"r4",stats:{bond:2,heart:1}},{text:`这个人让你想起了什么。你想试试。`,next:"r4",stats:{heart:2}}],reveal:{icon:`✨`,text:`法厄同不知道他面前站着的是初代虚狩。他只是看到一个一个人站着的人，走了过来。不带任何前提的善意，比任何勋章都重。`}},
+  r4:{char:"remiel",age:`战斗`,title:`空洞里的旧影`,text:`你跟法厄同进了一次空洞。战斗技能没有问题。\n\n但空洞深处出现了幻影——一百年前的自己。穿着节杖军制服，身边是你叫得出名字的每个战友。他们在笑。\n\n你的手停了。法厄同在身后喊你的名字——不是蕾米埃尔，是拉米尔。\n\n一个假名把你从幻影中拉了回来。`,choices:[{text:`他们走了。但他们教你的东西还在。这就是传承。`,next:"r5",stats:{will:2,bond:1}},{text:`你在心里和每个人告了别。`,next:"r5",stats:{heart:3}},{text:`法厄同假装没看到你的异样。这比"你没事吧"温柔一万倍。`,next:"r5",stats:{bond:3}}]},
+  r5:{char:"remiel",age:`深夜`,title:`天桥`,text:`天桥。深夜。风很大。\n\n你靠在栏杆上看城市的灯。远处有什么在燃烧。也许是空洞。也许是别的。\n\n你闻到了战斗的味道。和一百年前一样。\n\n你张开翅膀。风打在脸上的三秒钟里你什么都没想。\n\n最后一个问题——你为什么还在这里？`,choices:[{text:`因为这个世界还有值得守护的东西。就算它不认识我。`,next:"end",stats:{bond:3}},{text:`因为战斗是我唯一确定的事。`,next:"end",stats:{will:3}},{text:`因为法厄同说"先试一天"。一天过去了。我决定再试一天。`,next:"end",stats:{heart:2,bond:2}},{text:`因为我答应过她。她不记得了。但承诺不需要两个人都记得才算数。`,next:"end",stats:{heart:3,courage:1}}],reveal:{icon:`🪽`,text:`你从来不是为了赢才战斗。你是为了不让你在乎的东西消失。一百年前没做到。一百年后还想再试。`}},
+
+  m1:{char:"miyabi",age:`继承`,title:`课长的第一天`,text:`对空六课。你站在门口看了三秒才走进去。椅子「吱」了一声。\n\n你五岁握刀，十岁上战场。这间办公室是命运的必然。但坐在这里和站在战场上完全不同。\n\n你的手摸了一下刀柄。紧张时的习惯。月城柳站在门口，看到了。她什么都没说。`,choices:[{text:`先立规矩——没有秩序就没有战斗力`,next:"m2a",stats:{will:2,courage:1}},{text:`先了解人——不是档案，是这个人`,next:"m2b",stats:{bond:2,heart:1}}],reveal:{icon:`🗡️`,text:`你五岁握刀的时候没人告诉你：世界上有一种战斗不能用刀解决。信任没有捷径。`}},
+  m2a:{char:"miyabi",age:`秩序`,text:`三天重写作战规范。苍角照做。悠真签字时笔尖停了一下。月城柳看完说：\n\n「规矩是死的。空洞是活的。」\n\n她说得对。但你没退让——课长第一天就退了，后面更难走。`,choices:[{text:`「规矩是底线。底线之上自由发挥。」`,next:"m3",stats:{will:2}},{text:`「你说得对。但我先把底线立住。」`,next:"m3",stats:{will:1,heart:1}}]},
+  m2b:{char:"miyabi",age:`了解`,text:`苍角在食堂说了两小时。月城柳在天台站了四十分钟，话不多但每句像刀。悠真在训练场笑着说了一小时——但你走出来回头一看，笑收起了。\n\n你发现：了解一个人不能靠问，要靠并肩作战。`,choices:[{text:`我带队冲前面——课长以身作则`,next:"m3",stats:{courage:2,bond:1}},{text:`我指挥后方——课长的职责是全局`,next:"m3",stats:{will:1,bond:1}}]},
+  m3:{char:"miyabi",age:`首战`,title:`小型空洞`,text:`第一次实战。你的刀出鞘了但没机会用——月城柳和苍角配合得比你预想的好。\n\n你发现一件不舒服的事：她们不需要你也能完成任务。\n\n收队时月城柳经过你身边：「下次你可以再往前站一点。」`,choices:[{text:`下次一定站在最前面`,next:"m4",stats:{courage:2}},{text:`你需要找到只有课长才能做的事`,next:"m4",stats:{will:2,heart:1}}]},
+  m4:{char:"miyabi",age:`暗流`,title:`悠真`,text:`你发现悠真的报告有修改痕迹。不是错误——是有意隐藏。\n\n深夜训练场"偶遇"他。月光下他没有笑。\n\n「你在瞒我什么？」\n\n他看了你很久：「课长，有些事不知道比较好。」\n\n他笑底下是疲惫。你认出了那个笑——你也会。一种把所有人挡在外面的笑。`,choices:[{text:`追到底。课长不接受信息盲区。`,next:"m5",stats:{will:2,courage:1}},{text:`退一步。给他空间。但让他知道你看到了。`,next:"m5",stats:{heart:2,bond:1}}],reveal:{icon:`🎭`,text:`悠真的笑是他的铠甲。和你的刀法一样，很小就学会的生存技能。`}},
+  m5:{char:"miyabi",age:`裂缝`,title:`空洞灾害`,text:`最大规模空洞灾害。六课全员出动。\n\n新型空洞体出现。苍角挡在平民前面。她挡住了。但她被击中了。\n\n你听到她摔倒的声音。月城柳喊：「课长！撤！」\n\n你不想撤。你星见家的字典里没有这个字。但你是课长。课长的责任不是自己赢——是让所有人活着回来。\n\n苍角在地上还在对你笑。你的刀在发抖。`,choices:[{text:`撤。带所有人撤。苍角我来扛。`,next:"m6",stats:{bond:3,heart:1}},{text:`我留下断后。你们带苍角先走。`,next:"m6",stats:{courage:3}},{text:`谁都不撤。月城柳你指挥，我去前面。`,next:"m6",stats:{will:3}}],reveal:{icon:`❄️`,text:`「秩序，不可破。」但今天你发现：秩序的目的不是秩序本身。是人。`}},
+  m6:{char:"miyabi",age:`医疗室`,title:`苍角`,text:`所有人活着。你站在医疗室门口。苍角缠着绷带还在笑。\n\n你走过去，蹲下来，帮她拉了拉被子。你从来不做这种事。\n\n「下次不许一个人挡。」你的声音比预想的哑。\n\n月城柳站在门外。她眼神里有一种你第一次看到的东西：认可。`,choices:[{text:`秩序不可破。但秩序是方式，人是目的。`,next:"m7",stats:{will:1,bond:1,heart:2}},{text:`我的刀以后不只为砍。也为挡在她们前面。`,next:"m7",stats:{bond:3}}]},
+  m7:{char:"miyabi",age:`夜晚`,text:`办公室。深夜。刀靠在墙边。\n\n你以前只害怕失败。今天你害怕失去。这是完全不同的恐惧。\n\n桌上多了一杯茶。不知道谁放的。还是热的。\n\n你喝了一口。苦的。但嘴角弯了一下。`,choices:[{text:`星见家教了所有刀法。但你自己学会了——收刀。`,next:"end",stats:{heart:2,will:1}},{text:`这杯茶比任何勋章都重。`,next:"end",stats:{bond:2,heart:1}},{text:`明天的课长会不一样。一样的刀，不一样的温度。`,next:"end",stats:{courage:2,will:1}}]},
+
+  s1:{char:"sakura",age:`开始`,title:`那本书`,text:`地下室。灯泡闪了。一本书。你的手碰到它，光涌出来。卡片飞走了。\n\n一只会说话的小东西说你必须把它们收回来。\n\n你今年十岁。明天要交数学作业。但你拿起了魔杖。`,choices:[{text:`因为害怕不是不做的理由`,next:"s2",stats:{courage:2,heart:1}},{text:`因为是你弄散的`,next:"s2",stats:{will:2}},{text:`因为小可说会陪你`,next:"s2",stats:{bond:2}}],reveal:{icon:`📖`,text:`这本书选了你——不是因为你最强，是因为你在害怕的时候不会关门。`}},
+  s2:{char:"sakura",age:`收集`,title:`那些夜晚`,text:`白天上学假装正常。晚上收牌。你偶尔趴在课桌上打瞌睡。老师以为你贪玩。你是昨晚三点才收服了雷之牌。\n\n有一天你遇到了一张你打不过的牌。小可在你肩膀上发抖。知世在远处举着摄像机。你深吸一口气。`,choices:[{text:`「一定没问题的。」你不确定。但你每次说都做到了。`,next:"s3",stats:{courage:3}},{text:`看了一眼知世、小可、远处的小狼。不是一个人就不怕。`,next:"s3",stats:{bond:2,courage:1}}]},
+  s3:{char:"sakura",age:`相遇`,title:`小狼`,text:`他从香港来了。也在找库洛牌。他看你的眼神不友好——他认为你不配。\n\n但你没生他的气。你在他凶巴巴的眼睛底下看到了孤独。\n\n「我们可以一起收集呀。」他瞪了你。耳朵红了。转身走了。\n\n但第二天他来了。假装路过。你笑了。`,choices:[{text:`你不擅长讨厌别人。这是弱点，也是你最大的力量。`,next:"s4",stats:{heart:2,bond:1}},{text:`你不需要证明自己。做你自己就好。`,next:"s4",stats:{courage:2}}],reveal:{icon:`🐺`,text:`小狼后来承认：你每次都在害怕，但每次都做了。他做不到。你教了他什么叫真正的勇气。`}},
+  s4:{char:"sakura",age:`温柔`,title:`不用打的牌`,text:`一张不攻击你的牌。它在哭。你放下魔杖。蹲下来：\n\n「你害怕是正常的。我也害怕。但我可以陪你。」\n\n它飘到你手心。变成了卡。小可：「你没用魔法？」你笑了。`,choices:[{text:`温柔也是一种力量。而且是更难的那种。`,next:"s5",stats:{heart:3}},{text:`你对每张牌说话的方式和对朋友一样。`,next:"s5",stats:{bond:2,heart:1}}]},
+  s5:{char:"sakura",age:`知世`,title:`为什么一直拍`,text:`公园长椅。「知世，你为什么一直给我拍？」\n\n她放下摄像机。笑了。\n\n「因为你值得被记录啊。不是因为你是魔卡少女。是因为你是小樱。」\n\n你的眼睛热了。你抱了她。`,choices:[{text:`你不知道自己在别人眼里是什么样子。原来是值得的。`,next:"s6",stats:{bond:2,heart:1}},{text:`知世不会魔法。但她是你最重要的牌。`,next:"s6",stats:{bond:3}}]},
+  s6:{char:"sakura",age:`审判`,title:`最终审判`,text:`月之守护者说：如果你失败，所有人会忘记最重要的人。\n\n你握着魔杖的手在抖。不是怕输——是怕失去。\n\n月亮很大。风很冷。你的影子很小。但你站住了。`,choices:[{text:`我不会输。不是因为我强。是因为我输不起。`,next:"s7",stats:{courage:2,heart:2}},{text:`就算魔法拿走记忆，也拿不走我爱过的事实。`,next:"s7",stats:{heart:3}}],reveal:{icon:`🌙`,text:`审判测试的不是力量。是你在害怕的时候还能不能站住。`}},
+  s7:{char:"sakura",age:`之后`,text:`你赢了。天亮了。第二天照常上学。\n\n知世给你倒茶，比平时甜。小狼经过你座位时脸红了。小可在书包里打呼噜。\n\n你趴在桌上。眼睛酸了。不是累——是昨晚差点失去这一切。而现在它全在这里。`,choices:[{text:`「一定会没问题的。」你会说一辈子。`,next:"end",stats:{courage:2,heart:1}},{text:`最强的魔法在书包里打呼噜呢。`,next:"end",stats:{bond:2,heart:1}},{text:`重要的不是没问题。是就算有问题也不会一个人扛。`,next:"end",stats:{bond:3}}]},
+
+  a1:{char:"anya",age:`被选中`,title:`新的爸爸`,text:`孤儿院。又来了一个大人。你假装看绘本，其实在读他的心。\n\n他不是真的想要你。他在执行任务。\n\n但他心里也没有"害怕你"。\n\n他看到你松了的鞋带。蹲下来系好了。你决定跟他走。`,choices:[{text:`这次一定表现好。不能再被退回去。`,next:"a2",stats:{will:2,heart:1}},{text:`他帮我系鞋带了。也许这次不一样。`,next:"a2",stats:{bond:2,heart:1}}],reveal:{icon:`🧠`,text:`罗伊德心里没有你。但他蹲下来时闪过一个念头：「鞋带松了。」不是任务。只是看到了。你就是因为这一秒决定的。`}},
+  a2:{char:"anya",age:`家`,title:`三种秘密`,text:`罗伊德是间谍。约尔是杀手。你是超能力者。三个人三层伪装。\n\n约尔做的饭很难吃。但她心里想的是「希望好吃一点」。罗伊德虽然在演戏，但每天真的来接你放学。\n\n假的家——能不能住着变成真的？`,choices:[{text:`能。只要大家都不拆穿。`,next:"a3",stats:{bond:2,will:1}},{text:`不知道。但想试试。`,next:"a3",stats:{heart:2,courage:1}}],reveal:{icon:`🏠`,text:`有天你读到罗伊德心里一句话，一闪而过：「也许……这样也不坏。」就五个字。你把花生先生抱紧，在被窝里念了很多遍。`}},
+  a3:{char:"anya",age:`学校`,title:`第一天`,text:`伊甸学院。课本一半的字不认识。旁边同学心里：「这题好简单。」\n\n你把书合上。深呼吸。不能哭。哭了会被注意到。被发现就会被退回去。`,choices:[{text:`不会就学。什么都不怕——除了被退回去。`,next:"a4",stats:{will:2,courage:1}},{text:`贝琪看了你一眼。她心里想的是"新来的好可爱"。松了口气。`,next:"a4",stats:{bond:2}}]},
+  a4:{char:"anya",age:`达米安`,title:`任务的孩子`,text:`爸爸的任务需要你接近达米安。他心里有座山——他爸爸。大到挡住所有光。\n\n有天他说了很凶的话。你想了三秒。然后哭了——不是因为伤心，是因为"哭"是最优解。\n\n他心里在尖叫：「都怪我！」你差点笑出来。忍住了。`,choices:[{text:`你擅长让别人心变柔软。`,next:"a5",stats:{heart:2,bond:1}},{text:`任务是任务。但你可以同时完成任务和做好人。`,next:"a5",stats:{will:2}}]},
+  a5:{char:"anya",age:`星星`,title:`差一点`,text:`考试成绩出来了。差一颗星。\n\n罗伊德买了可丽饼。草莓味。他心里在想任务。但嘴上说的是：「下次一定行。」\n\n——"下次"。意思是他还打算留着你。你咬了一口。很甜。眼睛湿了。`,choices:[{text:`我不聪明。但可以比所有人都努力。`,next:"a6",stats:{will:3}},{text:`他说了"下次"。这比星星值钱。`,next:"a6",stats:{heart:2,bond:1}}]},
+  a6:{char:"anya",age:`危机`,title:`那半句话`,text:`你读到了罗伊德的心：「任务如果以另一种方式继续……也许不需要——」\n\n没想完。但你读到了含义。\n\n你站在客厅中间。花生先生掉了。你没捡。\n\n约尔：「怎么了？」你：「没事。」你回房间。关门。没哭。你在想办法——怎么变得更有用。`,choices:[{text:`不会让这个家散。就算要拿一百颗星。`,next:"a7",stats:{will:2,courage:2}},{text:`也许他只是累了。累了的人会想乱七八糟的事。`,next:"a7",stats:{heart:2,bond:1}}],reveal:{icon:`💔`,text:`后来你又读了他的心。那个"也许不需要"只出现过一次。之后他想的全是"晚饭吃什么""阿尼亚成绩"。大人的心也会乱。不是每个念头都是决定。`}},
+  a7:{char:"anya",age:`夜晚`,title:`牛奶`,text:`你假装睡着了。罗伊德推门拉了拉被子。心里：「任务结束后——」断了。约尔在门口端着牛奶。心里：「这个孩子——」也断了。\n\n两个半句都是温暖的。灯灭了。牛奶放在床头柜上。热气在黑暗中升起来。\n\n你闭上眼睛。这次是真的睡着了。`,choices:[{text:`他们心里有我。虽然只有半句。半句就够了。`,next:"end",stats:{heart:3}},{text:`我会让这个家变成真的。就算用一辈子。`,next:"end",stats:{will:2,bond:2}},{text:`Waku waku. 明天又是新的一天。`,next:"end",stats:{courage:2,bond:2}}],reveal:{icon:`🌟`,text:`你最怕的不是考试不是坏人。你最怕有一天醒来，床头柜上没有那杯牛奶了。`}},
+
+  k1:{char:"asuka",age:`到达`,title:`第三新东京市`,text:`你从德国来。EVA二号机驾驶员。同步率全球第二。\n\n——不对。你是最强的。\n\n你踏进NERV时下巴微微抬起。你需要所有人看到你。\n\n因为——这个想法你从不让自己想完。`,choices:[{text:`「我是最强的。记住。」`,next:"k2",stats:{will:2,courage:1}},{text:`（看了碇真嗣一眼。他低着头。凭什么？）`,next:"k2",stats:{heart:1,will:1}}],reveal:{icon:`🔥`,text:`你四岁被选为驾驶员。"被选中"就是你存在的证明。但证明需要观众。没人看的时候，证明给谁？`}},
+  k2:{char:"asuka",age:`巅峰`,title:`92%`,text:`同步测试。92%。全场安静。美里吹了声口哨。\n\n你从插入栓出来走路快了三分之一。走廊里碇真嗣：「啊……辛苦了。」\n\n你站在原地。92%。但心里有一种说不出的空。你赢了。但没人在跟你比。`,choices:[{text:`不需要认可。数字说明一切。`,next:"k3",stats:{will:2}},{text:`赢了之后那种空是什么？你不想分析。`,next:"k3",stats:{heart:2}}]},
+  k3:{char:"asuka",age:`日常`,title:`阳台`,text:`和美里、碇真嗣住一起。你不会做饭。他会。这让你非常不爽。\n\n有天晚上你睡不着。走到客厅。他坐在阳台上听录音机。你在他身后站了几秒。他没发现你。\n\n你转身回房间了。那几秒你不是驾驶员。你只是一个睡不着的女孩。你讨厌那种感觉。太软了。`,choices:[{text:`你不需要做"普通女孩"。你是驾驶员。`,next:"k4",stats:{will:2,courage:1}},{text:`那几秒你没忘掉。你讨厌这件事。`,next:"k4",stats:{heart:2}}]},
+  k4:{char:"asuka",age:`下降`,title:`螺旋`,text:`同步率在跌。你越想赢越紧。越紧率越低。一个逃不出的螺旋。\n\n碇真嗣的率在涨。他甚至没在努力。他不是在跟你比。他根本不知道你的存在构成了一场比赛。\n\n你在他的世界里不存在。`,choices:[{text:`愤怒。把愤怒烧成燃料。`,next:"k5",stats:{courage:2}},{text:`假装没事。骄傲不允许你承认。`,next:"k5",stats:{will:2}},{text:`……为什么他不看你。你讨厌这个问题。但它一直在。`,next:"k5",stats:{heart:2,bond:1}}]},
+  k5:{char:"asuka",age:`惨败`,title:`镜子`,text:`一场你不该输的战斗。你输了。初号机替你收了尾。\n\n更衣室。你砸了柜门。你在镜子里看着自己。对镜子说了一句：\n\n「你什么都没有了。只剩这个了。」\n\n声音很小。只有你听到。`,choices:[{text:`站起来。再来。惣流·明日香·兰格雷不会躺着。`,next:"k6",stats:{will:3}},{text:`你突然很想让谁抱你一下。但你不知道该找谁。`,next:"k6",stats:{heart:3}}],reveal:{icon:`🪞`,text:`「只剩这个了。」——EVA不是你的武器。它是你的身份。没有它你不知道自己是谁。`}},
+  k6:{char:"asuka",age:`坠落`,title:`精神污染`,text:`使徒入侵了你的精神。翻开了所有锁好的抽屉。\n\n妈妈。病房。天花板上的娃娃。四岁推开门——\n\n所有的骄傲，所有的铠甲，所有的92%，全部是在说同一句话：\n\n「看我。拜托了。看我。」\n\n同步率归零。屏幕全黑。你在驾驶舱里尖叫了。`,choices:[{text:`我不需要任何人。我自己就够了——`,next:"k7",stats:{will:3}},{text:`（沉默。连骗自己的力气都没了。）`,next:"k7",stats:{heart:3}}],reveal:{icon:`💔`,text:`使徒没打败你。它只是把灯打开了。你的骄傲是四岁造的墙。墙里面是一个在病房门口叫了很多声妈妈的四岁小女孩。没人回应。`}},
+  k7:{char:"asuka",age:`之后`,title:`白色天花板`,text:`病房。四根灯管。手举不起来。不是受伤——是没力气。\n\n你不是最强的。可能从来都不是。但你还在。\n\n你听到了走廊里的脚步声。你没转头。但你在听。\n\n门把手上挂着一个袋子。一罐德国果汁。日本买不到的那种。没有署名。\n\n你拿起来。手不抖了。嘴里是酸的。眼睛是热的。`,choices:[{text:`我还会坐上二号机。不是因为最强。是因为还有使徒，而我还活着。`,next:"end",stats:{courage:2,will:2}},{text:`也许活着本身就够了。不需要证明什么。`,next:"end",stats:{heart:3}},{text:`……我想知道走廊里是谁。我不想承认。但我想知道有没有人来看我。`,next:"end",stats:{heart:1,bond:3}}]},
+};
+
+// ═══════════════════════════════════════
+// PERSONAL SCENES (adjusted for profile)
+// ═══════════════════════════════════════
+const PER = {
+  r1:{char:"remiel",age:`苏醒`,title:`百年之后`,text:`意识回来的第一个感觉是冷。不是空气的冷。是"世界不认识你了"的冷。\n\n你从空洞中醒来。记忆完好。窗外的城市你不认识。有个孩子指着你的翅膀笑了。\n\n你没有回应。你只是站着。表面什么都没有。里面全是碎片。`,choices:[{text:`不动声色地观察。先搞清楚规则再决定怎么活。`,next:"r2a",stats:{will:2,courage:1}},{text:`去找艾尔妲。表面平静。但翅膀在发抖。`,next:"r2b",stats:{courage:2,bond:1}},{text:`用假名。把蕾米埃尔藏起来。你很擅长藏东西。`,next:"r2c",stats:{heart:2}}],reveal:{icon:`🕐`,text:`你什么都记得，但什么都不在了。你没对任何人说"我害怕"。不是不害怕。是你已经习惯了独自消化一切。`}},
+  r2a:{char:"remiel",age:`观察`,text:`三个月拆解了这个时代。你在分析的时候最安静——脑子全速运转时，心里那些碎片会暂时停下来。\n\n凌晨三点。天台。你突然很想飞——不是去哪里，只是想感觉速度。\n\n你从天台跃出。夜风打在脸上的三秒钟里你什么都没想。这是醒来以后第一次觉得自己还活着。`,choices:[{text:`重建达识结社。你分析过了，世界需要制衡。`,next:"r3",stats:{will:2,courage:1}},{text:`找法厄同。数据说他值得信任。但真正原因是他让你想起了什么。`,next:"r3",stats:{bond:2,heart:1}}]},
+  r2b:{char:"remiel",age:`重逢`,title:`她不记得了`,text:`你找到了她。拔出匕首——只有你们才懂的问候。她的手抬起来了。你的心跳停了。\n\n然后你看到了她的眼睛。空的。什么都没有。\n\n你收起匕首。手非常稳。表情什么都没泄漏。转身走了。步速和来的时候一样。\n\n但在第一个转角，你停下来了。靠在墙上。闭上眼。站了很久。没有哭。`,choices:[{text:`什么都没表现出来。这是你最擅长的事。`,next:"r3",stats:{will:2,heart:1}},{text:`通缉就通缉。至少有人知道你的名字。不像她。`,next:"r3",stats:{courage:3}}],reveal:{icon:`⚔️`,text:`你去见她不是为了刺杀。答案你早就猜到了——你一直在猜别人没说出口的意思。这次猜对了。你只是不想接受猜对了这件事。`}},
+  r2c:{char:"remiel",age:`拉米尔`,text:`你给自己取名拉米尔。藏好翅膀。赛场上没人认识你。\n\n你可以重新定义自己。像把画翻过来——背面是空白的。你喜欢这种空白。\n\n但你发现：你可以藏住名字、翅膀，但藏不住记忆。\n\n你在赛场战斗时速度很快。但你不是在战斗。你是在用速度甩掉脑子里的画面。`,choices:[{text:`英雄不需要观众。但你需要知道自己是谁。`,next:"r3",stats:{will:2,heart:1}},{text:`用回真名。你只是藏了太久。`,next:"r3",stats:{courage:2,bond:1}}]},
+  r3:{char:"remiel",age:`遭遇`,title:`法厄同`,text:`你观察了他三天才搭话。记下了他的行为模式、作息、战斗风格、说话时的手势。你什么都看到了。他没看到你在看他。\n\n第四天你出现在他面前。他问：「你为什么一个人？」\n\n你准备了六种回答。每种都滴水不漏。但你说了第七种——没准备的：\n\n「因为我还没决定要不要留在这个世界。」\n\n你不知道为什么说了实话。也许因为他没有在揣测你。他只是在问。\n\n他笑了。「那你先留一天试试？」`,choices:[{text:`一天。好。你接受了。你没分析为什么。这让你不安。`,next:"r4",stats:{bond:2,heart:1}},{text:`这个人不复杂。不复杂的人让你不知道怎么相处。但你想试试。`,next:"r4",stats:{heart:2}}],reveal:{icon:`✨`,text:`法厄同是你遇到的第一个"表面就是全部"的人。他说"先试一天"就是字面意思。没有言外之意。对你这个每句话都在找第二层含义的人来说——这比密码还难解。`}},
+  r4:{char:"remiel",age:`战斗`,title:`空洞里的旧影`,text:`空洞深处出现了幻影——一百年前的自己和每个战友。他们在笑。\n\n你的手停了。法厄同：「怎么了？」「没什么。」你的语气和平时一样平。\n\n但你的翅膀在发抖。你控制不了翅膀。它比你诚实。\n\n法厄同看了看你的翅膀。然后移开了目光。他没追问。他做了更好的事：假装没看到。\n\n你在心里记住了这一刻。`,choices:[{text:`他们走了。但他们教你的东西还在。`,next:"r5",stats:{will:2,bond:1}},{text:`你在心里和每个人告了别。没有出声。你所有的告别都是无声的。`,next:"r5",stats:{heart:3}},{text:`法厄同假装没看到。这比"你没事吧"温柔一万倍。`,next:"r5",stats:{bond:3}}]},
+  r5:{char:"remiel",age:`深夜`,title:`天桥`,text:`天桥。深夜。风很大。你可以从高度、色温和分布推算人口结构。脑子永远在分析。\n\n但今晚你不想分析。你想飞。\n\n你张开翅膀从天桥跃下。城市的灯变成光带。速度越来越快。所有碎片——记忆、通缉令、空荡荡的眼神——在速度面前全部安静了。\n\n你飞了很久。落在楼顶。呼吸很重。但你的心——第一次在一百年里觉得完整。`,choices:[{text:`因为这个世界还有值得守护的东西。就算它不认识你。`,next:"end",stats:{bond:3}},{text:`因为飞的时候你什么都不用藏。速度让你自由。`,next:"end",stats:{heart:3}},{text:`因为法厄同说"先试一天"。一天过去了。你决定再试一天。`,next:"end",stats:{heart:2,bond:2}},{text:`因为你答应过她。承诺不需要两个人都记得。`,next:"end",stats:{will:3,courage:1}}],reveal:{icon:`🪽`,text:`你从来不在别人面前展开翅膀飞。飞是你最私密的事——唯一不用伪装的时刻。在速度里你不需要分析，不需要藏，不需要猜。你只是一个有翅膀的人，在飞。`}},
+
+  m1:{char:"miyabi",age:`继承`,title:`课长的第一天`,text:`你站在门口看了三秒。表面上看门牌。实际上在给自己倒计时。三、二、一。\n\n坐下来。椅子「吱」了一声。\n\n你的表情从来不泄漏任何东西——这是星见家的第一课，比刀法更早。\n\n但你的手摸了一下刀柄。你以为没人看到。\n\n月城柳看到了。你也知道她看到了——因为你从走进楼开始就在观察每个人。你记住了月城柳的站姿、苍角的走路速度、悠真微笑时右嘴角比左边高一毫米。\n\n你什么都看到了。但什么都没说。`,choices:[{text:`先立规矩。你不需要她们喜欢你。你需要她们信你的判断。`,next:"m2a",stats:{will:2,courage:1}},{text:`先了解人。你已经观察了——但观察不等于了解。`,next:"m2b",stats:{bond:2,heart:1}}],reveal:{icon:`🗡️`,text:`你从小被训练隐藏情绪。师父第一句话不是"砍"，是"你的表情太多了"。你学会了不让任何人读出你在想什么。太好了。好到有时候你自己也读不出自己在想什么。`}},
+  m2a:{char:"miyabi",age:`秩序`,text:`三天重写规范。你研究了两年出勤记录、任务失败率、队员生理数据。\n\n你不是在制定规矩。你是在用数据搭桥。\n\n月城柳：「规矩是死的。空洞是活的。」\n\n你知道她会这么说。你在写规范时就预判了她的反应。你准备了三种回应。但你最终说了没准备过的。`,choices:[{text:`「如果我第一天就退了，你会信我吗？」`,next:"m3",stats:{will:2,heart:1}},{text:`「底线之上自由发挥。我的底线不多。但不可破。」`,next:"m3",stats:{will:2}}]},
+  m2b:{char:"miyabi",age:`了解`,text:`你约了三个人。选了他们最放松的环境——食堂、天台、训练场。这是你的策略。\n\n苍角好读。表里如一。你羡慕她——不是性格，是她不需要藏。\n\n月城柳话不多。你在分析她时感到尊重——因为她也在分析你。\n\n悠真说了一小时。你走出来回头看——笑收起了。你看到了那一秒的空白。你什么都没说。但记住了。`,choices:[{text:`你看到了。但现在不是戳穿的时候。你会等。`,next:"m3",stats:{will:1,heart:1,bond:1}},{text:`观察不够。你需要在战场上重新认识她们。`,next:"m3",stats:{courage:2,bond:1}}]},
+  m3:{char:"miyabi",age:`首战`,title:`静水`,text:`第一次实战。你的刀没机会用——她们配合得太好了。你站在中场像一潭不需要流动的水。\n\n月城柳经过你身边：「下次再往前站一点。」\n\n回到办公室你坐了很久。你想到了轮滑——你从来不在别人面前滑。那是唯一不用控制表情的时刻。\n\n凌晨两点。训练场。一个人。刀速越来越快。快到影子跟不上。在那种速度里，你找到了和轮滑一样的东西——不用想，只用动。`,choices:[{text:`下次站在最前面。不是因为她们需要你。是你需要自己在那里。`,next:"m4",stats:{courage:2}},{text:`课长的位置不是最前面。是让所有人发挥的那个位置。`,next:"m4",stats:{will:2,heart:1}}]},
+  m4:{char:"miyabi",age:`暗流`,title:`悠真`,text:`悠真报告有修改痕迹。你用三天交叉比对数据，还原了七成。剩下三成让你不舒服——你习惯读完整个人。\n\n深夜训练场。月光下他没有笑。\n\n「你在瞒我什么？」\n\n他笑了——但这次你读到了笑底下的东西：不是算计。是疲惫。\n\n「课长，有些事不知道比较好。」\n\n你沉默了。你认出了他的笑。那种笑你也会。一种把所有人挡在外面的笑。你不是在看陌生人。你是在照镜子。`,choices:[{text:`追到底。你不接受信息盲区。就算真相不好看。`,next:"m5",stats:{will:2,courage:1}},{text:`退一步。你认出了那个笑。你不想拆掉一个和你一样的人的墙。`,next:"m5",stats:{heart:3}}],reveal:{icon:`🎭`,text:`悠真和你是同一种人——表面精密运转，内部自己消化。你读不完他，是因为他用了和你一样的加密方式。`}},
+  m5:{char:"miyabi",age:`裂缝`,title:`空洞灾害`,text:`最大规模灾害。苍角挡在平民前面被击中了。你听到她摔倒的声音。\n\n你的表情没变。脚步没乱。呼吸没加速。但你的刀——快了一倍。\n\n月城柳喊：「课长！撤！」\n\n你的脑子在高速运转——撤退路线、伤亡概率、出血量、轨迹——零点三秒算完了。\n\n但你的身体已经在往苍角方向冲了。在你算完之前。\n\n这是你第一次：身体比脑子快。`,choices:[{text:`撤。你的分析说这是最优解。但你冲过去不是因为分析——是因为你害怕了。`,next:"m6",stats:{bond:3,heart:1}},{text:`我断后。你算过了。存活率68%。够了。`,next:"m6",stats:{courage:3}}],reveal:{icon:`❄️`,text:`你从小被教"不要感情用事"。今天你的身体比脑子先动了。这不是失控。这是你第一次允许自己有温度。冰裂开的那一秒不是碎了——是在融化。`}},
+  m6:{char:"miyabi",age:`医疗室`,title:`苍角`,text:`你站在医疗室门口。站了四十秒才推门。你在调整表情。\n\n苍角看到你，眼睛亮了。你走过去。蹲下来。帮她拉了拉被子。\n\n你从来不做这种事。苍角愣住了。\n\n「下次不许一个人挡。」你的声音比预想的哑。\n\n月城柳站在门外。她的眼神里不是认可——是理解。\n\n她看到了你拉被子那一下。她知道那一下花了你多大的力气。因为她也知道放下铠甲是什么感觉。`,choices:[{text:`你不需要她们知道你在乎。但你允许月城柳看到了。`,next:"m7",stats:{heart:2,bond:1}},{text:`铠甲裂了一条缝。你没有修补它。`,next:"m7",stats:{heart:3}}]},
+  m7:{char:"miyabi",age:`夜晚`,text:`深夜。刀靠在墙边。手还在抖。\n\n桌上多了一杯茶。不知道谁放的。还是热的。\n\n你端起来。手还在抖。茶面上你的倒影也在抖。\n\n喝了一口。苦的。嘴角弯了一下。\n\n弯度非常小。没人看得出来。但没人在你对面。所以你多弯了一点。\n\n你不需要在意被看到。`,choices:[{text:`你自己学会了一招——把刀放下。`,next:"end",stats:{heart:2,will:1}},{text:`这杯茶比任何勋章都重。放茶的人没留名。`,next:"end",stats:{bond:2,heart:1}},{text:`明天的课长会不一样。一样的刀。不一样的温度。`,next:"end",stats:{courage:2,will:1}}]},
+
+  s1:{char:"sakura",age:`开始`,title:`那本书`,text:`地下室。灯闪了。你听到了声音。一本书。光涌出来。卡片飞走了。\n\n你今年十岁。明天要交作业。\n\n但你拿起了魔杖。你虽然害怕，但你更受不了不知道会发生什么。`,choices:[{text:`害怕不是不做的理由。`,next:"s2",stats:{courage:2,heart:1}},{text:`是你弄散的。你会负责。`,next:"s2",stats:{will:2}},{text:`小可说会陪你。`,next:"s2",stats:{bond:2}}],reveal:{icon:`📖`,text:`这本书选了你——不是因为你最强，是因为你十岁就有很多大人没有的品质：你会带着恐惧往前走，而不是等恐惧消失了再走。`}},
+  s2:{char:"sakura",age:`收集`,title:`那些夜晚`,text:`白天假装正常。晚上收牌。你趴在课桌上打瞌睡。没人知道。\n\n有时候你想：如果有人知道就好了。不是炫耀，是不用一个人假装正常。\n\n但你看了看身边。爸爸在做早饭。阳光从窗户照进来。如果他们知道了，这个早晨就不一样了。\n\n你不想改变这个早晨。所以你继续藏着。`,choices:[{text:`两个世界你都不想放弃。就算要一个人背着另一个。`,next:"s3",stats:{will:2,courage:1}},{text:`知世知道。小可知道。你不是完全一个人。`,next:"s3",stats:{bond:2}}]},
+  s3:{char:"sakura",age:`相遇`,title:`小狼`,text:`他认为你不配。你没生他的气。\n\n因为你看到了他凶巴巴的眼睛底下的东西。别人看不出来。但你一直在看别人不说出口的东西——这是你的习惯。\n\n他底下是孤独。\n\n「我们可以一起收集呀。」他走了。但第二天他来了。假装路过。\n\n你注意到了。你什么都注意到了。你只是假装没注意到。因为有些事不说出来比说出来更好。你懂这个。`,choices:[{text:`你不擅长讨厌别人。这是弱点。也是你最大的力量。`,next:"s4",stats:{heart:2,bond:1}},{text:`做你自己就好。他会看到的。`,next:"s4",stats:{courage:2}}],reveal:{icon:`🐺`,text:`小狼后来承认：你每次都在害怕但每次都做了。他只在不害怕时才行动。你用害怕教了他勇气。而你自己不知道。`}},
+  s4:{char:"sakura",age:`温柔`,title:`不用打的牌`,text:`一张哭泣的牌。你放下魔杖。蹲下来：「你害怕是正常的。我也害怕。但我可以陪你。」\n\n它飘到你手心。你没用魔法。你用了最擅长的东西——看到别人藏起来的害怕。因为你也在藏。所以你认得出来。`,choices:[{text:`温柔也是力量。而且是更难的那种。`,next:"s5",stats:{heart:3}},{text:`你和这张牌一样。都在藏。但你学会了不藏了。`,next:"s5",stats:{courage:2,heart:1}}]},
+  s5:{char:"sakura",age:`知世`,title:`为什么一直拍`,text:`「知世，你为什么一直给我拍？」\n\n「因为你值得被记录啊。不是因为你是魔卡少女。是因为你是小樱。」\n\n你的眼睛热了。你抱了她。你说不出话。\n\n你一直以为自己藏得很好。但知世一直在拍。她什么都看到了。她看到了你看不到的你自己。`,choices:[{text:`你不知道自己在别人眼里是什么样子。原来是值得的。`,next:"s6",stats:{bond:2,heart:1}},{text:`知世不会魔法。但她是你最重要的牌。`,next:"s6",stats:{bond:3}}]},
+  s6:{char:"sakura",age:`审判`,title:`最终审判`,text:`如果你失败，所有人忘记最重要的人。\n\n你在脑子里过了一遍所有可能——你一直在分析。但这次分析帮不了你。变量只有一个：你害不害怕。\n\n答案是害怕。非常害怕。但你站住了。月亮很大。你的影子很小。`,choices:[{text:`我不会输。不是因为我强。是因为我输不起。`,next:"s7",stats:{courage:2,heart:2}},{text:`就算魔法拿走记忆，也拿不走爱过的事实。`,next:"s7",stats:{heart:3}}],reveal:{icon:`🌙`,text:`审判测试的不是力量。是你在害怕时还能不能站住。答案从来都是能——你害怕的原因恰好就是你站住的原因。`}},
+  s7:{char:"sakura",age:`之后`,text:`你赢了。天亮了。没人知道。知世的茶比平时甜。小狼脸红了。小可在书包里打呼噜。\n\n你趴在桌上。眼睛酸了。不需要分析为什么。有些事不需要分析。感受就好。`,choices:[{text:`「一定会没问题的。」你会说一辈子。`,next:"end",stats:{courage:2,heart:1}},{text:`最强的魔法在书包里打呼噜呢。`,next:"end",stats:{bond:2,heart:1}},{text:`你终于不用藏了。至少在这个早晨。`,next:"end",stats:{heart:3}}]},
+
+  a1:{char:"anya",age:`被选中`,title:`新的爸爸`,text:`又来了一个大人。你假装看绘本，在读他的心。\n\n你一直在读。每个来过的大人你都读过。他们说不出哪里不对。但他们感觉到了。然后把你退回来了。\n\n罗伊德在想任务。但他心里也没有"害怕你"。\n\n他看到你鞋带松了。蹲下来。系好了。心里那一秒只有：「鞋带松了。」\n\n你决定了。你没有告诉他为什么选了他。你永远不会。因为你最擅长的事——就是知道了但不说。`,choices:[{text:`这次一定表现好。你会藏好所有不该被看到的东西。`,next:"a2",stats:{will:2,heart:1}},{text:`他帮你系鞋带了。你读到了那一秒的干净。这就够了。`,next:"a2",stats:{bond:2,heart:1}}],reveal:{icon:`🧠`,text:`你能读心。你知道所有人在想什么。但没人知道你在想什么。你是世界上信息最多同时也最孤独的人。因为你不能说。说了就会被退回去。你像一座装满书的图书馆，门上着锁。`}},
+  a2:{char:"anya",age:`家`,title:`三种秘密`,text:`三个人三层伪装。你是唯一知道全部真相的人。五岁的你承受着三个成年人份量的秘密。\n\n你不能说。说了就散了。\n\n约尔端来了饭。很难吃。但她心里：「希望好吃一点。」你笑了。说「好吃」。\n\n你在撒谎。但这个谎是温暖的。所有的谎加在一起——看起来像真的。`,choices:[{text:`假的家也是家。只要大家都不拆穿。`,next:"a3",stats:{bond:2,will:1}},{text:`你是唯一知道一切的人。很沉。但你扛得住。`,next:"a3",stats:{will:2,heart:1}}],reveal:{icon:`🏠`,text:`有天你读到罗伊德一闪而过的念头：「也许……这样也不坏。」你把花生先生抱紧，把这五个字念了很多遍。你看到了他自己都不知道的温柔。这是读心最残酷的地方——你看到了，但你不能告诉他你看到了。`}},
+  a3:{char:"anya",age:`学校`,title:`第一天`,text:`你读了教室里所有人的心。这个想点心。那个想玩具。老师想今晚做什么菜。\n\n你是唯一在想「表现不好这个家就没了」的人。\n\n课本一半的字不认识。旁边同学心里：「好简单。」\n\n不能哭。你的分析链条很清晰——五岁的脑子跑出了成年人的逻辑。你翻开书。一个字一个字地读。`,choices:[{text:`不会就学。你什么都不怕——除了被退回去。`,next:"a4",stats:{will:2,courage:1}},{text:`贝琪看了你一眼。心里：「新来的好可爱。」你松了口气。`,next:"a4",stats:{bond:2}}]},
+  a4:{char:"anya",age:`达米安`,title:`心里有座山的男孩`,text:`他心里有座山——他爸爸。大到挡住所有光。你读到之后突然觉得他也在藏东西。和你一样。\n\n他说了很凶的话。你想了三秒。然后哭了——不是因为伤心，是因为"哭"是最优解。\n\n他心里在尖叫：「都怪我！」你差点笑出来。忍住了。\n\n你五岁。你已经在用读心制定策略了。你不知道这是天赋还是悲剧。`,choices:[{text:`你擅长读到别人的软肋。你不会伤人——你会靠近他们。`,next:"a5",stats:{heart:2,bond:1}},{text:`哭是策略。但有一秒你是真的想哭。那一秒你没有分析。`,next:"a5",stats:{heart:3}}]},
+  a5:{char:"anya",age:`星星`,title:`差一点`,text:`差一颗星。罗伊德买了可丽饼。心里想任务。嘴上：「下次一定行。」\n\n——"下次"。你读到了他心里的"下次"和嘴上的"下次"——是同一个。他没说谎。这一句，没有说谎。\n\n你咬了一口。很甜。眼睛湿了。不是因为没拿到星星。是因为"下次"的意思是——他还打算留着你。`,choices:[{text:`你不聪明。但你可以比所有人都努力。`,next:"a6",stats:{will:3}},{text:`他说了"下次"。这比星星值钱。`,next:"a6",stats:{heart:2,bond:1}}]},
+  a6:{char:"anya",age:`危机`,title:`那半句话`,text:`你读到了罗伊德的心：「任务如果以另一种方式……也许不需要——」\n\n花生先生掉了。你站在客厅中间。世界变成了嗡嗡声。\n\n约尔：「怎么了？」你：「没事。」\n\n你回房间。没哭。你在想办法——怎么变得更有用。你在把恐惧转化成计划。\n\n你五岁。你不知道这是坚强还是另一种悲伤。`,choices:[{text:`不会让这个家散。你已经在心里列出了计划。`,next:"a7",stats:{will:2,courage:2}},{text:`也许他只是累了。你读过很多人的心。累了的人会想乱七八糟的事。你选择相信这个解释。`,next:"a7",stats:{heart:2,bond:1}}],reveal:{icon:`💔`,text:`后来你又读了他的心。"也许不需要"只出现过一次。之后全是"晚饭吃什么""阿尼亚成绩"。大人的心也会乱。但你忘不掉那半句话。你会记一辈子。因为你什么都记得。这是读心的代价。`}},
+  a7:{char:"anya",age:`夜晚`,title:`牛奶`,text:`你假装睡着了。在读他们的心。这是每晚的仪式——不是好奇，是确认。确认他们还想留着你。\n\n罗伊德：「任务结束后——」断了。约尔：「这个孩子——」也断了。两个半句都是温暖的。\n\n灯灭了。牛奶放在床头柜上。热气在黑暗中升起。\n\n你是世界上知道最多秘密的人。但你不知道一件事——他们那两个半句后面是什么。\n\n也许有天你会知道。也许不会。但今晚牛奶是热的。\n\n你闭上眼。这次没有读任何人的心。你在听自己的。`,choices:[{text:`他们心里有你。虽然只有半句。半句就够了。`,next:"end",stats:{heart:3}},{text:`你会让这个家变成真的。你已经有计划了。`,next:"end",stats:{will:2,bond:2}},{text:`Waku waku. 你不需要读完所有人的心。你只需要知道——牛奶是热的。`,next:"end",stats:{courage:2,bond:2}}],reveal:{icon:`🌟`,text:`你做了所有能做的事——分析变量，制定策略，读所有人的心。但你最好的策略不是算出来的。是闭上眼睛，抱着花生先生，听自己的心跳。和牛奶的热气。`}},
+
+  k1:{char:"asuka",age:`到达`,title:`第三新东京市`,text:`你从德国来。全身红色。\n\n你踏进NERV时下巴微微抬起。你感觉到了走廊里每一道目光的方向和停留时间。你一直在读空气。一直。\n\n碇真嗣站在走廊尽头。低着头。你一秒钟读完了他：没有攻击性，没有竞争意识。但他同步率比你高。\n\n你分析不出原因。这让你不安。你把不安塞进了骄傲的壳里。\n\n「你好啊，第三适格者。」声音轻快。只有你知道每个音节都是计算过的。`,choices:[{text:`「我是最强的。记住。」你需要他知道。需要所有人知道。`,next:"k2",stats:{will:2,courage:1}},{text:`你不在乎他怎么看你。你在乎的是——为什么他不看你。`,next:"k2",stats:{heart:2}}],reveal:{icon:`🔥`,text:`你四岁被选为驾驶员。"被选中"是你存在的证明。但证明需要观众。没人看的时候，证明给谁？`}},
+  k2:{char:"asuka",age:`巅峰`,title:`92%`,text:`92%。全场安静。你从插入栓出来步速快了三分之一。在用步速告诉所有人：我赢了。\n\n碇真嗣：「啊……辛苦了。」然后低头走了。\n\n你站在原地。92%。但心里有空洞。你分析了这种空：不是92%不够高。是你赢了但没人在跟你比。\n\n你需要的不是赢。你需要赢了之后有人说"你好厉害"。但你永远不会承认这一点。`,choices:[{text:`不需要认可。数字说明一切。你把空洞感压到了最深处。`,next:"k3",stats:{will:2}},{text:`你在走廊里站了多久？你记住了"辛苦了"三个字的温度——很低。`,next:"k3",stats:{heart:2}}]},
+  k3:{char:"asuka",age:`日常`,title:`阳台`,text:`有天晚上你睡不着。碇真嗣坐在阳台上听录音机。你在他身后站了几秒。\n\n你读了他的状态：呼吸平稳，身体放松，没注意到你。他活在一个不需要你的世界里。\n\n你转身回去了。躺在床上你分析了那几秒钟：为什么出去？不知道。为什么回来？不想让他看到你在看他。\n\n你在隐藏。你从来在隐藏。\n\n那几秒你不是驾驶员。你只是一个睡不着的女孩。你讨厌那种感觉。太像你不愿意成为的那个自己。`,choices:[{text:`你不需要做"普通女孩"。你是驾驶员。`,next:"k4",stats:{will:2,courage:1}},{text:`那几秒你什么都没想。"什么都不想"是一种你不习惯的速度——零。`,next:"k4",stats:{heart:2}}]},
+  k4:{char:"asuka",age:`下降`,title:`螺旋`,text:`同步率在跌。你在夜里分析自己像分析一台故障的机器。所有可观测变量都正常。\n\n所以问题在不可观测的地方。在你藏起来的那些东西里。\n\n碇真嗣的率在涨。他不是在跟你比。他根本不知道你的存在构成了一场比赛。\n\n你在他的世界里——不存在。`,choices:[{text:`愤怒。用速度把螺旋甩掉。`,next:"k5",stats:{courage:2}},{text:`你分析完了。结论：故障不在机器里。在操作员心里。但你不知道怎么修。`,next:"k5",stats:{heart:2,will:1}},{text:`……为什么他不看你。你讨厌这个问题。但它一直在。`,next:"k5",stats:{heart:2,bond:1}}]},
+  k5:{char:"asuka",age:`惨败`,title:`镜子`,text:`一场你不该输的战斗。你输了。关键一秒慢了零点几秒。初号机替你收尾。\n\n更衣室。你砸了柜门。在镜子里看自己。你在看的不是驾驶员。你在看一个被层层包裹的人——骄傲、愤怒、"我是最强的"——一层一层。\n\n你对镜子说了一句话。声音很小：\n\n「你什么都没有了。只剩这个了。」\n\n你说的"这个"是EVA。但更深的意思你没敢想：如果连"这个"也没了——`,choices:[{text:`站起来。再来。惣流·明日香·兰格雷不会躺着。`,next:"k6",stats:{will:3}},{text:`你突然很想让谁抱你一下。你分析了所有认识的人。没有一个合适的选项。`,next:"k6",stats:{heart:3}}],reveal:{icon:`🪞`,text:`「只剩这个了。」——你把所有鸡蛋放在一个篮子里。不是因为勇敢。是因为你只有一个篮子。`}},
+  k6:{char:"asuka",age:`坠落`,title:`精神污染`,text:`使徒翻开了你的脑子。所有锁好的抽屉被打开。\n\n妈妈。病房。四岁推开门。她看的是天花板上的娃娃。她对娃娃说了你的名字——但不是对你说的。\n\n从那天起你决定了：让全世界看你。因为妈妈没有看你。\n\n所有的92%。所有的"我是最强的"。全部是同一句话：「看我。拜托了。看我。」\n\n同步率归零。你在驾驶舱里尖叫了。`,choices:[{text:`我不需要任何人。我自己就够了——就——`,next:"k7",stats:{will:3}},{text:`（什么都不说了。连骗自己的力气都没了。你什么都不想了。第一次。）`,next:"k7",stats:{heart:3}}],reveal:{icon:`💔`,text:`使徒没打败你。它只是把灯打开了。你的骄傲是四岁造的墙。红色。高大。墙外面是惣流·明日香·兰格雷——战斗天才。墙里面是一个在病房门口叫了很多声妈妈的四岁小女孩。十年来你在墙外面活着。从没回去看过她。今天你被带回了墙里面。她还站在那里。还在等。`}},
+  k7:{char:"asuka",age:`沉默`,title:`四根灯管`,text:`病房。四根灯管。手举不起来。不是受伤——没力气。\n\n你的脑子终于安静了。没有分析。没有比较。没有同步率。\n\n什么都没有。\n\n你发现：什么都没有的时候——不疼。骄傲疼。比较疼。需要被看到——疼。但什么都没有——不疼。\n\n你在这种什么都没有的安静里呼吸。心跳。存在着。\n\n不为了任何理由。`,choices:[{text:`也许不需要理由也可以存在。也许存在不需要被证明。`,next:"k8",stats:{heart:3}},{text:`什么都没有。但你还在呼吸。这让你困惑，也让你好奇。`,next:"k8",stats:{heart:2,will:1}}]},
+  k8:{char:"asuka",age:`之后`,title:`走廊`,text:`第三天。你听到了走廊里的脚步声。你的脑子开始分析——步频、鞋底材质、步幅。你停不下来。你一直在猜。\n\n但这次你做了不一样的事：你没假装不在意。你把头转向了门口。\n\n没有人。但门把手上挂着一个袋子。一罐德国果汁。日本买不到的。没有署名。\n\n你拿起来。手不抖了。喝了一口。嘴里是酸的。眼睛是热的。\n\n你没有分析是谁放的。你没有猜。你只是喝了。\n\n这是十年来你第一次——接受了一个东西，没有问为什么。`,choices:[{text:`你还会坐上二号机。不是因为最强。是因为你还活着。活着本身就是理由。`,next:"end",stats:{courage:2,will:2}},{text:`你不知道果汁是谁放的。你选择不去猜。你选择只说——谢谢。虽然没人听到。`,next:"end",stats:{heart:2,bond:2}},{text:`你转头看了门口。这是十年来你第一次主动看向别人。不是为了被看到。是因为你想看到他们。`,next:"end",stats:{bond:3,heart:1}}]},
+};
+
+const EGGS_STD = {
+  remiel:`……\n\n你站在天桥上，突然感觉有人在看你。不是追兵。更远的地方。你回头。什么都没有。\n\n但你张开翅膀时，风里多了一种温度。你笑了。一百年来第一次。`,
+  miyabi:`……\n\n办公桌上一张纸条。不是任何人的字。上面写着：「你不需要一直强。」\n\n你把纸条折好，放进了刀鞘内侧。`,
+  sakura:`……\n\n书包里一张没见过的库洛牌。牌面上画着一个人。在看着你。\n\n背面写着：「这张牌叫'被守护的人'。它一直在你的牌组里。」`,
+  anya:`……\n\n你读到了一个很远的地方。那个人心里在想：「希望这个小家伙能幸福。」\n\n你把花生先生抱得更紧了。\n\nWaku waku. 这次是真的开心。`,
+  asuka:`……\n\n门把手上挂着一罐德国果汁。没有署名。你拿起来。手不抖了。\n\n嘴里是酸的。眼睛是热的。你没有哭。\n\n但你也没再说"我不需要任何人"了。`,
+};
+const EGGS_PER = {
+  remiel:`……\n\n你站在天桥上。感觉有人在看你。隔着一层看不见的屏幕。\n\n你回头。什么都没有。但你张开翅膀时，风里多了温度。你笑了。\n\n你没有藏住这个笑。你也没想要藏。`,
+  miyabi:`……\n\n办公桌上一张纸条。上面写着：「你不需要一直强。」\n\n你把它放进了刀鞘内侧。以后每次拔刀你都会碰到它。\n\n它提醒你：有人看到了你藏起来的那部分。而且没有走。`,
+  sakura:`……\n\n书包里一张没见过的库洛牌。牌面上画着一个人。在看着你微笑。\n\n背面写着：「这张牌叫'被守护的人'。它一直在你的牌组里。」\n\n你终于知道了——你一直在守护别人。但你也一直在被守护。只是你太忙了没发现。`,
+  anya:`……\n\n你读到了更远的地方。那个人心里：「希望这个小家伙能幸福。」\n\n你不知道那个人是谁。你读不到更多了。距离太远了。\n\n但你在心里对那个人说了一句话：「谢谢你。虽然你听不到。」\n\nWaku waku.`,
+  asuka:`……\n\n第五天你走出了病房。透过玻璃看外面。灯火。\n\n你注意到玻璃上的倒影——你自己的脸。没有面具。眼睛下面有青。头发乱了。\n\n你看了很久。然后对玻璃里的自己说了一句话：\n\n「……还在啊。」\n\n不是在问。是在确认。`,
+};
+
+function getEnding(charId, stats) {
+  const { courage, heart, will, bond } = stats;
+  const max = Math.max(courage, heart, will, bond);
+  const E = {
+    remiel: { bond:{t:`守护者`,text:`一百年改变了世界。没有改变你。你守护的是"守护"本身。`,c:"#c4b5fd"}, will:{t:`永不止步`,text:`你不属于任何时代。但你只需要一个方向和一双翅膀。`,c:"#c4b5fd"}, heart:{t:`飞行`,text:`你只有在飞的时候才不需要藏。速度让你自由。`,c:"#c4b5fd"}, courage:{t:`初代虚狩`,text:`通缉令上写着蕾米埃尔·丹。你没改名。没躲。翅膀张到最大，飞进天空。让他们追。`,c:"#c4b5fd"} },
+    miyabi: { bond:{t:`课长`,text:`你学会了收刀。有时挡在队友前面比砍更重要。`,c:"#7dd3fc"}, will:{t:`不可破`,text:`不可破的不是规矩。是你守护规矩背后那些人的决心。`,c:"#7dd3fc"}, heart:{t:`融化`,text:`铠甲底下是一个会因为队友受伤而手抖的人。冰会化的。尤其当里面包着一颗热的心。`,c:"#7dd3fc"}, courage:{t:`先锋`,text:`课长不该冲最前面。但你偏要。她们看到的第一个身影应该是你。`,c:"#7dd3fc"} },
+    sakura: { courage:{t:`一定没问题的`,text:`每次都不确定。但每次都做到了。不是确定了才做。是做了才确定。`,c:"#f9a8d4"}, bond:{t:`羁绊`,text:`最强的牌不在牌组里。在给你倒茶的人手里。在书包里打呼噜。`,c:"#f9a8d4"}, heart:{t:`不用藏了`,text:`你藏了两个世界。但知世什么都看到了。你不用藏了。至少在她面前。`,c:"#f9a8d4"}, will:{t:`魔卡之主`,text:`库洛牌选了你。是因为你是那种打碎花瓶会自己扫的人。`,c:"#f9a8d4"} },
+    anya: { heart:{t:`不会消失的家`,text:`牛奶每天在床头柜上。它已经是真的了。从第一杯牛奶开始。`,c:"#86efac"}, bond:{t:`世界和平`,text:`你的任务更难。但你不会放弃。你已经被退回去两次了。第三次不会了。`,c:"#86efac"}, will:{t:`策略家`,text:`你最好的策略不是算出来的。是闭上眼睛，听自己的心跳。`,c:"#86efac"}, courage:{t:`Waku Waku`,text:`你什么都怕。但你每天都笑着出门。这比读心厉害多了。`,c:"#86efac"} },
+    asuka: { heart:{t:`还在啊`,text:`你对着玻璃里的自己说了一句：「还在啊。」不是在问。是在确认。你还在。这就是全部。`,c:"#fca5a5"}, courage:{t:`二号机`,text:`你不是最强的。但你坐上去了。每一次都坐上去了。战斗是你唯一不用演的事。`,c:"#fca5a5"}, will:{t:`我不会输`,text:`就算碎了也要站着碎。惣流·明日香·兰格雷不会躺着。`,c:"#fca5a5"}, bond:{t:`被看到的人`,text:`门把手上的果汁没有署名。但有人记得你喝什么。你选择不去猜。你选择只说谢谢。这是十年来你第一次接受了什么东西——没有问为什么。`,c:"#fca5a5"} },
+  };
+  const ce=E[charId]; const key=max===bond?"bond":max===heart?"heart":max===will?"will":"courage";
+  return {title:ce[key].t,text:ce[key].text,color:ce[key].c};
+}
+
+function RevealBox({reveal}){const[open,setOpen]=useState(false);if(!reveal)return null;return(<div style={{margin:"16px 0"}}>{!open?(<button onClick={()=>setOpen(true)} style={{background:"rgba(0,212,170,0.08)",border:"1px solid rgba(0,212,170,0.2)",borderRadius:8,padding:"10px 16px",color:"#00D4AA",cursor:"pointer",fontSize:13,fontWeight:600,width:"100%",textAlign:"left"}}>🔓 你当时不知道的事</button>):(<div style={{background:"rgba(0,212,170,0.06)",border:"1px solid rgba(0,212,170,0.15)",borderRadius:8,padding:"14px 16px",fontSize:13,color:"#00D4AA",lineHeight:1.7}}>{reveal.icon} {reveal.text}</div>)}</div>);}
+
+function LifeRewind(){
+  const[mode,setMode]=useState(null);const[phase,setPhase]=useState("mode");
+  const[charId,setCharId]=useState(null);const[sceneId,setSceneId]=useState(null);
+  const[stats,setStats]=useState({...initStats});const[history,setHistory]=useState([]);
+  const[choiceMade,setChoiceMade]=useState(false);const[fadeIn,setFadeIn]=useState(true);
+  const[eggOpen,setEggOpen]=useState(false);const topRef=useRef(null);
+
+  const scenes=mode==="per"?PER:STD;
+  const eggs=mode==="per"?EGGS_PER:EGGS_STD;
+  const scene=sceneId?scenes[sceneId]:null;
+  const char=CHARS.find(c=>c.id===charId);
+
+  useEffect(()=>{setFadeIn(false);const t=setTimeout(()=>setFadeIn(true),50);return()=>clearTimeout(t);},[sceneId]);
+  useEffect(()=>{topRef.current?.scrollIntoView({behavior:"smooth"});},[sceneId,phase,eggOpen]);
+
+  const pickMode=(m)=>{setMode(m);setPhase("select");};
+  const selectChar=(ch)=>{setCharId(ch.id);setSceneId(ch.start);setPhase("play");setStats({...initStats});setHistory([]);setChoiceMade(false);setEggOpen(false);};
+  const choose=(choice)=>{if(choiceMade)return;setChoiceMade(true);const ns={...stats};if(choice.stats)Object.entries(choice.stats).forEach(([k,v])=>{ns[k]=(ns[k]||0)+v;});setStats(ns);setHistory(h=>[...h,{choice:choice.text}]);setTimeout(()=>{if(choice.next==="end")setPhase("end");else{setSceneId(choice.next);setChoiceMade(false);}},400);};
+  const restart=()=>{setPhase("select");setCharId(null);setSceneId(null);setEggOpen(false);};
+  const fullRestart=()=>{setPhase("mode");setMode(null);setCharId(null);setSceneId(null);setEggOpen(false);};
+
+  const sty={background:C.bg,color:C.text,minHeight:"100vh",fontFamily:"Georgia, 'Noto Serif SC', serif",padding:"24px 20px",maxWidth:520,margin:"0 auto"};
+
+  if(phase==="mode") return(
+    <div style={sty}><div ref={topRef}/>
+      <div style={{textAlign:"center",paddingTop:48}}>
+        <div style={{fontSize:13,color:C.dim,letterSpacing:2,fontFamily:"sans-serif"}}>LIFE REWIND</div>
+        <h1 style={{fontSize:24,fontWeight:800,margin:"8px 0 24px",color:C.white}}>人生回溯</h1>
+        <button onClick={()=>pickMode("std")} style={{display:"block",width:"100%",background:C.card,border:`1px solid ${C.border}`,borderRadius:12,padding:"20px",marginBottom:10,color:C.text,cursor:"pointer",textAlign:"left"}}>
+          <div style={{fontSize:16,fontWeight:700,color:"#c4b5fd",marginBottom:4}}>🎮 标准版</div>
+          <div style={{fontSize:12,color:C.dim}}>五个角色，各自的故事线。每个选择改变结局。</div>
+        </button>
+        <button onClick={()=>pickMode("per")} style={{display:"block",width:"100%",background:"rgba(255,107,157,0.04)",border:"1px solid rgba(255,107,157,0.15)",borderRadius:12,padding:"20px",color:C.text,cursor:"pointer",textAlign:"left"}}>
+          <div style={{fontSize:16,fontWeight:700,color:"#fca5a5",marginBottom:4}}><span style={{opacity:0.65,fontSize:20,color:"#ff4d6a"}}>♥</span> 专属版</div>
+          <div style={{fontSize:12,color:C.dim}}>为「表面平静、内心翻涌、爱猜爱藏」的人重新写的故事。</div>
+        </button>
+      </div>
+    </div>);
+
+  if(phase==="select") return(
+    <div style={sty}><div ref={topRef}/>
+      <div style={{textAlign:"center",marginBottom:20}}>
+        <div style={{fontSize:11,color:mode==="per"?"#fca5a5":"#c4b5fd",letterSpacing:2,fontFamily:"sans-serif"}}>{mode==="per"?"PERSONAL EDITION":"STANDARD EDITION"}</div>
+        <h1 style={{fontSize:20,fontWeight:800,margin:"6px 0 4px",color:C.white}}>选择角色</h1>
+        <div style={{fontSize:11,color:C.dim,cursor:"pointer"}} onClick={fullRestart}>← 切换版本</div>
+      </div>
+      {CHARS.map(ch=>(
+        <button key={ch.id} onClick={()=>selectChar(ch)} style={{display:"block",width:"100%",textAlign:"left",background:C.card,border:`1px solid ${C.border}`,borderRadius:12,padding:"14px 16px",marginBottom:8,color:C.text,cursor:"pointer"}}>
+          <div style={{display:"flex",alignItems:"center",gap:10}}>
+            <span style={{fontSize:28}}>{ch.icon}</span>
+            <div><div style={{fontSize:15,fontWeight:700,color:ch.color}}>{ch.name}<span style={{fontSize:11,color:C.dim,fontWeight:400,marginLeft:6,fontFamily:"sans-serif"}}>{ch.sub}</span></div>
+              <div style={{fontSize:12,color:C.dim,marginTop:2}}>{Array.isArray(ch.desc)?(mode==="per"?ch.desc[1]:ch.desc[0]):ch.desc}</div></div>
+          </div>
+        </button>))}
+    </div>);
+
+  if(phase==="end"){
+    const ending=getEnding(charId,stats);
+    return(<div style={sty}><div ref={topRef}/>
+      <div style={{textAlign:"center",paddingTop:32}}>
+        <div style={{fontSize:48,marginBottom:8}}>{char.icon}</div>
+        <div style={{fontSize:12,color:C.dim,fontFamily:"sans-serif",letterSpacing:1}}>— {char.name} · 结局 —</div>
+        <h2 style={{fontSize:22,fontWeight:700,color:ending.color,margin:"8px 0 20px"}}>{ending.title}</h2>
+        <div style={{fontSize:15,lineHeight:2,color:C.text,textAlign:"left",padding:"0 8px",whiteSpace:"pre-line"}}>{ending.text}</div>
+        <div style={{marginTop:24,padding:14,background:C.card,borderRadius:10,border:`1px solid ${C.border}`,textAlign:"left"}}>
+          <div style={{fontSize:10,color:C.dim,marginBottom:6,fontFamily:"sans-serif",letterSpacing:1}}>选择路径</div>
+          {history.map((h,i)=><div key={i} style={{fontSize:12,color:"#888",lineHeight:1.8,fontFamily:"sans-serif"}}><span style={{color:C.dim}}>{i+1}.</span> {h.choice}</div>)}
+        </div>
+        <div style={{display:"flex",gap:8,marginTop:16,justifyContent:"center",fontFamily:"sans-serif"}}>
+          {[{l:"勇",v:stats.courage,c:"#fca5a5"},{l:"心",v:stats.heart,c:"#f9a8d4"},{l:"意",v:stats.will,c:"#c4b5fd"},{l:"绊",v:stats.bond,c:"#86efac"}].map(s=>(
+            <div key={s.l} style={{background:C.card,borderRadius:8,padding:"8px 14px",textAlign:"center",border:`1px solid ${C.border}`,minWidth:48}}>
+              <div style={{fontSize:18,fontWeight:700,color:s.c}}>{s.v}</div>
+              <div style={{fontSize:10,color:C.dim,marginTop:2}}>{s.l}</div></div>))}
+        </div>
+        {!eggOpen?(<div onClick={()=>setEggOpen(true)} style={{marginTop:28,cursor:"pointer",fontSize:16,color:"#555",letterSpacing:10,userSelect:"none",padding:"8px",borderRadius:8,transition:"color 0.3s"}}>. . .</div>
+        ):(<div style={{marginTop:20,padding:"20px 16px",background:"rgba(255,255,255,0.02)",borderRadius:12,border:`1px solid ${ending.color}20`,textAlign:"left",fontSize:14,lineHeight:2,color:C.text,whiteSpace:"pre-line"}}>
+          <div style={{fontSize:10,color:ending.color,fontFamily:"sans-serif",letterSpacing:2,marginBottom:10}}>POST CREDITS</div>
+          {eggs[charId]}</div>)}
+        <div style={{display:"flex",gap:8,marginTop:16,justifyContent:"center",fontFamily:"sans-serif"}}>
+          <button onClick={restart} style={{padding:"10px 24px",background:ending.color,color:C.bg,border:"none",borderRadius:8,fontWeight:700,fontSize:14,cursor:"pointer"}}>换角色</button>
+          <button onClick={()=>{setSceneId(char.start);setStats({...initStats});setHistory([]);setChoiceMade(false);setEggOpen(false);setPhase("play");}} style={{padding:"10px 24px",background:"none",border:`1px solid ${C.border}`,borderRadius:8,color:C.text,fontSize:14,cursor:"pointer"}}>重玩</button>
+          <button onClick={fullRestart} style={{padding:"10px 24px",background:"none",border:`1px solid ${C.border}`,borderRadius:8,color:C.dim,fontSize:14,cursor:"pointer"}}>换版本</button>
+        </div>
+      </div>
+    </div>);
+  }
+
+  return(<div style={sty}><div ref={topRef}/>
+    <div style={{opacity:fadeIn?1:0,transition:"opacity 0.5s ease"}}>
+      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:12}}>
+        <div style={{fontSize:12,fontFamily:"sans-serif",color:char.color,background:`${char.color}15`,borderRadius:20,padding:"4px 14px",border:`1px solid ${char.color}25`,fontWeight:600}}>{char.icon} {scene.age}</div>
+        <div style={{fontSize:11,color:C.dim,fontFamily:"sans-serif"}}>{char.name}{mode==="per"?" ·专属":"" }</div>
+      </div>
+      {scene.title&&<h2 style={{fontSize:22,fontWeight:700,margin:"0 0 16px",color:C.white,lineHeight:1.3}}>{scene.title}</h2>}
+      <div style={{fontSize:15,lineHeight:2,whiteSpace:"pre-line",marginBottom:16}}>{scene.text}</div>
+      {scene.reveal&&<RevealBox reveal={scene.reveal}/>}
+      {scene.choices&&(<div style={{marginTop:20}}>
+        {scene.choices.map((ch,i)=>(
+          <button key={i} onClick={()=>choose(ch)} disabled={choiceMade} style={{
+            display:"block",width:"100%",textAlign:"left",
+            background:choiceMade?"rgba(255,255,255,0.02)":"rgba(255,255,255,0.04)",
+            border:`1px solid ${choiceMade?"rgba(255,255,255,0.04)":"rgba(255,255,255,0.1)"}`,
+            borderRadius:10,padding:"14px 18px",marginBottom:8,
+            color:choiceMade?"#555":C.text,cursor:choiceMade?"default":"pointer",
+            fontSize:14,lineHeight:1.6,fontFamily:"inherit",
+            opacity:choiceMade?0.4:1,transition:"all 0.2s",
+          }}>{ch.text}</button>))}
+      </div>)}
+      <div style={{marginTop:32,textAlign:"center",fontSize:11,color:C.dim,fontFamily:"sans-serif"}}>第 {history.length+1} 个选择</div>
+    </div>
+  </div>);
+}
+
+
+ReactDOM.createRoot(document.getElementById('root')).render(<LifeRewind />);
+  </script>
+  <script>
+    const { code } = Babel.transform(document.getElementById('app-source').textContent, {
+      presets: [['env'], ['react', { runtime: 'classic' }]]
+    });
+    new Function(code)();
+  </script>
+</body>
+</html>
