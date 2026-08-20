@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#f7f7f7">
+<title>格式转换 · Song Chaoyang</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f7f7f7; min-height: 100vh; display: flex; justify-content: center; align-items: flex-start; padding: 40px 16px; }
+  .card { background: #fff; border-radius: 16px; box-shadow: 0 2px 20px rgba(0,0,0,0.06); max-width: 480px; width: 100%; padding: 32px 28px; }
+  h1 { font-size: 22px; font-weight: 700; margin-bottom: 24px; color: #111; }
+  .tabs { display: flex; gap: 0; border-radius: 10px; overflow: hidden; border: 1px solid #e0e0e0; margin-bottom: 24px; }
+  .tab { flex: 1; padding: 11px 0; border: none; cursor: pointer; font-weight: 600; font-size: 14px; transition: all 0.2s; background: #f5f5f5; color: #888; }
+  .tab.active { background: #111; color: #fff; }
+  textarea, input[type="password"] { width: 100%; padding: 14px; border-radius: 10px; border: 1px solid #ddd; font-size: 15px; outline: none; transition: border 0.2s; }
+  textarea:focus, input:focus { border-color: #999; }
+  textarea { min-height: 120px; resize: vertical; margin-bottom: 14px; font-family: inherit; line-height: 1.6; }
+  input[type="password"] { margin-bottom: 14px; }
+  .btn { width: 100%; padding: 13px; border-radius: 10px; background: #111; color: #fff; border: none; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+  .btn:active { background: #333; }
+  .error { color: #e33; font-size: 13px; margin-top: 10px; }
+  .result { margin-top: 24px; }
+  .result-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .result-label { font-size: 13px; font-weight: 600; color: #888; }
+  .copy-btn { padding: 6px 16px; border-radius: 8px; border: 1px solid #ddd; background: #fff; color: #333; font-size: 13px; cursor: pointer; font-weight: 500; transition: all 0.2s; }
+  .copy-btn.done { background: #111; color: #fff; border-color: #111; }
+  .result textarea { font-family: "SF Mono", "Fira Code", monospace; font-size: 13px; min-height: 80px; background: #fafafa; }
+  .footer { margin-top: 28px; font-size: 12px; color: #bbb; line-height: 1.6; text-align: center; }
+  .site-back { position: fixed; z-index: 10; left: 14px; top: 14px; padding: 8px 12px; border-radius: 999px; background: rgba(20,20,20,.82); color: #fff; text-decoration: none; font-size: 13px; backdrop-filter: blur(8px); }
+</style>
+</head>
+<body>
+<a class="site-back" href="/tools/">← 工具中心</a>
+<div class="card">
+  <h1>格式转换</h1>
+  <div class="tabs">
+    <button class="tab active" onclick="switchMode('encrypt')">加密</button>
+    <button class="tab" onclick="switchMode('decrypt')">解密</button>
+  </div>
+  <textarea id="input" placeholder="输入你想加密的话..."></textarea>
+  <input type="password" id="password" placeholder="密码（你和对方约定好的）">
+  <button class="btn" id="runBtn" onclick="run()">加密 →</button>
+  <div class="error" id="error"></div>
+  <div class="result" id="resultBox" style="display:none">
+    <div class="result-header">
+      <span class="result-label" id="resultLabel">密文（发给对方）</span>
+      <button class="copy-btn" id="copyBtn" onclick="copyResult()">复制</button>
+    </div>
+    <textarea id="output" readonly onfocus="this.select()"></textarea>
+  </div>
+  <div class="footer">AES-256-GCM 加密 · 所有计算在本地完成</div>
+</div>
+
+<script>
+let mode = 'encrypt';
+
+function switchMode(m) {
+  mode = m;
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', (i === 0 && m === 'encrypt') || (i === 1 && m === 'decrypt')));
+  document.getElementById('input').value = '';
+  document.getElementById('input').placeholder = m === 'encrypt' ? '输入你想加密的话...' : '粘贴收到的密文...';
+  document.getElementById('runBtn').textContent = m === 'encrypt' ? '加密 →' : '解密 →';
+  document.getElementById('resultBox').style.display = 'none';
+  document.getElementById('error').textContent = '';
+}
+
+async function getKey(password) {
+  const enc = new TextEncoder();
+  const km = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey({ name: 'PBKDF2', salt: enc.encode('msg-encrypt-v1'), iterations: 100000, hash: 'SHA-256' }, km, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']);
+}
+
+async function run() {
+  const input = document.getElementById('input').value.trim();
+  const pw = document.getElementById('password').value;
+  const errEl = document.getElementById('error');
+  if (!input || !pw) { errEl.textContent = '请填写内容和密码'; return; }
+  errEl.textContent = '';
+  try {
+    let result;
+    if (mode === 'encrypt') {
+      const enc = new TextEncoder();
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const key = await getKey(pw);
+      const encrypted = await crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, enc.encode(input));
+      const combined = new Uint8Array(iv.length + encrypted.byteLength);
+      combined.set(iv);
+      combined.set(new Uint8Array(encrypted), iv.length);
+      result = btoa(String.fromCharCode(...combined));
+    } else {
+      const raw = Uint8Array.from(atob(input), c => c.charCodeAt(0));
+      const iv = raw.slice(0, 12);
+      const data = raw.slice(12);
+      const key = await getKey(pw);
+      const decrypted = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
+      result = new TextDecoder().decode(decrypted);
+    }
+    document.getElementById('output').value = result;
+    document.getElementById('resultLabel').textContent = mode === 'encrypt' ? '密文（发给对方）' : '原文';
+    document.getElementById('resultBox').style.display = 'block';
+  } catch (e) {
+    errEl.textContent = mode === 'encrypt' ? '加密失败' : '解密失败——密码错了或密文被改过';
+  }
+}
+
+function copyResult() {
+  const output = document.getElementById('output');
+  const btn = document.getElementById('copyBtn');
+  output.select();
+  output.setSelectionRange(0, 99999);
+  navigator.clipboard.writeText(output.value).then(() => {
+    btn.textContent = '已复制 ✓';
+    btn.classList.add('done');
+    setTimeout(() => { btn.textContent = '复制'; btn.classList.remove('done'); }, 1500);
+  }).catch(() => {
+    document.execCommand('copy');
+    btn.textContent = '已复制 ✓';
+    btn.classList.add('done');
+    setTimeout(() => { btn.textContent = '复制'; btn.classList.remove('done'); }, 1500);
+  });
+}
+</script>
+</body>
+</html>
