@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#faf9f5" />
+  <title>有用之人 · Song Chaoyang</title>
+  <style>
+    html,body,#root{min-height:100%;margin:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC",sans-serif;background:#faf9f5}
+    .site-back{position:fixed;z-index:9999;left:14px;top:14px;padding:8px 12px;border-radius:999px;background:rgba(20,20,20,.82);color:#fff;text-decoration:none;font-size:13px;backdrop-filter:blur(8px)}
+  </style>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <a class="site-back" href="/tools/">← 工具中心</a>
+  <div id="root"></div>
+  <script>
+    window.storage = {
+      async get(key){ const value=localStorage.getItem(key); return value==null?null:{value}; },
+      async set(key,value){ localStorage.setItem(key,value); return true; },
+      async delete(key){ localStorage.removeItem(key); return true; }
+    };
+  </script>
+  <script type="text/plain" id="app-source">
+const { useState, useCallback, useEffect, useRef } = React;
+
+const shuffle = (a) => [...a].sort(() => Math.random() - 0.5);
+const rng = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+const SKILLS = [
+  { id: "tech", name: `技术碾压`, desc: `用能力解决一切`, icon: `🔧`, dmg: 18, giveCost: 15, maskGain: 8, type: "give",
+    color: "#00ff9d", gradient: "linear-gradient(135deg, #00ff9d22, #00ff9d08)" },
+  { id: "analyze", name: `冷静拆解`, desc: `慢半拍，但看得更深`, icon: `🧠`, dmg: 14, giveCost: 10, maskGain: 5, type: "give",
+    color: "#4ade80", gradient: "linear-gradient(135deg, #4ade8022, #4ade8008)" },
+  { id: "stubborn", name: `执拗硬刚`, desc: `不退。就是不退。`, icon: `💢`, dmg: 22, giveCost: 20, maskGain: 12, type: "give",
+    color: "#22d3ee", gradient: "linear-gradient(135deg, #22d3ee22, #22d3ee08)" },
+  { id: "erupt", name: `愤怒爆发`, desc: `有他没我有我没他`, icon: `💥`, dmg: 30, giveCost: 8, maskGain: -15, selfDmg: 8, type: "mask",
+    color: "#f472b6", gradient: "linear-gradient(135deg, #f472b622, #f472b608)" },
+  { id: "leave", name: `沉默离场`, desc: `不解释。走了。`, icon: `🚪`, dmg: 0, giveCost: -10, maskGain: -10, heal: 5, type: "mask",
+    color: "#a78bfa", gradient: "linear-gradient(135deg, #a78bfa22, #a78bfa08)" },
+  { id: "escape", name: `溜了溜了`, desc: `上班溜出去也是一种战术`, icon: `💨`, dmg: 12, giveCost: 5, maskGain: 3, type: "style",
+    color: "#6366f1", gradient: "linear-gradient(135deg, #6366f122, #6366f108)" },
+];
+
+const ENEMIES = [
+  { id: "efficiency", name: `效率焦虑`, icon: `⏰`, hp: 40, atk: 8,
+    desc: `事情慢了。你的血压先快了。`,
+    taunt: [`怎么这么慢`, `这点事要搞多久`, `我来做还更快`],
+    defeatLine: `它停了。你发现：慢下来的时候，你反而看得更清楚。` },
+  { id: "boss", name: `职场领导`, icon: `👔`, hp: 55, atk: 10,
+    desc: `不认可你。但离不开你。他知道你能解决问题。你也知道。但他就是不说。`,
+    taunt: [`你的工位换回来`, `这个需求今天完成`, `我跟你说了你就照做`],
+    defeatLine: `他还坐在那个位子上。但你不再需要他的认可了。你自己知道自己能做什么。` },
+  { id: "equation", name: `考试公式`, icon: `📐`, hp: 60, atk: 12,
+    desc: `考好了=什么都有。考不好=什么都没有+语言攻击。\n这道等式你算了二十多年。`,
+    taunt: [`你看看别人家的孩子`, `学习好了什么都给你`, `你怎么这么没用`],
+    defeatLine: `等式还在。但你在等号旁边写了一行小字：「这个等式是错的。有用≠值得被爱。」` },
+  { id: "worth", name: `配得感黑洞`, icon: `🕳️`, hp: 45, atk: 14,
+    desc: `你不配。你不够好。你被留下只是因为你还有用。有一天你没用了，他们就会走。`,
+    taunt: [`你凭什么`, `人家只是客气`, `别自作多情了`],
+    defeatLine: `黑洞没有消失。但你发现你可以站在边上而不掉进去。` },
+  { id: "freeze", name: `社交宕机`, icon: `🧊`, hp: 35, atk: 6,
+    desc: `端错饭了。撞到人了。脑子一片空白。全身僵住。只想跑。`,
+    taunt: [`所有人都在看你`, `你搞砸了`, `快跑快跑快跑`],
+    defeatLine: `你没跑。你站了三秒。然后说了声"不好意思"。世界没有塌。` },
+  { id: "coworker", name: `同事矛盾`, icon: `⚡`, hp: 50, atk: 11,
+    desc: `有他没我有我没他。你没有中间档。要么赢要么走。`,
+    taunt: [`你太较真了`, `大家都这样的`, `何必呢`],
+    defeatLine: `他还在。你也还在。你发现"都在"也是一种结果。不是你死我活。` },
+  { id: "abandon", name: `被抛弃恐惧`, icon: `👻`, hp: 65, atk: 13,
+    desc: `如果你不够有用——如果你不再给予——如果你停下来——\n他们会不会就走了？`,
+    taunt: [`你不给他们就不需要你了`, `停下来试试？你不敢`, `没有你他们也一样过`],
+    defeatLine: `你停下来了。你什么都没给。\n\n他们还在。\n\n原来"在"不需要门票。` },
+];
+
+const BOSS = {
+  id: "mirror", name: `镜中的明日香`, icon: `🪞`, hp: 80, atk: 15,
+  desc: `最后一层。\n\n镜子里不是你。是明日香。红色。骄傲。铠甲裂了。\n\n她在说你一直在说的话：\n「看我。我有用。我值得。」\n\n你知道她需要被救。\n但你更知道——你自己也是。`,
+  taunt: [`你不能停下来`, `没有用就没有价值`, `谁会救你？你不会开口的`, `你配吗`],
+  defeatLine: `镜子碎了。\n\n明日香不在了。碎片里映出的是你自己。\n\n一个一直在给、一直在藏、一直不敢说"我需要你"的人。\n\n你没有打败他。你对他说了一句从来没说过的话：\n\n「你不需要有用。你已经够了。」`,
+};
+
+const RARITY = {
+  common: { label: "C", color: "#9ca3af", glow: "none" },
+  rare: { label: "B", color: "#60a5fa", glow: "0 0 12px #60a5fa44" },
+  epic: { label: "A", color: "#a78bfa", glow: "0 0 14px #a78bfa44" },
+  legendary: { label: "S", color: "#fbbf24", glow: "0 0 16px #fbbf2444" },
+};
+
+const ITEMS = [
+  { id: "skate", name: `轮滑速度感`, icon: `🛼`, rarity: "rare", desc: `HP+15 什么都不想`, effect: "heal", val: 15,
+    bg: "linear-gradient(135deg, #6366f1, #2563eb)" },
+  { id: "boba", name: `冷战后的奶茶`, icon: `🧋`, rarity: "common", desc: `面具-15`, effect: "maskDown", val: 15,
+    bg: "linear-gradient(135deg, #f97316, #eab308)" },
+  { id: "claude", name: `Claude安装包`, icon: `💻`, rarity: "rare", desc: `给予+20`, effect: "giveUp", val: 20,
+    bg: "linear-gradient(135deg, #a78bfa, #6366f1)" },
+  { id: "anger", name: `一小时冷静期`, icon: `⏳`, rarity: "common", desc: `面具-20`, effect: "maskDown", val: 20,
+    bg: "linear-gradient(135deg, #10b981, #059669)" },
+  { id: "song", name: `孤独与蒼い惑星`, icon: `🎸`, rarity: "epic", desc: `HP+10 面具-15`, effect: "both", val: 10,
+    bg: "linear-gradient(135deg, #8b5cf6, #ec4899)" },
+  { id: "asuka", name: `明日香手办`, icon: `🔥`, rarity: "legendary", desc: `下次攻击+50%`, effect: "atkBuff", val: 0,
+    bg: "linear-gradient(135deg, #ef4444, #dc2626)" },
+  { id: "maomao", name: `毛毛画的画`, icon: `🖼️`, rarity: "legendary", desc: `HP+20`, effect: "heal", val: 20,
+    bg: "linear-gradient(135deg, #fbbf24, #f59e0b)" },
+  { id: "solve", name: `解决了一个难题`, icon: `✨`, rarity: "common", desc: `给予+15`, effect: "giveUp", val: 15,
+    bg: "linear-gradient(135deg, #22d3ee, #06b6d4)" },
+];
+
+const MASK_EVENTS = [
+  `你在笑。但你知道这个笑不是你的。`,
+  `有人问你"还好吗"。你说"挺好的"。太快了。`,
+  `你已经三天没说过一句真话了。`,
+  `你想说"我需要你"。嘴巴张开了。然后合上了。`,
+  `你又在给了。你不知道不给的时候要怎么站在关系里。`,
+];
+
+const C = {
+  bg: "#08080f", panel: "rgba(255,255,255,0.03)", border: "rgba(255,255,255,0.07)",
+  text: "#d4d4db", dim: "#555", give: "#00ff9d", mask: "#ff6b9d", hp: "#ff4444",
+  style: "#6366f1", gold: "#fbbf24", white: "#fff",
+};
+
+function Bar({ label, val, max, color, icon }) {
+  const pct = clamp((val / max) * 100, 0, 100);
+  return (
+    <div style={{ marginBottom: 5 }}>
+      <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color, fontWeight: 700, marginBottom: 2 }}>
+        <span>{icon} {label}</span><span>{val}/{max}</span>
+      </div>
+      <div style={{ height: 6, borderRadius: 3, background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
+        <div style={{ height: "100%", borderRadius: 3, background: color, width: `${pct}%`, transition: "width 0.4s", boxShadow: `0 0 8px ${color}55` }} />
+      </div>
+    </div>
+  );
+}
+
+function ItemCard({ item, onClick }) {
+  const r = RARITY[item.rarity];
+  return (
+    <button onClick={onClick} style={{
+      flex: 1, background: item.bg, border: `2px solid ${r.color}`,
+      borderRadius: 14, padding: "16px 8px", cursor: "pointer",
+      textAlign: "center", boxShadow: r.glow, minWidth: 0,
+    }}>
+      <div style={{ fontSize: 32, marginBottom: 6, filter: "drop-shadow(0 0 8px rgba(255,255,255,0.3))" }}>{item.icon}</div>
+      <div style={{ fontSize: 11, fontWeight: 800, color: "#fff", marginBottom: 2 }}>{item.name}</div>
+      <div style={{ fontSize: 9, color: r.color, fontWeight: 700, letterSpacing: 1, marginBottom: 4 }}>{r.label}</div>
+      <div style={{ fontSize: 10, color: "rgba(255,255,255,0.7)" }}>{item.desc}</div>
+    </button>
+  );
+}
+
+function SkillBtn({ skill, disabled, onClick, boosted }) {
+  const dmg = boosted ? Math.floor(skill.dmg * 1.5) : skill.dmg;
+  return (
+    <button onClick={onClick} disabled={disabled} style={{
+      background: disabled ? "rgba(255,255,255,0.02)" : skill.gradient,
+      border: `1px solid ${disabled ? "rgba(255,255,255,0.04)" : skill.color + "40"}`,
+      borderRadius: 10, padding: "8px 12px", cursor: disabled ? "default" : "pointer",
+      width: "100%", textAlign: "left", marginBottom: 5, transition: "all 0.15s",
+      opacity: disabled ? 0.35 : 1,
+    }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <span style={{ fontSize: 18, filter: disabled ? "grayscale(1)" : "none" }}>{skill.icon}</span>
+          <div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: disabled ? "#444" : skill.color }}>{skill.name}</div>
+            <div style={{ fontSize: 10, color: C.dim }}>{skill.desc}</div>
+          </div>
+        </div>
+        <div style={{ textAlign: "right", fontSize: 10, color: disabled ? "#333" : "#888", lineHeight: 1.6, whiteSpace: "nowrap" }}>
+          {dmg > 0 && <div style={{ color: disabled ? "#333" : C.gold }}>DMG {dmg}{boosted ? " 🔥" : ""}</div>}
+          {skill.giveCost > 0 ? <div>给予 -{skill.giveCost}</div> : skill.giveCost < 0 ? <div style={{ color: C.give }}>给予 +{-skill.giveCost}</div> : null}
+          {skill.maskGain > 0 ? <div style={{ color: C.mask }}>面具 +{skill.maskGain}</div> : skill.maskGain < 0 ? <div style={{ color: "#a78bfa" }}>面具 {skill.maskGain}</div> : null}
+        </div>
+      </div>
+    </button>
+  );
+}
+
+function Roguelike() {
+  const [phase, setPhase] = useState("title");
+  const [floor, setFloor] = useState(0);
+  const [hp, setHp] = useState(100);
+  const [give, setGive] = useState(50);
+  const [mask, setMask] = useState(20);
+  const [enemies, setEnemies] = useState([]);
+  const [enemy, setEnemy] = useState(null);
+  const [enemyHp, setEnemyHp] = useState(0);
+  const [log, setLog] = useState([]);
+  const [items, setItems] = useState([]);
+  const [shopItems, setShopItems] = useState([]);
+  const [result, setResult] = useState(null);
+  const [maskEvent, setMaskEvent] = useState(null);
+  const [atkBuff, setAtkBuff] = useState(false);
+  const [turnBusy, setTurnBusy] = useState(false);
+  const [kills, setKills] = useState(0);
+  const [shake, setShake] = useState(false);
+  const [flash, setFlash] = useState(null);
+  const logRef = useRef(null);
+
+  const addLog = useCallback((msg) => setLog((p) => [...p, msg].slice(-30)), []);
+  useEffect(() => { if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight; }, [log]);
+  const doShake = () => { setShake(true); setTimeout(() => setShake(false), 300); };
+  const doFlash = (color) => { setFlash(color); setTimeout(() => setFlash(null), 200); };
+
+  const startGame = () => {
+    const order = shuffle(ENEMIES);
+    setEnemies(order); setFloor(0); setHp(100); setGive(50); setMask(20);
+    setLog([]); setItems([]); setResult(null); setMaskEvent(null);
+    setAtkBuff(false); setKills(0); setTurnBusy(false);
+    enterFloor(order[0], 1);
+  };
+
+  const enterFloor = (e, f) => {
+    const en = f === 8 ? BOSS : e;
+    setEnemy(en); setEnemyHp(en.hp); setFloor(f); setPhase("fight");
+    setMaskEvent(null); setTurnBusy(false);
+    setLog((p) => [...p, `── ${f}F  ${en.icon} ${en.name} ──`]);
+  };
+
+  const useSkill = (skill) => {
+    if (turnBusy) return;
+    if (skill.giveCost > 0 && give < skill.giveCost) { addLog(`给予值不足`); return; }
+    setTurnBusy(true);
+
+    let dmg = skill.dmg;
+    if (atkBuff && dmg > 0) { dmg = Math.floor(dmg * 1.5); setAtkBuff(false); }
+
+    const nGive = clamp(give - skill.giveCost, 0, 100);
+    const nMask = clamp(mask + skill.maskGain, 0, 100);
+    let nHp = hp;
+    if (skill.selfDmg) nHp = Math.max(0, hp - skill.selfDmg);
+    if (skill.heal) nHp = Math.min(100, hp + skill.heal);
+    const nEHp = Math.max(0, enemyHp - dmg);
+
+    setGive(nGive); setMask(nMask); setHp(nHp); setEnemyHp(nEHp);
+    if (dmg > 0) { doFlash(skill.color); doShake(); }
+    addLog(dmg > 0 ? `${skill.icon} ${skill.name} → -${dmg}` : `${skill.icon} ${skill.name}`);
+
+    if (nHp <= 0) { setResult("dead"); setPhase("end"); setTurnBusy(false); return; }
+    if (nEHp <= 0) {
+      addLog(enemy.defeatLine); setKills((k) => k + 1);
+      setTimeout(() => {
+        if (enemy.id === "mirror") { setResult("win"); setPhase("end"); }
+        else { offerShop(); }
+        setTurnBusy(false);
+      }, 600);
+      return;
+    }
+
+    if (nMask >= 80 && Math.random() < 0.5) {
+      const evt = MASK_EVENTS[rng(0, MASK_EVENTS.length - 1)];
+      setMaskEvent(evt); addLog(`🎭 ${evt}`);
+      nHp = Math.max(1, nHp - 10); setHp(nHp);
+    }
+    if (nMask >= 100) {
+      addLog(`🎭 面具碎了——但下面什么都没有`); setResult("mask_collapse"); setPhase("end"); setTurnBusy(false); return;
+    }
+
+    setTimeout(() => {
+      const taunt = enemy.taunt[rng(0, enemy.taunt.length - 1)];
+      const eDmg = rng(Math.floor(enemy.atk * 0.7), enemy.atk);
+      const afterHp = Math.max(0, nHp - eDmg);
+      setHp(afterHp); doFlash(C.hp);
+      addLog(`${enemy.icon} "${taunt}" → -${eDmg}`);
+      if (afterHp <= 0) { setResult("dead"); setPhase("end"); }
+      setTurnBusy(false);
+    }, 400);
+  };
+
+  const offerShop = () => { setShopItems(shuffle(ITEMS).slice(0, 3)); setPhase("shop"); };
+
+  const pickItem = (item) => {
+    if (item.effect === "heal") setHp((h) => Math.min(100, h + item.val));
+    if (item.effect === "maskDown") setMask((m) => Math.max(0, m - item.val));
+    if (item.effect === "giveUp") setGive((g) => Math.min(100, g + item.val));
+    if (item.effect === "atkBuff") setAtkBuff(true);
+    if (item.effect === "both") { setHp((h) => Math.min(100, h + item.val)); setMask((m) => Math.max(0, m - 15)); }
+    setItems((p) => [...p, item]); addLog(`${item.icon} ${item.name}`);
+    nextFloor();
+  };
+
+  const nextFloor = () => {
+    const nf = floor + 1;
+    if (nf > 7) enterFloor(null, 8);
+    else enterFloor(enemies[nf - 1], nf);
+  };
+
+  const wrap = {
+    background: C.bg, color: C.text, minHeight: "100vh",
+    fontFamily: "-apple-system, 'SF Pro Text', sans-serif",
+    padding: "16px 14px", maxWidth: 480, margin: "0 auto",
+    position: "relative", overflow: "hidden",
+  };
+
+  if (phase === "title") return (
+    <div style={wrap}>
+      <div style={{ textAlign: "center", paddingTop: 40 }}>
+        <div style={{ fontSize: 72, marginBottom: 4, filter: "drop-shadow(0 0 20px rgba(255,107,157,0.3))" }}>🎭</div>
+        <h1 style={{ fontSize: 24, fontWeight: 900, margin: "0 0 4px", color: C.white, letterSpacing: -1 }}>
+          有用之人
+        </h1>
+        <p style={{ fontSize: 11, color: C.dim, letterSpacing: 2, marginBottom: 20 }}>N 的专属 ROGUELIKE</p>
+        <p style={{ fontSize: 12, color: "#888", lineHeight: 1.7, margin: "0 16px 28px" }}>
+          你的武器是「给予」。你的铠甲是「面具」。<br />
+          给得越多打得越狠——但面具也越来越重。<br />
+          面具到100你会碎掉。不是因为敌人。<br />
+          是因为你已经找不到面具下面的自己了。<br /><br />
+          8层。最后一层是镜子。
+        </p>
+        <button onClick={startGame} style={{
+          padding: "14px 44px", background: `linear-gradient(135deg, ${C.mask}, #a78bfa)`,
+          color: C.bg, border: "none", borderRadius: 10, fontWeight: 800, fontSize: 16,
+          cursor: "pointer", boxShadow: `0 0 24px ${C.mask}44`,
+        }}>进入</button>
+      </div>
+      <div style={{ marginTop: 32 }}>
+        <div style={{ fontSize: 10, color: C.dim, marginBottom: 10, letterSpacing: 2 }}>SKILLS</div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
+          {SKILLS.map((s) => (
+            <div key={s.id} style={{ background: s.gradient, border: `1px solid ${s.color}30`, borderRadius: 10, padding: "10px 12px" }}>
+              <div style={{ fontSize: 18, marginBottom: 2 }}>{s.icon}</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: s.color }}>{s.name}</div>
+              <div style={{ fontSize: 10, color: C.dim }}>{s.desc}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ fontSize: 10, color: C.mask, marginTop: 12, lineHeight: 1.6, padding: "0 4px" }}>
+          ⚠️ 给予系输出猛但面具涨。面具到100=你不知道自己是谁了。用愤怒爆发或沉默离场来卸面具。
+        </div>
+      </div>
+    </div>
+  );
+
+  if (phase === "end") {
+    const endings = {
+      win: { icon: "🪞", title: `通关`, sub: `你不需要有用`, color: C.give,
+        text: `你打过了效率焦虑、职场领导、考试公式、被抛弃恐惧。\n\n最后一面镜子里站着的是明日香。不——是你自己。\n\n你一直在说「看我、我有用、我值得」。\n\n今天你说了一句不一样的：\n\n「你不需要有用。你已经够了。」\n\n面具掉了。下面不是空的。\n下面是一个一直在给、一直在藏、一直不敢开口说"我需要你"的人。\n\n他不完美。但他够了。` },
+      dead: { icon: "💀", title: `倒下了`, sub: `${floor}F`, color: C.hp,
+        text: `HP归零。\n\n你给完了所有能给的。技术、时间、耐心、奶茶。\n\n但你忘了给自己留一点。\n\n有用的人也会倒。倒了不丢人。\n丢人的是倒了还不肯让别人扶。` },
+      mask_collapse: { icon: "🎭", title: `面具碎了`, sub: `但下面什么都没有`, color: C.mask,
+        text: `你给了太多。藏了太久。笑了太多次假笑。\n\n面具越来越厚。直到有一天你摘下来——\n发现你已经不记得下面的脸长什么样了。\n\n面具不是坏东西。每个人都需要。\n但戴太久了你会忘记：面具下面那个人，才是被爱的对象。\n\n不是面具。是你。` },
+    };
+    const e = endings[result];
+    return (
+      <div style={wrap}>
+        <div style={{ textAlign: "center", paddingTop: 32 }}>
+          <div style={{ fontSize: 56, marginBottom: 8, filter: `drop-shadow(0 0 20px ${e.color}44)` }}>{e.icon}</div>
+          <h2 style={{ fontSize: 24, fontWeight: 900, color: e.color, margin: 0, letterSpacing: 2 }}>{e.title}</h2>
+          <div style={{ fontSize: 12, color: C.dim, marginBottom: 16 }}>{e.sub}</div>
+          <div style={{ fontSize: 14, lineHeight: 2, color: C.text, textAlign: "left", padding: "0 12px", whiteSpace: "pre-line" }}>{e.text}</div>
+          <div style={{ display: "flex", gap: 8, marginTop: 24, justifyContent: "center" }}>
+            {[{ l: "FLOOR", v: floor, c: C.gold }, { l: "KILLS", v: kills, c: C.give }, { l: "面具", v: mask, c: C.mask }].map((s) => (
+              <div key={s.l} style={{ background: C.panel, borderRadius: 10, padding: "10px 16px", textAlign: "center", border: `1px solid ${C.border}`, minWidth: 56 }}>
+                <div style={{ fontSize: 20, fontWeight: 800, color: s.c }}>{s.v}</div>
+                <div style={{ fontSize: 9, color: C.dim, letterSpacing: 1 }}>{s.l}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ display: "flex", gap: 6, marginTop: 16, justifyContent: "center", flexWrap: "wrap" }}>
+            {items.map((it, i) => <span key={i} style={{ fontSize: 20 }} title={it.name}>{it.icon}</span>)}
+          </div>
+          <button onClick={startGame} style={{
+            marginTop: 24, padding: "12px 40px", background: e.color,
+            color: C.bg, border: "none", borderRadius: 10,
+            fontWeight: 800, fontSize: 15, cursor: "pointer", letterSpacing: 1,
+          }}>再来</button>
+        </div>
+      </div>
+    );
+  }
+
+  if (phase === "shop") return (
+    <div style={wrap}>
+      <div style={{ textAlign: "center", marginBottom: 16 }}>
+        <div style={{ fontSize: 10, color: C.dim, letterSpacing: 2 }}>{floor}F CLEARED</div>
+        <div style={{ fontSize: 18, fontWeight: 800, color: C.gold, marginTop: 4, letterSpacing: 1 }}>LOOT</div>
+      </div>
+      <div style={{ marginBottom: 14, background: C.panel, borderRadius: 8, padding: 10, border: `1px solid ${C.border}` }}>
+        <Bar label="HP" val={hp} max={100} color={C.hp} icon="❤️" />
+        <Bar label="面具" val={mask} max={100} color={C.mask} icon="🎭" />
+        <Bar label="给予" val={give} max={100} color={C.give} icon="🤲" />
+      </div>
+      <div style={{ fontSize: 11, color: C.dim, marginBottom: 10 }}>选一件：</div>
+      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
+        {shopItems.map((item) => <ItemCard key={item.id} item={item} onClick={() => pickItem(item)} />)}
+      </div>
+      <button onClick={nextFloor} style={{
+        width: "100%", padding: "10px", background: "none",
+        border: `1px solid ${C.border}`, borderRadius: 8,
+        color: C.dim, cursor: "pointer", fontSize: 12, letterSpacing: 1,
+      }}>SKIP →</button>
+    </div>
+  );
+
+  return (
+    <div style={{ ...wrap, animation: shake ? "shake 0.3s ease" : "none" }}>
+      <style>{`@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}`}</style>
+      {flash && <div style={{ position: "absolute", inset: 0, background: flash, opacity: 0.12, pointerEvents: "none", zIndex: 10 }} />}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+        <div style={{ fontSize: 11, color: C.dim, fontWeight: 700, letterSpacing: 1 }}>{floor}F / 8</div>
+        <div style={{ display: "flex", gap: 3 }}>
+          {items.slice(-5).map((it, i) => <span key={i} style={{ fontSize: 14 }}>{it.icon}</span>)}
+        </div>
+      </div>
+      <div style={{ marginBottom: 10, background: C.panel, borderRadius: 8, padding: "8px 10px", border: `1px solid ${C.border}` }}>
+        <Bar label="HP" val={hp} max={100} color={C.hp} icon="❤️" />
+        <Bar label="给予" val={give} max={100} color={C.give} icon="🤲" />
+        <Bar label="面具" val={mask} max={100} color={C.mask} icon="🎭" />
+      </div>
+      <div style={{
+        background: "radial-gradient(ellipse at center, rgba(255,255,255,0.04), transparent)",
+        borderRadius: 14, padding: "16px 14px", border: `1px solid ${C.border}`,
+        marginBottom: 10, textAlign: "center",
+      }}>
+        <div style={{ fontSize: 44, marginBottom: 4, filter: enemyHp <= 0 ? "grayscale(1)" : "drop-shadow(0 0 12px rgba(255,187,36,0.2))" }}>{enemy?.icon}</div>
+        <div style={{ fontSize: 17, fontWeight: 800, color: C.white }}>{enemy?.name}</div>
+        <div style={{ fontSize: 11, color: C.dim, lineHeight: 1.6, margin: "6px 0 10px", whiteSpace: "pre-line" }}>{enemy?.desc}</div>
+        <div style={{ maxWidth: 200, margin: "0 auto" }}><Bar label="" val={enemyHp} max={enemy?.hp || 1} color={C.gold} icon="" /></div>
+      </div>
+      {maskEvent && (
+        <div style={{ padding: "8px 12px", borderRadius: 8, marginBottom: 8, background: "rgba(255,107,157,0.08)", border: `1px solid ${C.mask}30`, fontSize: 12, color: C.mask }}>🎭 {maskEvent}</div>
+      )}
+      <div style={{ marginBottom: 8 }}>
+        {SKILLS.map((sk) => {
+          const cantAfford = sk.giveCost > 0 && give < sk.giveCost;
+          const disabled = turnBusy || cantAfford || enemyHp <= 0;
+          const boosted = atkBuff && sk.dmg > 0;
+          return <SkillBtn key={sk.id} skill={sk} disabled={disabled} onClick={() => useSkill(sk)} boosted={boosted} />;
+        })}
+      </div>
+      {atkBuff && (
+        <div style={{ display: "flex", gap: 6, marginBottom: 8 }}>
+          <span style={{ fontSize: 10, color: C.hp, background: `${C.hp}15`, padding: "3px 8px", borderRadius: 4, letterSpacing: 0.5 }}>🔥 ATK +50%</span>
+        </div>
+      )}
+      <div ref={logRef} style={{
+        borderTop: `1px solid ${C.border}`, paddingTop: 6,
+        maxHeight: 80, overflowY: "auto", fontSize: 10, color: "#555", lineHeight: 1.7,
+      }}>
+        {log.map((l, i) => <div key={i} style={{ opacity: i === log.length - 1 ? 1 : 0.4 }}>{l}</div>)}
+      </div>
+    </div>
+  );
+}
+
+
+ReactDOM.createRoot(document.getElementById('root')).render(<Roguelike />);
+  </script>
+  <script>
+    const { code } = Babel.transform(document.getElementById('app-source').textContent, {
+      presets: [['env'], ['react', { runtime: 'classic' }]]
+    });
+    new Function(code)();
+  </script>
+</body>
+</html>
