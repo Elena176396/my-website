@@ -1,5 +1,5 @@
-const TIMICC_MESSAGES_URL = 'https://timicc.com/v1/messages';
-const MODEL = 'claude-sonnet-4-6';
+const DEEPSEEK_URL = 'https://api.deepseek.com/chat/completions';
+const MODEL = 'deepseek-chat';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -7,9 +7,9 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: { message: '仅支持 POST 请求' } });
   }
 
-  const apiKey = process.env.TIMICC_API_KEY;
+  const apiKey = process.env.DEEPSEEK_API_KEY;
   if (!apiKey) {
-    return res.status(503).json({ error: { message: '服务端尚未配置 TIMICC_API_KEY' } });
+    return res.status(503).json({ error: { message: '服务端尚未配置 DEEPSEEK_API_KEY' } });
   }
 
   const input = req.body || {};
@@ -34,32 +34,48 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: { message: '对话消息格式无效' } });
   }
 
+  // DeepSeek 用 OpenAI 格式：system 是 messages 数组的第一条
   const system = typeof input.system === 'string' ? input.system.slice(0, 6000) : undefined;
+  const allMessages = system
+    ? [{ role: 'system', content: system }, ...safeMessages]
+    : safeMessages;
+
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 28000);
 
   try {
-    const upstream = await fetch(TIMICC_MESSAGES_URL, {
+    const upstream = await fetch(DEEPSEEK_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'anthropic-version': '2023-06-01',
-        'x-api-key': apiKey,
         Authorization: `Bearer ${apiKey}`,
       },
       signal: controller.signal,
       body: JSON.stringify({
         model: MODEL,
         max_tokens: isTest ? 32 : 1000,
-        ...(system ? { system } : {}),
-        messages: safeMessages,
+        messages: allMessages,
+        temperature: 0.7,
+        stream: false,
       }),
     });
 
-    const body = await upstream.text();
-    res.setHeader('Content-Type', upstream.headers.get('content-type') || 'application/json; charset=utf-8');
+    const data = await upstream.json();
+
+    if (!upstream.ok) {
+      console.error('DeepSeek API error', upstream.status, data?.error?.message);
+      return res.status(502).json({ error: { message: 'AI 服务暂时不可用' } });
+    }
+
+    const text = data?.choices?.[0]?.message?.content?.trim() || '';
+
+    // 前端读的是 Anthropic 格式：data.content[{type,text}]
+    // 这里把 DeepSeek 的返回转成前端期望的格式
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.setHeader('Cache-Control', 'no-store');
-    return res.status(upstream.status).send(body);
+    return res.status(200).json({
+      content: [{ type: 'text', text }],
+    });
   } catch (error) {
     const message = error instanceof Error && error.name === 'AbortError'
       ? '上游接口请求超时'
