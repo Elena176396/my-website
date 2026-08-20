@@ -179,7 +179,7 @@ const nav = navigator as Navigator & {
   canShare?: (data: ShareData) => boolean;
 };
 
-const CARD_FILENAME = 'fuck-claude-result.png';
+const CARD_FILENAME = 'songchaoyang-result.png';
 let cardBlob: Blob | null = null;
 
 function resetCard() {
@@ -199,7 +199,7 @@ async function buildCard(total: number, band: RiskBand, hits: CardHit[]) {
       outOf: t('hero.scoreOutOf'),
       hits,
       url: pageShareUrl(),
-      brand: 'Fuck Claude',
+      brand: currentLang() === 'zh' ? '环境检测器' : 'Environment Detector',
     });
     cardBlob = blob;
     const save = q<HTMLButtonElement>('#share-save');

@@ -40,7 +40,7 @@ import { useTranslations, type Lang } from '../../i18n/ui';
 
 export const prerender = false;
 
-const SITE = 'https://fuck-claude.vercel.app';
+const SITE = 'https://songchaoyang.com';
 
 const CORS: Record<string, string> = {
   'Access-Control-Allow-Origin': '*',
@@ -203,7 +203,7 @@ function analyze(req: Request, lang: Lang): Analysis {
 function jsonBody(a: Analysis, lang: Lang) {
   const t = useTranslations(lang);
   return {
-    app: 'Fuck Claude',
+    app: 'Environment Detector',
     estimate: true,
     lang,
     score: a.score,
@@ -281,7 +281,7 @@ function textBody(a: Analysis, lang: Lang, color: boolean): string {
 
   const out: string[] = [];
   out.push(rule('╭'));
-  out.push(`${bar}  ${accent(bold('Fuck Claude'))}  ${dim(L.subtitle)}`);
+  out.push(`${bar}  ${accent(bold('Environment Detector'))}  ${dim(L.subtitle)}`);
   out.push(`${bar}  ${dim(L.tagline)}`);
   out.push(bar);
   out.push(

@@ -9,7 +9,7 @@ interface Props {
 const { lang, path } = Astro.props;
 const t = useTranslations(lang);
 
-const site = Astro.site ?? new URL('https://fuck-claude.vercel.app');
+const site = Astro.site ?? new URL('https://songchaoyang.com');
 const canonical = new URL(path, site).href;
 const enUrl = new URL('/', site).href;
 const zhUrl = new URL('/zh/', site).href;

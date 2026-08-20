@@ -17,7 +17,7 @@ const { lang } = Astro.props;
 const t = useTranslations(lang);
 const home = lang === 'zh' ? '/zh/' : '/';
 
-const API_BASE = 'https://fuck-claude.vercel.app/api/check';
+const API_BASE = 'https://songchaoyang.com/api/check';
 const apiExamples = [
   { comment: t('api.ex1'), cmd: `curl ${API_BASE}` },
   { comment: t('api.ex2'), cmd: `curl -H "Accept-Language: zh" ${API_BASE}` },
@@ -30,13 +30,7 @@ const apiExamples = [
     <a class="brand" href={home}>
       <svg viewBox="0 0 64 64" aria-hidden="true">
         <rect width="64" height="64" rx="14" fill="currentColor"></rect>
-        <g fill="#FAF9F5">
-          <rect x="26.9" y="8" width="7.6" height="29" rx="3.8"></rect>
-          <rect x="18.9" y="24.5" width="6.4" height="11" rx="3.2"></rect>
-          <rect x="36.1" y="24.5" width="6.4" height="11" rx="3.2"></rect>
-          <rect x="16.9" y="30" width="27.6" height="24" rx="9"></rect>
-          <rect x="40.6" y="32.5" width="7.6" height="16" rx="3.8" transform="rotate(-24 44.4 40.5)"></rect>
-        </g>
+        <text x="32" y="44" text-anchor="middle" font-family="Georgia, serif" font-size="38" font-weight="700" fill="#F7F8FA">S</text>
       </svg>
       <span class="brand__text">{t('nav.title')}</span>
     </a>
@@ -46,7 +40,7 @@ const apiExamples = [
       <SocialLinks lang={lang} />
       <a
         class="icon-link"
-        href="https://github.com/LinXiaoTao/FuckClaude"
+        href="https://github.com/Elena176396/my-website"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="GitHub"

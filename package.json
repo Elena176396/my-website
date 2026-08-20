@@ -1,15 +1,15 @@
 {
-  "name": "china-user-detector",
+  "name": "songchaoyang-tools",
   "type": "module",
   "version": "0.1.0",
   "private": true,
-  "description": "Check which parts of your browser environment could get you flagged as a China user by Claude Code.",
+  "description": "好奇心驱动的互动工具实验场",
   "license": "MIT",
-  "author": "LinXiaoTao",
-  "homepage": "https://github.com/LinXiaoTao/FuckClaude",
+  "author": "Song Chaoyang",
+  "homepage": "https://songchaoyang.com",
   "repository": {
     "type": "git",
-    "url": "https://github.com/LinXiaoTao/FuckClaude.git"
+    "url": "https://github.com/Elena176396/my-website.git"
   },
   "scripts": {
     "dev": "astro dev",
@@ -27,7 +27,6 @@
   },
   "devDependencies": {
     "@types/qrcode": "^1.5.6",
-    "qrcode": "^1.5.4",
-    "sharp": "^0.35.3"
+    "qrcode": "^1.5.4"
   }
 }
