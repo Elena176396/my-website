@@ -1,31 +1,18 @@
-import type { APIRoute } from 'astro';
-
-export const prerender = false;
-
 const TIMICC_MESSAGES_URL = 'https://timicc.com/v1/messages';
 const MODEL = 'claude-sonnet-4-6';
 
-const json = (body: unknown, status = 200) =>
-  new Response(JSON.stringify(body), {
-    status,
-    headers: {
-      'Content-Type': 'application/json; charset=utf-8',
-      'Cache-Control': 'no-store',
-    },
-  });
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', 'POST');
+    return res.status(405).json({ error: { message: '仅支持 POST 请求' } });
+  }
 
-export const POST: APIRoute = async ({ request }) => {
-  const apiKey = import.meta.env.TIMICC_API_KEY;
+  const apiKey = process.env.TIMICC_API_KEY;
   if (!apiKey) {
-    return json({ error: { message: '服务端尚未配置 TIMICC_API_KEY' } }, 503);
+    return res.status(503).json({ error: { message: '服务端尚未配置 TIMICC_API_KEY' } });
   }
 
-  let input: { system?: unknown; messages?: unknown; test?: unknown };
-  try {
-    input = await request.json();
-  } catch {
-    return json({ error: { message: '请求内容不是有效 JSON' } }, 400);
-  }
+  const input = req.body || {};
 
   const isTest = input.test === true;
   const messages = isTest
@@ -33,18 +20,18 @@ export const POST: APIRoute = async ({ request }) => {
     : input.messages;
 
   if (!Array.isArray(messages) || messages.length < 1 || messages.length > 17) {
-    return json({ error: { message: '对话消息数量无效' } }, 400);
+    return res.status(400).json({ error: { message: '对话消息数量无效' } });
   }
 
-  const safeMessages = messages.map((message) => {
-    const role = message && typeof message === 'object' ? Reflect.get(message, 'role') : null;
-    const content = message && typeof message === 'object' ? Reflect.get(message, 'content') : null;
+  const safeMessages = messages.map((msg) => {
+    const role = msg && typeof msg === 'object' ? msg.role : null;
+    const content = msg && typeof msg === 'object' ? msg.content : null;
     if (!['user', 'assistant'].includes(role) || typeof content !== 'string') return null;
     return { role, content: content.slice(0, 6000) };
   });
 
-  if (safeMessages.some((message) => message === null)) {
-    return json({ error: { message: '对话消息格式无效' } }, 400);
+  if (safeMessages.some((msg) => msg === null)) {
+    return res.status(400).json({ error: { message: '对话消息格式无效' } });
   }
 
   const system = typeof input.system === 'string' ? input.system.slice(0, 6000) : undefined;
@@ -70,19 +57,15 @@ export const POST: APIRoute = async ({ request }) => {
     });
 
     const body = await upstream.text();
-    return new Response(body, {
-      status: upstream.status,
-      headers: {
-        'Content-Type': upstream.headers.get('content-type') || 'application/json; charset=utf-8',
-        'Cache-Control': 'no-store',
-      },
-    });
+    res.setHeader('Content-Type', upstream.headers.get('content-type') || 'application/json; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-store');
+    return res.status(upstream.status).send(body);
   } catch (error) {
     const message = error instanceof Error && error.name === 'AbortError'
       ? '上游接口请求超时'
       : '无法连接上游接口';
-    return json({ error: { message } }, 502);
+    return res.status(502).json({ error: { message } });
   } finally {
     clearTimeout(timeout);
   }
-};
+}
