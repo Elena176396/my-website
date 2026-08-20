@@ -1,16 +1,16 @@
 ---
 const categories = [
-  { id: 'decode', label: '人格解码', color: '#6e7488', soft: 'rgba(110,116,136,.1)', light: '#8b92aa' },
-  { id: 'mystic', label: '玄学引擎', color: '#706888', soft: 'rgba(112,104,136,.1)', light: '#8d84a6' },
-  { id: 'boost',  label: '效率外挂', color: '#5e7080', soft: 'rgba(94,112,128,.1)',  light: '#7a919f' },
-  { id: 'spark',  label: '灵感弹珠', color: '#6e7488', soft: 'rgba(110,116,136,.1)', light: '#8b92aa' },
+  { id: 'mirror', label: '镜像引擎', color: '#6e7488', soft: 'rgba(110,116,136,.1)', light: '#8b92aa' },
+  { id: 'play',   label: '游乐结界', color: '#706888', soft: 'rgba(112,104,136,.1)', light: '#8d84a6' },
+  { id: 'shore',  label: '上岸外挂', color: '#5e7080', soft: 'rgba(94,112,128,.1)',  light: '#7a919f' },
+  { id: 'think',  label: '思维探索', color: '#63727f', soft: 'rgba(99,114,127,.1)', light: '#8193a1' },
 ];
 
 const catMap = Object.fromEntries(categories.map(c => [c.id, c]));
 
 /* ── Spotlight: change this to feature any tool ── */
 const spotlight = {
-  cat: 'spark',
+  cat: 'play',
   href: '/tools/life-rewind/',
   label: '✦ 最近上新',
   title: '人生回溯',
@@ -20,10 +20,10 @@ const spotlight = {
 };
 
 const bentoBlocks = [
-  { cat: 'boost',  label: '效率外挂', desc: '专注计时 · 考研词汇 · 英语写作 · MBA 口语 · 回译与语感 · 决策助手', deco: '时词写\n商译决', bg: 'rgba(140,160,175,.32)', c: '#48606e', count: 12 },
-  { cat: 'decode', label: '人格解码', desc: 'MBTI · 九型人格 · OH 卡 · CMSP · PDP · DISC · 贝尔宾团队角色', deco: 'M九团\nOH双', bg: 'rgba(155,150,175,.32)', c: '#555068', count: 8 },
-  { cat: 'mystic', label: '玄学引擎', desc: '八字排盘 · 五行生肖 · 星座星图 · 塔罗占卜 · 不决', deco: '八五肖\n星塔决', bg: 'rgba(148,140,170,.32)', c: '#564e6e', count: 6 },
-  { cat: 'spark',  label: '灵感弹珠', desc: 'nRoguelike · 格式转换 · 人生回溯 · Game hub · Roguelike · 音视频播放 · 双拼训练 · 亲子觉察 · 认知与世界观闯关', deco: '游影音\n拼认世', bg: 'rgba(148,155,172,.32)', c: '#4e5568', count: 14 },
+  { cat: 'mirror', label: '镜像引擎', desc: '人格测评 · 玄学解盘', deco: '人格测\n玄学盘', bg: 'rgba(155,150,175,.32)', c: '#555068', count: 14 },
+  { cat: 'play',   label: '游乐结界', desc: 'nRoguelike · Roguelike · Game hub · 名言转盘 · 秘密通道 · 人生回溯 · 音视频播放', deco: '游影音\n秘回溯', bg: 'rgba(148,140,170,.32)', c: '#564e6e', count: 8 },
+  { cat: 'shore',  label: '上岸外挂', desc: '专注计时 · 双拼训练 · 考研词汇 · MBA 英语 · 英语二写作', deco: '时拼词\n商英写', bg: 'rgba(140,160,175,.32)', c: '#48606e', count: 12 },
+  { cat: 'think',  label: '思维探索', desc: '决策助手 · 拾光读书会 · 亲子觉察 · 认知学习 · 世界观', deco: '决读亲\n认世界', bg: 'rgba(145,158,168,.32)', c: '#4d606c', count: 6 },
 ];
 ---
 
@@ -34,7 +34,7 @@ const bentoBlocks = [
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#e7e9ed" />
   <title>Song Chaoyang · 工具与模拟器</title>
-  <meta name="description" content="宋超洋的互动工具实验场——人格解码、玄学引擎、效率外挂与灵感弹珠。把好奇心做成工具。" />
+  <meta name="description" content="宋超洋的互动工具实验场——镜像引擎、游乐结界、上岸外挂与思维探索。把好奇心做成工具。" />
   <link rel="canonical" href="https://songchaoyang.com/" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 </head>

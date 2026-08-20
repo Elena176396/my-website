@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="theme-color" content="#e7e9ed" />
   <title>工具与模拟器 · Song Chaoyang</title>
-  <meta name="description" content="探索 Song Chaoyang 的 40 个互动工具：人格测试、八字五行、星座塔罗、英语学习、效率提升、音视频播放与认知闯关。" />
+  <meta name="description" content="探索 Song Chaoyang 的 40 个互动工具，分为镜像引擎、游乐结界、上岸外挂与思维探索四个方向。" />
   <style>
     *{box-sizing:border-box;margin:0}
     html{scroll-behavior:smooth}
@@ -33,6 +33,12 @@
     .tab.active{color:#fff;background:var(--tc,rgba(30,34,50,.8));box-shadow:0 2px 8px rgba(50,55,80,.12)}
     .tab-n{font-size:11px;font-weight:700;opacity:.5}
     .tab.active .tab-n{opacity:.7}
+    .subtabs{display:none;align-items:center;gap:8px;margin:-10px 0 24px;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.35)}
+    .subtabs.visible{display:flex}
+    .subtab{all:unset;cursor:pointer;padding:7px 14px;border-radius:999px;color:#7d8089;font-size:12.5px;font-weight:650;transition:color .2s,background .2s}
+    .subtab:hover{color:#292b31;background:rgba(255,255,255,.3)}
+    .subtab.active{color:#fff;background:#6e7488}
+    .subtabs-label{margin-right:2px;color:#a0a3ac;font-size:12px}
 
     .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;transition:opacity .2s ease,transform .2s ease}
     .grid.is-filtering{opacity:0;transform:translateY(8px)}
@@ -72,253 +78,261 @@
 
     <nav class="tabs" role="tablist">
       <button class="tab active" role="tab" aria-selected="true" data-cat="all" style="--tc:rgba(30,34,50,.8)">全部<span class="tab-n">40</span></button>
-      <button class="tab" role="tab" aria-selected="false" data-cat="decode" style="--tc:#6e7488">人格解码<span class="tab-n">8</span></button>
-      <button class="tab" role="tab" aria-selected="false" data-cat="mystic" style="--tc:#706888">玄学引擎<span class="tab-n">6</span></button>
-      <button class="tab" role="tab" aria-selected="false" data-cat="boost" style="--tc:#5e7080">效率外挂<span class="tab-n">12</span></button>
-      <button class="tab" role="tab" aria-selected="false" data-cat="spark" style="--tc:#6e7488">灵感弹珠<span class="tab-n">14</span></button>
+      <button class="tab" role="tab" aria-selected="false" data-cat="mirror" style="--tc:#6e7488">镜像引擎<span class="tab-n">14</span></button>
+      <button class="tab" role="tab" aria-selected="false" data-cat="play" style="--tc:#706888">游乐结界<span class="tab-n">8</span></button>
+      <button class="tab" role="tab" aria-selected="false" data-cat="shore" style="--tc:#5e7080">上岸外挂<span class="tab-n">12</span></button>
+      <button class="tab" role="tab" aria-selected="false" data-cat="think" style="--tc:#63727f">思维探索<span class="tab-n">6</span></button>
+    </nav>
+
+    <nav class="subtabs" id="mirror-subtabs" aria-label="镜像引擎二级分类">
+      <span class="subtabs-label">镜像：</span>
+      <button class="subtab active" data-sub="all">全部 14</button>
+      <button class="subtab" data-sub="personality">人格测评 8</button>
+      <button class="subtab" data-sub="mystic">玄学解盘 6</button>
     </nav>
 
     <div class="grid" id="tools-grid">
-      <!-- 人格解码 -->
-      <a class="card" href="/tools/mbti-simulator/" data-cat="decode" style="--c:#6e7488;--cl:#8b92aa">
-        <span class="card-pill">人格解码</span>
+      <!-- 镜像引擎：人格测评 -->
+      <a class="card" href="/tools/mbti-simulator/" data-cat="mirror" data-sub="personality" style="--c:#6e7488;--cl:#8b92aa">
+        <span class="card-pill">镜像引擎 · 人格测评</span>
         <div class="card-title">MBTI 测评</div>
         <p class="card-desc">8 道情境题，3 分钟出结果。你到底是 I 人还是在装 E。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/enneagram-pro/" data-cat="decode" style="--c:#6e7488;--cl:#8b92aa">
-        <span class="card-pill">人格解码</span>
+      <a class="card" href="/tools/enneagram-pro/" data-cat="mirror" data-sub="personality" style="--c:#6e7488;--cl:#8b92aa">
+        <span class="card-pill">镜像引擎 · 人格测评</span>
         <div class="card-title">九型人格</div>
         <p class="card-desc">找到驱动你的核心动机——为什么你总是那个操心的人。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/mbti-enneagram-fusion/" data-cat="decode" style="--c:#6e7488;--cl:#8b92aa">
-        <span class="card-pill">人格解码</span>
+      <a class="card" href="/tools/mbti-enneagram-fusion/" data-cat="mirror" data-sub="personality" style="--c:#6e7488;--cl:#8b92aa">
+        <span class="card-pill">镜像引擎 · 人格测评</span>
         <div class="card-title">MBTI × 九型</div>
         <p class="card-desc">把两套人格理论撞在一起，看能碰出什么火花。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/oh-card-explorer/" data-cat="decode" style="--c:#6e7488;--cl:#8b92aa">
-        <span class="card-pill">人格解码</span>
+      <a class="card" href="/tools/oh-card-explorer/" data-cat="mirror" data-sub="personality" style="--c:#6e7488;--cl:#8b92aa">
+        <span class="card-pill">镜像引擎 · 人格测评</span>
         <div class="card-title">OH 卡探索</div>
         <p class="card-desc">用图卡与词卡触发联想，通过四层问题看见当下的感受、信念与行动。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/cmsp-test/" data-cat="decode" style="--c:#6e7488;--cl:#8b92aa">
-        <span class="card-pill">人格解码</span>
+      <a class="card" href="/tools/cmsp-test/" data-cat="mirror" data-sub="personality" style="--c:#6e7488;--cl:#8b92aa">
+        <span class="card-pill">镜像引擎 · 人格测评</span>
         <div class="card-title">CMSP-希波克拉底性格测评</div>
         <p class="card-desc">40 道题，测出力量型、活泼型、完美型与和平型的独特组合。</p>
         <span class="card-link">开始测试 →</span>
       </a>
-      <a class="card" href="/tools/pdp-test/" data-cat="decode" style="--c:#6e7488;--cl:#8b92aa">
-        <span class="card-pill">人格解码</span>
+      <a class="card" href="/tools/pdp-test/" data-cat="mirror" data-sub="personality" style="--c:#6e7488;--cl:#8b92aa">
+        <span class="card-pill">镜像引擎 · 人格测评</span>
         <div class="card-title">PDP-行为风格测评</div>
         <p class="card-desc">30 道题，测出老虎、孔雀、考拉、猫头鹰和变色龙五种行为风格。</p>
         <span class="card-link">开始测试 →</span>
       </a>
-      <a class="card" href="/tools/belbin-team-test/" data-cat="decode" style="--c:#6e7488;--cl:#8b92aa">
-        <span class="card-pill">人格解码</span>
+      <a class="card" href="/tools/belbin-team-test/" data-cat="mirror" data-sub="personality" style="--c:#6e7488;--cl:#8b92aa">
+        <span class="card-pill">镜像引擎 · 人格测评</span>
         <div class="card-title">团队测评-贝尔宾</div>
         <p class="card-desc">七部分自评，探索你在贝尔宾九种团队角色中的优势与协作方式。</p>
         <span class="card-link">开始测试 →</span>
       </a>
-      <a class="card" href="/tools/disc-report/" data-cat="decode" style="--c:#6e7488;--cl:#8b92aa">
-        <span class="card-pill">人格解码</span>
+      <a class="card" href="/tools/disc-report/" data-cat="mirror" data-sub="personality" style="--c:#6e7488;--cl:#8b92aa">
+        <span class="card-pill">镜像引擎 · 人格测评</span>
         <div class="card-title">DISC-行为模式测评</div>
         <p class="card-desc">探索支配、影响、稳定与服从四种行为倾向，生成完整人格报告。</p>
         <span class="card-link">开始测试 →</span>
       </a>
-      <!-- 玄学引擎 -->
-      <a class="card" href="/tools/bazi-calculator/" data-cat="mystic" style="--c:#706888;--cl:#8d84a6">
-        <span class="card-pill">玄学引擎</span>
+      <!-- 镜像引擎：玄学解盘 -->
+      <a class="card" href="/tools/bazi-calculator/" data-cat="mirror" data-sub="mystic" style="--c:#6e7488;--cl:#8b92aa">
+        <span class="card-pill">镜像引擎 · 玄学解盘</span>
         <div class="card-title">八字排盘</div>
         <p class="card-desc">输入生辰，排出你的命盘。信不信由你，看看无妨。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/wuxing-explainer/" data-cat="mystic" style="--c:#706888;--cl:#8d84a6">
-        <span class="card-pill">玄学引擎</span>
+      <a class="card" href="/tools/wuxing-explainer/" data-cat="mirror" data-sub="mystic" style="--c:#6e7488;--cl:#8b92aa">
+        <span class="card-pill">镜像引擎 · 玄学解盘</span>
         <div class="card-title">五行关系图</div>
         <p class="card-desc">金木水火土谁克谁？拖一拖，五行关系一目了然。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/zodiac-compatibility-chart/" data-cat="mystic" style="--c:#706888;--cl:#8d84a6">
-        <span class="card-pill">玄学引擎</span>
+      <a class="card" href="/tools/zodiac-compatibility-chart/" data-cat="mirror" data-sub="mystic" style="--c:#6e7488;--cl:#8b92aa">
+        <span class="card-pill">镜像引擎 · 玄学解盘</span>
         <div class="card-title">生肖关系盘</div>
         <p class="card-desc">你和谁合，和谁冲？十二生肖关系全景图。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/zodiac-explorer/" data-cat="mystic" style="--c:#706888;--cl:#8d84a6">
-        <span class="card-pill">玄学引擎</span>
+      <a class="card" href="/tools/zodiac-explorer/" data-cat="mirror" data-sub="mystic" style="--c:#6e7488;--cl:#8b92aa">
+        <span class="card-pill">镜像引擎 · 玄学解盘</span>
         <div class="card-title">星座星图探索器</div>
         <p class="card-desc">探索十二星座星图、天文数据，并按出生时间和城市计算太阳与上升星座。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/tarot-reading/" data-cat="mystic" style="--c:#706888;--cl:#8d84a6">
-        <span class="card-pill">玄学引擎</span>
+      <a class="card" href="/tools/tarot-reading/" data-cat="mirror" data-sub="mystic" style="--c:#6e7488;--cl:#8b92aa">
+        <span class="card-pill">镜像引擎 · 玄学解盘</span>
         <div class="card-title">塔罗占卜 · 八大牌阵</div>
         <p class="card-desc">从事业、感情到重大抉择，抽取大阿尔卡纳牌并获得正逆位解读。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/bujue/" data-cat="mystic" style="--c:#706888;--cl:#8d84a6">
-        <span class="card-pill">玄学引擎</span>
+      <a class="card" href="/tools/bujue/" data-cat="mirror" data-sub="mystic" style="--c:#6e7488;--cl:#8b92aa">
+        <span class="card-pill">镜像引擎 · 玄学解盘</span>
         <div class="card-title">不决</div>
         <p class="card-desc">冲动来临时先停五分钟，用呼吸、事实墙和不发送的信找回清醒。</p>
         <span class="card-link">先停一下 →</span>
       </a>
-      <!-- 效率外挂 -->
-      <a class="card" href="/tools/focus-timer/" data-cat="boost" style="--c:#5e7080;--cl:#7a919f">
-        <span class="card-pill">效率外挂</span>
+      <!-- 上岸外挂 -->
+      <a class="card" href="/tools/focus-timer/" data-cat="shore" style="--c:#5e7080;--cl:#7a919f">
+        <span class="card-pill">上岸外挂</span>
         <div class="card-title">专注计时器</div>
         <p class="card-desc">25 分钟一轮，专注数据自动记录。对抗手机的物理疗法。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/vocab-1341/" data-cat="boost" style="--c:#5e7080;--cl:#7a919f">
-        <span class="card-pill">效率外挂</span>
+      <a class="card" href="/tools/vocab-1341/" data-cat="shore" style="--c:#5e7080;--cl:#7a919f">
+        <span class="card-pill">上岸外挂</span>
         <div class="card-title">考研词汇 1341</div>
         <p class="card-desc">1341 个考研高频词，随手刷，碎片时间不浪费。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/vocab-3728/" data-cat="boost" style="--c:#5e7080;--cl:#7a919f">
-        <span class="card-pill">效率外挂</span>
+      <a class="card" href="/tools/vocab-3728/" data-cat="shore" style="--c:#5e7080;--cl:#7a919f">
+        <span class="card-pill">上岸外挂</span>
         <div class="card-title">考研词汇 3728</div>
         <p class="card-desc">3728 词完整版，适合系统过一遍的人。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/vocab-4533/" data-cat="boost" style="--c:#5e7080;--cl:#7a919f">
-        <span class="card-pill">效率外挂</span>
+      <a class="card" href="/tools/vocab-4533/" data-cat="shore" style="--c:#5e7080;--cl:#7a919f">
+        <span class="card-pill">上岸外挂</span>
         <div class="card-title">考研词汇 4533</div>
         <p class="card-desc">4533 词全量版，考研词汇一网打尽。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/mba-vocab-632/" data-cat="boost" style="--c:#5e7080;--cl:#7a919f">
-        <span class="card-pill">效率外挂</span>
+      <a class="card" href="/tools/mba-vocab-632/" data-cat="shore" style="--c:#5e7080;--cl:#7a919f">
+        <span class="card-pill">上岸外挂</span>
         <div class="card-title">MBA 词汇 632</div>
         <p class="card-desc">632 个 MBA 核心词，面试前突击的好朋友。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/mba-english-dialogue-practice/" data-cat="boost" style="--c:#5e7080;--cl:#7a919f">
-        <span class="card-pill">效率外挂</span>
+      <a class="card" href="/tools/mba-english-dialogue-practice/" data-cat="shore" style="--c:#5e7080;--cl:#7a919f">
+        <span class="card-pill">上岸外挂</span>
         <div class="card-title">MBA 英语对话</div>
         <p class="card-desc">模拟 MBA 面试对话，AI 当你的口语陪练。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/mba-interview-listening/" data-cat="boost" style="--c:#5e7080;--cl:#7a919f">
-        <span class="card-pill">效率外挂</span>
+      <a class="card" href="/tools/mba-interview-listening/" data-cat="shore" style="--c:#5e7080;--cl:#7a919f">
+        <span class="card-pill">上岸外挂</span>
         <div class="card-title">MBA 面试听力</div>
         <p class="card-desc">听两个人聊 MBA 话题，练耳朵也练脑子。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/mba-translation-trainer/" data-cat="boost" style="--c:#5e7080;--cl:#7a919f">
-        <span class="card-pill">效率外挂</span>
+      <a class="card" href="/tools/mba-translation-trainer/" data-cat="shore" style="--c:#5e7080;--cl:#7a919f">
+        <span class="card-pill">上岸外挂</span>
         <div class="card-title">MBA 英语二 · 回译练习器（AI 批改版）</div>
         <p class="card-desc">简单扩句与高难回译双模式，支持 AI 批改和参考答案。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/mba-language-sense/" data-cat="boost" style="--c:#5e7080;--cl:#7a919f">
-        <span class="card-pill">效率外挂</span>
+      <a class="card" href="/tools/mba-language-sense/" data-cat="shore" style="--c:#5e7080;--cl:#7a919f">
+        <span class="card-pill">上岸外挂</span>
         <div class="card-title">MBA 语感训练器</div>
         <p class="card-desc">听句子、感知节奏，训练不依赖逐字翻译的英语语感。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/english-writing-templates/" data-cat="boost" style="--c:#5e7080;--cl:#7a919f">
-        <span class="card-pill">效率外挂</span>
+      <a class="card" href="/tools/english-writing-templates/" data-cat="shore" style="--c:#5e7080;--cl:#7a919f">
+        <span class="card-pill">上岸外挂</span>
         <div class="card-title">英语二写作模板全集</div>
         <p class="card-desc">大作文 5 套、小作文 5 套，支持逐句朗读、语速切换与默写练习。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/english-writing-vocabulary/" data-cat="boost" style="--c:#5e7080;--cl:#7a919f">
-        <span class="card-pill">效率外挂</span>
+      <a class="card" href="/tools/english-writing-vocabulary/" data-cat="shore" style="--c:#5e7080;--cl:#7a919f">
+        <span class="card-pill">上岸外挂</span>
         <div class="card-title">英语二模板生词表</div>
         <p class="card-desc">按 10 类作文模板整理重点词汇，支持发音、语速切换和易错拼写提醒。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/clarity/" data-cat="boost" style="--c:#5e7080;--cl:#7a919f">
-        <span class="card-pill">效率外挂</span>
+      <!-- 思维探索 -->
+      <a class="card" href="/tools/clarity/" data-cat="think" style="--c:#63727f;--cl:#8193a1">
+        <span class="card-pill">思维探索</span>
         <div class="card-title">CLARITY · 决策助手</div>
         <p class="card-desc">用 7 个步骤拆开约束、假设与权衡，得到一份清晰的决策报告。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <!-- 灵感弹珠 -->
-      <a class="card" href="/tools/useful-person/" data-cat="spark" style="--c:#6e7488;--cl:#8b92aa">
-        <span class="card-pill">灵感弹珠</span>
+      <!-- 游乐结界 -->
+      <a class="card" href="/tools/useful-person/" data-cat="play" style="--c:#706888;--cl:#8d84a6">
+        <span class="card-pill">游乐结界</span>
         <div class="card-title">nRoguelike</div>
         <p class="card-desc">以给予为武器、面具为铠甲，在八层肉鸽冒险里重新寻找自己的价值。</p>
         <span class="card-link">进入游戏 →</span>
       </a>
-      <a class="card" href="/tools/format-converter/" data-cat="spark" style="--c:#6e7488;--cl:#8b92aa">
-        <span class="card-pill">灵感弹珠</span>
-        <div class="card-title">格式转换</div>
+      <a class="card" href="/tools/format-converter/" data-cat="play" style="--c:#706888;--cl:#8d84a6">
+        <span class="card-pill">游乐结界</span>
+        <div class="card-title">秘密通道</div>
         <p class="card-desc">使用约定密码在本地加密或解密文字，内容与密码不会上传。</p>
         <span class="card-link">开始转换 →</span>
       </a>
-      <a class="card" href="/tools/life-rewind/" data-cat="spark" style="--c:#6e7488;--cl:#8b92aa">
-        <span class="card-pill">灵感弹珠</span>
+      <a class="card" href="/tools/life-rewind/" data-cat="play" style="--c:#706888;--cl:#8d84a6">
+        <span class="card-pill">游乐结界</span>
         <div class="card-title">人生回溯</div>
         <p class="card-desc">选择角色重走人生关键节点，让每一次决定改变故事走向与最终结局。</p>
         <span class="card-link">开始回溯 →</span>
       </a>
-      <a class="card" href="/tools/roguelike/" data-cat="spark" style="--c:#6e7488;--cl:#8b92aa">
-        <span class="card-pill">灵感弹珠</span>
+      <a class="card" href="/tools/roguelike/" data-cat="play" style="--c:#706888;--cl:#8d84a6">
+        <span class="card-pill">游乐结界</span>
         <div class="card-title">Roguelike</div>
         <p class="card-desc">击破规则与权威化身，在 Te、Fi 与生存之间做出选择的八层肉鸽冒险。</p>
         <span class="card-link">开始冒险 →</span>
       </a>
-      <a class="card" href="/tools/pinyin-input-trainer/" data-cat="spark" style="--c:#6e7488;--cl:#8b92aa">
-        <span class="card-pill">灵感弹珠</span>
+      <a class="card" href="/tools/pinyin-input-trainer/" data-cat="shore" style="--c:#5e7080;--cl:#7a919f">
+        <span class="card-pill">上岸外挂</span>
         <div class="card-title">双拼训练</div>
         <p class="card-desc">练习全拼与小鹤双拼，从单字、词组到整句闯关提升输入熟练度。</p>
         <span class="card-link">开始练习 →</span>
       </a>
-      <a class="card" href="/tools/flux/" data-cat="spark" style="--c:#6e7488;--cl:#8b92aa">
-        <span class="card-pill">灵感弹珠</span>
+      <a class="card" href="/tools/flux/" data-cat="play" style="--c:#706888;--cl:#8d84a6">
+        <span class="card-pill">游乐结界</span>
         <div class="card-title">Flux · 音频播放器</div>
         <p class="card-desc">按学习、音乐和播客分类，让声音自然流动。</p>
         <span class="card-link">打开播放器 →</span>
       </a>
-      <a class="card" href="/tools/phase/" data-cat="spark" style="--c:#6e7488;--cl:#8b92aa">
-        <span class="card-pill">灵感弹珠</span>
+      <a class="card" href="/tools/phase/" data-cat="play" style="--c:#706888;--cl:#8d84a6">
+        <span class="card-pill">游乐结界</span>
         <div class="card-title">Phase · 视频播放器</div>
         <p class="card-desc">简洁浏览与播放学习、影视和收藏视频。</p>
         <span class="card-link">打开播放器 →</span>
       </a>
-      <a class="card" href="/tools/game-hub/" data-cat="spark" style="--c:#6e7488;--cl:#8b92aa">
-        <span class="card-pill">灵感弹珠</span>
+      <a class="card" href="/tools/game-hub/" data-cat="play" style="--c:#706888;--cl:#8d84a6">
+        <span class="card-pill">游乐结界</span>
         <div class="card-title">Game hub</div>
         <p class="card-desc">11 款棋类、桌游、牌类和经典街机，支持单机挑战与本地对战。</p>
         <span class="card-link">开始玩 →</span>
       </a>
-      <a class="card" href="/tools/quote-wheel/" data-cat="spark" style="--c:#6e7488;--cl:#8b92aa">
-        <span class="card-pill">灵感弹珠</span>
+      <a class="card" href="/tools/quote-wheel/" data-cat="play" style="--c:#706888;--cl:#8d84a6">
+        <span class="card-pill">游乐结界</span>
         <div class="card-title">名言转盘</div>
         <p class="card-desc">盲猜名句来源、分类随机抽取，还可玩真心话大冒险。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/have-fun/" data-cat="spark" style="--c:#6e7488;--cl:#8b92aa">
-        <span class="card-pill">灵感弹珠</span>
+      <a class="card" href="/tools/have-fun/" data-cat="think" style="--c:#63727f;--cl:#8193a1">
+        <span class="card-pill">思维探索</span>
         <div class="card-title">拾光读书会</div>
         <p class="card-desc">记录你看过的书和电影，整理出属于你的精神食谱。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/parent-child-mirror/" data-cat="spark" style="--c:#6e7488;--cl:#8b92aa">
-        <span class="card-pill">灵感弹珠</span>
+      <a class="card" href="/tools/parent-child-mirror/" data-cat="think" style="--c:#63727f;--cl:#8193a1">
+        <span class="card-pill">思维探索</span>
         <div class="card-title">亲子照镜子</div>
         <p class="card-desc">从亲子场景里的第一反应，看见自己的沟通模式。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/wholebrain-parenting-quest/" data-cat="spark" style="--c:#6e7488;--cl:#8b92aa">
-        <span class="card-pill">灵感弹珠</span>
+      <a class="card" href="/tools/wholebrain-parenting-quest/" data-cat="think" style="--c:#63727f;--cl:#8193a1">
+        <span class="card-pill">思维探索</span>
         <div class="card-title">亲子全脑教养 · 知识闯关</div>
         <p class="card-desc">用 40 道题检验全脑教养与无戏剧性管教知识。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/cognitive-learning-quest/" data-cat="spark" style="--c:#6e7488;--cl:#8b92aa">
-        <span class="card-pill">灵感弹珠</span>
+      <a class="card" href="/tools/cognitive-learning-quest/" data-cat="think" style="--c:#63727f;--cl:#8193a1">
+        <span class="card-pill">思维探索</span>
         <div class="card-title">认知学习与思维闯关</div>
         <p class="card-desc">从认知科学到思维偏差，用闯关检验真正理解了多少。</p>
         <span class="card-link">试试看 →</span>
       </a>
-      <a class="card" href="/tools/worldview-antifragile-quest/" data-cat="spark" style="--c:#6e7488;--cl:#8b92aa">
-        <span class="card-pill">灵感弹珠</span>
+      <a class="card" href="/tools/worldview-antifragile-quest/" data-cat="think" style="--c:#63727f;--cl:#8193a1">
+        <span class="card-pill">思维探索</span>
         <div class="card-title">世界观 · 打破控制幻觉</div>
         <p class="card-desc">从黑天鹅与反脆弱出发，完成一场世界观重塑闯关。</p>
         <span class="card-link">试试看 →</span>
@@ -332,16 +346,19 @@
   </footer>
 
   <script>
-    const tabs=document.querySelectorAll('.tab'),cards=document.querySelectorAll('.card'),grid=document.getElementById('tools-grid');
-    function filterTo(cat){
+    const tabs=document.querySelectorAll('.tab'),subtabs=document.querySelectorAll('.subtab'),mirrorSubtabs=document.getElementById('mirror-subtabs'),cards=document.querySelectorAll('.card'),grid=document.getElementById('tools-grid');
+    function filterTo(cat,sub='all'){
       tabs.forEach(t=>{t.classList.remove('active');t.setAttribute('aria-selected','false');if(t.dataset.cat===cat){t.classList.add('active');t.setAttribute('aria-selected','true')}});
+      mirrorSubtabs.classList.toggle('visible',cat==='mirror');
+      subtabs.forEach(t=>t.classList.toggle('active',t.dataset.sub===sub));
       grid.classList.add('is-filtering');
-      setTimeout(()=>{cards.forEach(c=>{c.style.display=(cat==='all'||c.dataset.cat===cat)?'':'none'});grid.classList.remove('is-filtering')},200);
+      setTimeout(()=>{cards.forEach(c=>{const inCategory=cat==='all'||c.dataset.cat===cat;const inSub=cat!=='mirror'||sub==='all'||c.dataset.sub===sub;c.style.display=(inCategory&&inSub)?'':'none'});grid.classList.remove('is-filtering')},200);
     }
     tabs.forEach(tab=>{tab.addEventListener('click',()=>filterTo(tab.dataset.cat))});
+    subtabs.forEach(tab=>{tab.addEventListener('click',()=>filterTo('mirror',tab.dataset.sub))});
     const hash=location.hash.replace('#','');
-    if(hash&&['decode','mystic','boost','spark'].includes(hash))filterTo(hash);
-    window.addEventListener('hashchange',()=>{const h=location.hash.replace('#','');if(h)filterTo(h)});
+    if(hash&&['mirror','play','shore','think'].includes(hash))filterTo(hash);
+    window.addEventListener('hashchange',()=>{const h=location.hash.replace('#','');if(['mirror','play','shore','think'].includes(h))filterTo(h)});
   </script>
 </body>
 </html>
